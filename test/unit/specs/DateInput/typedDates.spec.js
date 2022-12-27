@@ -14,7 +14,7 @@ describe('DateInput', () => {
     })
   })
 
-  it('does not format the date when typed', () => {
+  it('does not format the date when typed', async () => {
     const dateString = '2018-04-24'
     wrapper.vm.input.value = dateString
     expect(wrapper.vm.input.value).toEqual(dateString)
@@ -24,6 +24,8 @@ describe('DateInput', () => {
     wrapper.setProps({
       selectedDate: new Date(dateString)
     })
+    await wrapper.vm.$nextTick()
+
     expect(wrapper.vm.typedDate).toEqual(dateString)
     expect(wrapper.vm.formattedValue).toEqual(dateString)
   })
@@ -36,7 +38,7 @@ describe('DateInput', () => {
     expect(wrapper.emitted().typedDate[0][0]).toBeInstanceOf(Date)
   })
 
-  it('allows custom date format', () => {
+  it('allows custom date format', async () => {
     const dateString = '24/06/2018'
     wrapper.setProps({
       selectedDate: new Date(dateString),
@@ -46,6 +48,8 @@ describe('DateInput', () => {
         return new Date(result[2] + '-' + result[1] + '-' + result[0] + 'T00:00:00-03:00')
       }
     })
+    await wrapper.vm.$nextTick()
+
     const input = wrapper.find('input')
     wrapper.vm.input.value = dateString
     expect(wrapper.vm.input.value).toEqual(dateString)

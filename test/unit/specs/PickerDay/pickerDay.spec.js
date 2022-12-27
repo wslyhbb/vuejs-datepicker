@@ -14,11 +14,13 @@ describe('PickerDay: DOM', () => {
     })
   })
 
-  it('knows the selected date', () => {
+  it('knows the selected date', async () => {
     const newDate = new Date(2016, 9, 15)
     wrapper.setProps({
       selectedDate: newDate
     })
+    await wrapper.vm.$nextTick()
+
     expect(wrapper.vm.isSelectedDate(newDate)).toEqual(true)
     expect(wrapper.vm.isSelectedDate(new Date(2017, 1, 1))).toEqual(false)
   })

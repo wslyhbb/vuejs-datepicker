@@ -36,15 +36,15 @@ To view demo examples locally clone the repo and run `npm install && npm run ser
 ## Install
 
 ``` bash
-npm install @hokify/vuejs-datepicker
+npm install @wslyhbb/vuejs-datepicker
 ```
 or
 ``` bash
-yarn add @hokify/vuejs-datepicker
+yarn add @wslyhbb/vuejs-datepicker
 ```
 
 ``` javascript
-import Datepicker from '@hokify/vuejs-datepicker';
+import Datepicker from '@wslyhbb/vuejs-datepicker';
 
 export default {
   // ...
@@ -96,7 +96,7 @@ E.g.via:
 ```
 <style lang="scss">
 /* purgecss start ignore */
-@import "@hokify/vuejs-datepicker/dist/vuejs-datepicker.css"
+@import "@wslyhbb/vuejs-datepicker/dist/vuejs-datepicker.css"
 /* purgecss end ignore */
 </style>
 ```
@@ -109,7 +109,7 @@ add inside nuxt.config:
 ```
 css: [
  {
-  src: '@hokify/vuejs-datepicker/dist/vuejs-datepicker.css',
+  src: '@wslyhbb/vuejs-datepicker/dist/vuejs-datepicker.css',
   lang: 'css'
  },
 ```

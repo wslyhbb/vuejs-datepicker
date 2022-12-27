@@ -14,11 +14,13 @@ describe('PickerMonth', () => {
     })
   })
 
-  it('knows the selected month', () => {
+  it('knows the selected month', async () => {
     const newDate = new Date(2016, 9, 15)
     wrapper.setProps({
       selectedDate: newDate
     })
+    await wrapper.vm.$nextTick()
+
     expect(wrapper.vm.isSelectedMonth(newDate)).toEqual(true)
     expect(wrapper.vm.isSelectedMonth(new Date(2017, 1, 1))).toEqual(false)
   })

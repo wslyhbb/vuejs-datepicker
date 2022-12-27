@@ -10,5 +10,4 @@ test/unit/coverage
 yarn-debug.log*
 yarn-error.log*
 .idea
-package-lock.json
 TODO

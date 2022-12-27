@@ -218,6 +218,9 @@ describe('Datepicker.vue set by string', () => {
       }
     })
     const date = new Date('2016-02-20')
+    // moment parses dates in local time but new Date is parsed in UTC
+    // need to make them same timezone before comparing
+    date.setMinutes(date.getMinutes() + date.getTimezoneOffset())
     expect(wrapper.vm.selectedDate.getFullYear()).toEqual(date.getFullYear())
     expect(wrapper.vm.selectedDate.getMonth()).toEqual(date.getMonth())
     expect(wrapper.vm.selectedDate.getDate()).toEqual(date.getDate())
@@ -242,9 +245,9 @@ describe('Datepicker.vue set by timestamp', () => {
         value: new Date(Date.UTC(2018, 0, 29)).getTime()
       }
     })
-    expect(wrapper.vm.selectedDate.getFullYear()).toEqual(2018)
-    expect(wrapper.vm.selectedDate.getMonth()).toEqual(0)
-    expect(wrapper.vm.selectedDate.getDate()).toEqual(29)
+    expect(wrapper.vm.selectedDate.getUTCFullYear()).toEqual(2018)
+    expect(wrapper.vm.selectedDate.getUTCMonth()).toEqual(0)
+    expect(wrapper.vm.selectedDate.getUTCDate()).toEqual(29)
   })
 })
 
@@ -254,8 +257,8 @@ describe('Datepicker.vue using UTC', () => {
     const timezoneOffset = ((new Date()).getTimezoneOffset() / 60)
 
     // this is ambiguous because localzone differs by one day than UTC
-    const ambiguousHour = 25 - timezoneOffset
-    const ambiguousDate = new Date(2018, 3, 15, ambiguousHour)
+    const ambiguousHour = 24 - timezoneOffset
+    const ambiguousDate = new Date(Date.UTC(2018, 3, 15, ambiguousHour))
     const ambiguousYear = ambiguousDate.getUTCFullYear()
     const ambiguousMonth = (`0${ambiguousDate.getUTCMonth() + 1}`).slice(-2)
     const ambiguousDay = (`0${ambiguousDate.getUTCDate()}`).slice(-2)
@@ -271,7 +274,7 @@ describe('Datepicker.vue using UTC', () => {
     })
     // It's important to assert the input rendered output
     await wrapper.vm.$nextTick()
-    return expect(wrapper.find(DateInput).vm.formattedValue).toEqual(UTCString)
+    return expect(wrapper.findComponent(DateInput).vm.formattedValue).toEqual(UTCString)
   })
 })
 
