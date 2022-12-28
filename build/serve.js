@@ -2,10 +2,10 @@ import path from 'path'
 import serve from 'rollup-plugin-serve'
 import livereload from 'rollup-plugin-livereload'
 import vue from 'rollup-plugin-vue'
-import resolve from 'rollup-plugin-node-resolve'
+import resolve from '@rollup/plugin-node-resolve'
 import replace from 'rollup-plugin-replace'
-import common from 'rollup-plugin-commonjs'
-import babel from 'rollup-plugin-babel'
+import common from '@rollup/plugin-commonjs'
+import babel from '@rollup/plugin-babel'
 
 export default {
   input: path.join(__dirname, '..', 'example', 'main.js'),
@@ -30,8 +30,8 @@ export default {
       mainFields: ['module', 'jsnext', 'browser']
     }),
     babel({
-      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue'],
-      runtimeHelpers: true
+      babelHelpers: 'bundled',
+      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue']
     }),
     serve({
       contentBase: path.join(__dirname, '..', 'example'),

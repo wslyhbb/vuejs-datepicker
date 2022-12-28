@@ -6,9 +6,9 @@ const config = Object.assign({}, base, {
     name: 'vuejsDatepicker',
     file: 'dist/vuejs-datepicker.common.js',
     format: 'cjs',
-    banner: banner,
+    banner,
     globals: {
-      'vue': 'Vue'
+      vue: 'Vue'
     }
   }
 })

@@ -1,12 +1,11 @@
 import path from 'path'
 import vue from 'rollup-plugin-vue'
-import babel from 'rollup-plugin-babel'
-
+import babel from '@rollup/plugin-babel'
 import postcss from 'rollup-plugin-postcss'
 import autoprefixer from 'autoprefixer'
-import common from 'rollup-plugin-commonjs'
+import common from '@rollup/plugin-commonjs'
 import replace from 'rollup-plugin-replace'
-import node from 'rollup-plugin-node-resolve'
+import node from '@rollup/plugin-node-resolve'
 import css from 'rollup-plugin-css-only'
 import CleanCSS from 'clean-css'
 
@@ -27,9 +26,10 @@ export default {
       extensions: ['.js', '.jsx', '.vue']
     }),
     common(),
-    css({ output: (style) => {
-      fs.writeFileSync('dist/vuejs-datepicker.css', new CleanCSS().minify(style).styles)
-    }
+    css({
+      output: (style) => {
+        fs.writeFileSync('dist/vuejs-datepicker.css', new CleanCSS().minify(style).styles)
+      }
     }),
     vue({
       css: false,
@@ -47,6 +47,7 @@ export default {
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     babel({
+      babelHelpers: 'bundled',
       extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue']
     })
   ]

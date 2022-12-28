@@ -44,7 +44,7 @@ describe('DateInput', () => {
       selectedDate: new Date(dateString),
       typeable: true,
       parseTypedDate: function (dateString) {
-        let result = dateString.split('/')
+        const result = dateString.split('/')
         return new Date(result[2] + '-' + result[1] + '-' + result[0] + 'T00:00:00-03:00')
       }
     })

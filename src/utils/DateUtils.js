@@ -227,7 +227,7 @@ const utils = {
    * @return {Array}
    */
   createDateArray (start, end) {
-    let dates = []
+    const dates = []
     while (start <= end) {
       dates.push(new Date(start))
       start = this.setDate(new Date(start), this.getDate(new Date(start)) + 1)
@@ -260,9 +260,9 @@ export const ymdLangs = ['ja', 'lt', 'mn', 'ko']
 
 // 3. special year suffix
 export const langYearSuffix = {
-  'zh': '年',
-  'ja': '年',
-  'ko': '년'
+  zh: '年',
+  ja: '年',
+  ko: '년'
 }
 
 // eslint-disable-next-line

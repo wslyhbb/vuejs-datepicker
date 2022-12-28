@@ -1,19 +1,19 @@
 import base, { banner } from './rollup.config.base'
-import { uglify } from 'rollup-plugin-uglify'
+import { terser } from 'rollup-plugin-terser'
 
 const config = Object.assign({}, base, {
   output: {
     exports: 'named',
     name: 'vuejsDatepicker',
     file: 'dist/vuejs-datepicker.min.js',
-    banner: banner,
+    banner,
     format: 'iife',
     globals: {
-      'vue': 'Vue'
+      vue: 'Vue'
     }
   }
 })
 
-config.plugins.push(uglify())
+config.plugins.push(terser())
 
 export default config
