@@ -387,7 +387,7 @@ export default {
 
 <style>
 
-@import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
+@import url('https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css');
 
 body {
     font-family: 'Helvetica Neue Light', Helvetica, sans-serif;
