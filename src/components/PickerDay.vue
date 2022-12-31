@@ -47,6 +47,7 @@ export default {
     calendarStyle: Object,
     language: Object,
     mondayFirst: Boolean,
+    twoLetterAbbr: Boolean,
     useUtc: Boolean
   },
   data () {
@@ -72,7 +73,7 @@ export default {
      * @return {String[]}
      */
     daysOfWeek () {
-      return this.utils.getDaysOfWeek(this.mondayFirst)
+      return this.utils.getDaysOfWeek(this.mondayFirst, this.twoLetterAbbr)
     },
     /**
      * Returns the day number of the week less one for the first of the current month

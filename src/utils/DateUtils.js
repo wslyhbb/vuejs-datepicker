@@ -118,7 +118,6 @@ const utils = {
   /**
    * Return abbreviated week day name
    * @param {Date}
-   * @param {Array}
    * @return {String}
    */
   getDayNameAbbr (date) {
@@ -191,12 +190,22 @@ const utils = {
     }
   },
 
-  getDaysOfWeek (mondayFirst) {
+  /**
+   * Return abbreviated week day name
+   * @param {Boolean} mondayFirst
+   * @param {Boolean} twoLetter
+   * @returns {Array}
+   */
+  getDaysOfWeek (mondayFirst, twoLetter = false) {
     const plainDate = new Date()
     const dates = [0, 1, 2, 3, 4, 5, 6]
+    let formatString = 'ccc'
+    if (twoLetter) {
+      formatString = 'cccccc'
+    }
     return dates.map((v) => format(
       setDay(plainDate, mondayFirst ? v + 1 : v),
-      'ccc',
+      formatString,
       { locale: this.language }
     ))
   },

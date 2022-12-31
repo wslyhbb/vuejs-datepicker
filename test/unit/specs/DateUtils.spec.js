@@ -129,6 +129,23 @@ describe('daysInWeek', () => {
     expect(DateUtils.getDaysOfWeek(true)).toEqual(mondayFirst)
     expect(DateUtils.getDaysOfWeek(false)).toEqual(sundayFirst)
   })
+
+  it('should give the correct days in a week with two letter abbreviation', () => {
+    const mondayFirst = [
+      'Mo', 'Tu',
+      'We', 'Th',
+      'Fr', 'Sa',
+      'Su'
+    ]
+    const sundayFirst = [
+      'Su', 'Mo',
+      'Tu', 'We',
+      'Th', 'Fr',
+      'Sa'
+    ]
+    expect(DateUtils.getDaysOfWeek(true, true)).toEqual(mondayFirst)
+    expect(DateUtils.getDaysOfWeek(false, true)).toEqual(sundayFirst)
+  })
 })
 
 const getAmbiguousDate = _ => {

@@ -47,6 +47,7 @@
       :language="language"
       :pageTimestamp="pageTimestamp"
       :mondayFirst="mondayFirst"
+      :twoLetterAbbr="twoLetterAbbr"
       :dayCellContent="dayCellContent"
       :use-utc="useUtc"
       @changedMonth="handleChangedMonthFromDayPicker"
@@ -138,6 +139,7 @@ export default {
     inputClass: [String, Object, Array],
     wrapperClass: [String, Object, Array],
     mondayFirst: Boolean,
+    twoLetterAbbr: Boolean,
     clearButton: Boolean,
     clearButtonIcon: String,
     calendarButton: Boolean,
