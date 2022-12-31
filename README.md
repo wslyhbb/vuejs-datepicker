@@ -341,9 +341,11 @@ An example would be to use bootstrap's `input-group-prepend` and `input-group-ap
 to show some custom text:
 ``` html
 <datepicker :bootstrap-styling="true">
-  <div slot="beforeCalendarHeader" class="calender-header">
-    Choose a Date
-  </div>
+  <template v-slot:beforeCalendarHeader">
+    <div class="calender-header">
+      Choose a Date
+    </div>
+  </template>
 </datepicker>
 ```
 
@@ -358,9 +360,11 @@ To implement some custom styling (for instance to add an animated placeholder) o
 
 ``` html
 <datepicker>
-  <span slot="afterDateInput" class="animated-placeholder">
-    Choose a Date
-  </span>
+  <template v-slot:afterDateInput">
+    <span class="animated-placeholder">
+      Choose a Date
+    </span>
+  </template>
 </datepicker>
 ```
 
