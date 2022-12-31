@@ -29,7 +29,7 @@ which includes following breaking changes:
 ## Demo
 
 To view a demo online:
-https://codesandbox.io/s/vue-datepicker-demo-82x48
+https://codesandbox.io/s/vue-datepicker-demo-hjktwc
 
 To view demo examples locally clone the repo and run `npm install && npm run serve`
 
@@ -379,7 +379,7 @@ import { de } from 'date-fns/locale';
 
 2. specify the language in the datepicker component:
 ```html
-<datepicker language="de"></datepicker>
+<datepicker :language="de"></datepicker>
 ```
   
 Available languages are all that date-fs supports.
