@@ -99,6 +99,7 @@ import PickerDay from './PickerDay.vue'
 import PickerMonth from './PickerMonth.vue'
 import PickerYear from './PickerYear.vue'
 import utils, { makeDateUtils, rtlLangs } from '../utils/DateUtils'
+import { enUS } from 'date-fns/locale'
 
 export default {
   components: {
@@ -116,11 +117,13 @@ export default {
     id: String,
     format: {
       type: [String, Function],
-      default: 'DD MMM YYYY'
+      default: 'dd MMM yyyy'
     },
     language: {
-      type: String,
-      default: 'en'
+      type: Object,
+      default () {
+        return enUS
+      }
     },
     openDate: {
       validator: val => utils.validateDateInput(val)
@@ -396,7 +399,7 @@ export default {
      */
     setValue (date) {
       if (typeof date === 'string' || typeof date === 'number') {
-        const parsed = this.utils.parseDate(date)
+        const parsed = this.utils.parseDate(date, this.format)
         date = isNaN(parsed.valueOf()) ? null : parsed
       }
       if (!date) {

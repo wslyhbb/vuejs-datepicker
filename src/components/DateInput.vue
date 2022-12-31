@@ -47,7 +47,7 @@ export default {
     selectedDate: Date,
     resetTypedDate: [Date],
     format: [String, Function],
-    language: String,
+    language: Object,
     inline: Boolean,
     id: String,
     name: String,
@@ -85,7 +85,7 @@ export default {
       }
       return typeof this.format === 'function'
         ? this.format(this.selectedDate)
-        : this.utils.formatDate(this.utils.parseDate(this.selectedDate, this.format), this.format)
+        : this.utils.formatDate(this.selectedDate, this.format)
     },
 
     computedInputClass () {

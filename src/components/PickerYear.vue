@@ -32,7 +32,7 @@ export default {
     highlighted: Object,
     calendarClass: [String, Object, Array],
     calendarStyle: Object,
-    language: String,
+    language: Object,
     allowedToShowView: Function,
     useUtc: Boolean
   },

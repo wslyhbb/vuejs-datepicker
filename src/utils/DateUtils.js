@@ -1,4 +1,5 @@
-import moment from 'moment'
+import { toDate, format, setMonth, setDay, parse } from 'date-fns'
+import { enUS } from 'date-fns/locale'
 
 const utils = {
   /**
@@ -6,9 +7,9 @@ const utils = {
    */
   useUtc: false,
   /**
-   * @type {String}
+   * @type {Locale}
    */
-  language: 'en',
+  language: enUS,
   /**
    * Returns the full year, using UTC or not
    * @param {Date} date
@@ -124,7 +125,7 @@ const utils = {
     if (typeof date !== 'object') {
       throw TypeError('Invalid Type')
     }
-    return moment().setDay(this.getDay(date)).locale(this.language).format('ddd')
+    return format(date, 'ccc', { locale: this.language })
   },
 
   /**
@@ -135,10 +136,10 @@ const utils = {
    */
   getMonthName (date) {
     if (typeof date === 'object') {
-      return moment(date).locale(this.language).format('MMMM')
+      return format(date, 'LLLL', { locale: this.language })
     }
     if (typeof date === 'number') {
-      return moment().month(date).locale(this.language).format('MMMM')
+      return format(setMonth(new Date(), date), 'LLLL', { locale: this.language })
     }
     throw TypeError('Invalid type')
   },
@@ -150,10 +151,10 @@ const utils = {
    */
   getMonthNameAbbr (date) {
     if (typeof date === 'object') {
-      return moment(date).locale(this.language).format('MMM')
+      return format(date, 'LLL', { locale: this.language })
     }
     if (typeof date === 'number') {
-      return moment().month(date).locale(this.language).format('MMM')
+      return format(setMonth(new Date(), date), 'LLL', { locale: this.language })
     }
     throw TypeError('Invalid type')
   },
@@ -191,18 +192,13 @@ const utils = {
   },
 
   getDaysOfWeek (mondayFirst) {
-    const date = moment().day(0)
-    if (mondayFirst) {
-      date.day(1)
-    }
-
-    const days = []
-    for (let i = 0; i < 7; i++) {
-      days.push(date.locale(this.language).format('ddd'))
-      date.day(date.day() + 1)
-    }
-
-    return days
+    const plainDate = new Date()
+    const dates = [0, 1, 2, 3, 4, 5, 6]
+    return dates.map((v) => format(
+      setDay(plainDate, mondayFirst ? v + 1 : v),
+      'ccc',
+      { locale: this.language }
+    ))
   },
 
   /**
@@ -212,12 +208,16 @@ const utils = {
    * @param {Object}
    * @return {String}
    */
-  formatDate (date, format) {
-    return moment(date).locale(this.language).format(format)
+  formatDate (date, formatString) {
+    return format(date, formatString, { locale: this.language })
   },
 
-  parseDate (dateString, format) {
-    return moment(dateString, format).toDate()
+  parseDate (dateValue, formatString = 'yyyy-MM-dd') {
+    if (typeof dateValue === 'string') {
+      return parse(dateValue, formatString, new Date(), { locale: this.language })
+    } else if (typeof dateValue === 'number') {
+      return toDate(dateValue)
+    }
   },
 
   /**
@@ -245,7 +245,9 @@ const utils = {
   }
 }
 
-export const makeDateUtils = (useUtc = false, language = 'en') => ({ ...utils, useUtc, language })
+export const makeDateUtils = (useUtc = false, language = enUS) => {
+  return { ...utils, useUtc, language }
+}
 
 export default {
   ...utils

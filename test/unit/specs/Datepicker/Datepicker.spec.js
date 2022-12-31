@@ -213,12 +213,12 @@ describe('Datepicker.vue set by string', () => {
   it('can parse a string date', () => {
     wrapper = shallowMount(Datepicker, {
       propsData: {
-        format: 'YYYY MM dd',
-        value: '2016-02-20'
+        format: 'yyyy MM dd',
+        value: '2016 02 20'
       }
     })
     const date = new Date('2016-02-20')
-    // moment parses dates in local time but new Date is parsed in UTC
+    // date-fns parses dates in local time but new Date is parsed in UTC
     // need to make them same timezone before comparing
     date.setMinutes(date.getMinutes() + date.getTimezoneOffset())
     expect(wrapper.vm.selectedDate.getFullYear()).toEqual(date.getFullYear())
@@ -241,7 +241,7 @@ describe('Datepicker.vue set by timestamp', () => {
   it('can parse unix timestamp', () => {
     wrapper = shallowMount(Datepicker, {
       propsData: {
-        format: 'YYYY MM dd',
+        format: 'yyyy-MM-dd',
         value: new Date(Date.UTC(2018, 0, 29)).getTime()
       }
     })
@@ -267,7 +267,7 @@ describe('Datepicker.vue using UTC', () => {
     // It's important to use the `mount` helper here
     wrapper = mount(Datepicker, {
       propsData: {
-        format: 'YYYY MM DD',
+        format: 'yyyy MM dd',
         value: ambiguousDate,
         useUtc: true // This should fail if `useUtc=false`
       }

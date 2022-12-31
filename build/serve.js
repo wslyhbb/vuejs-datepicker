@@ -15,7 +15,7 @@ export default {
     name: 'demo',
     sourcemap: true,
     external: [
-      'moment'
+      'date-fns'
     ]
   },
   plugins: [

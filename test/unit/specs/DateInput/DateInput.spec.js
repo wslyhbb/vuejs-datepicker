@@ -1,3 +1,4 @@
+import { enUS } from 'date-fns/locale'
 import DateInput from '@/components/DateInput.vue'
 import { shallowMount } from '@vue/test-utils'
 
@@ -8,8 +9,8 @@ describe('DateInput', () => {
     wrapper = shallowMount(DateInput, {
       propsData: {
         selectedDate: new Date(2018, 2, 24),
-        format: 'DD MMM YYYY',
-        language: 'en'
+        format: 'dd MMM yyyy',
+        language: enUS
       }
     })
   })
@@ -97,8 +98,8 @@ describe('DateInput', () => {
       attachTo: document.body,
       propsData: {
         selectedDate: new Date(2018, 2, 24),
-        format: 'DD MMM YYYY',
-        language: 'en',
+        format: 'dd MMM yyyy',
+        language: enUS,
         showCalendarOnFocus: true
       }
     })

@@ -18,8 +18,8 @@
     </div>
 
     <div class="example">
-      <h3>Typeable datepicker with custom formatter (DD.MM.YYYY)</h3>
-      <datepicker placeholder="Type or select date" :typeable="true" format="DD.MM.YYYY" :parse-typed-date="parseTypedDate" />
+      <h3>Typeable datepicker with custom formatter (dd.MM.yyyy)</h3>
+      <datepicker placeholder="Type or select date" :typeable="true" format="dd.MM.yyyy" :parse-typed-date="parseTypedDate" />
       <code>
         &lt;datepicker placeholder="Type or select date" :typeable="true"&gt;&lt;/datepicker&gt;
       </code>
@@ -67,11 +67,11 @@
         <div class="form-group">
           <label>Format</label>
           <select v-model="format">
-            <option value="D MMM YYYY" selected>D MMM YYYY - e.g 12 Feb 2016</option>
-            <option value="D MMMM YYYY">D MMMM YYYY - e.g 12 February 2016</option>
-            <option value="YYYY-MM-DD">YYYY-MM-DD - e.g 2016-02-12</option>
-            <option value="Do MMM YYYY">do MMM YYYY - e.g 12th Feb 2016</option>
-            <option value="ddd Do MMM YYYY">ddd do MMM YYYY - e.g Sat 12th Feb 2016</option>
+            <option value="d MMM yyyy" selected>d MMM yyyy - e.g 12 Feb 2016</option>
+            <option value="d MMMM yyyy">d MMMM yyyy - e.g 12 February 2016</option>
+            <option value="yyyy-MM-dd">yyyy-MM-dd - e.g 2016-02-12</option>
+            <option value="do MMM yyyy">do MMM yyyy - e.g 12th Feb 2016</option>
+            <option value="eee do MMM yyyy">eee do MMM YYYY - e.g Sat 12th Feb 2016</option>
           </select>
         </div>
       </div>
@@ -195,7 +195,7 @@
       <h3>Translations</h3>
       <h5>{{ language }} datepicker</h5>
 
-      <datepicker :language="language" format="D MMMM YYYY"></datepicker>
+      <datepicker :language="language" format="d MMMM yyyy"></datepicker>
       <code>
           &lt;datepicker :language="language"&gt;&lt;/datepicker&gt;
       </code>
@@ -215,9 +215,9 @@
       </code>
     </div>
     <div class="example">      <h3>RTL datepicker</h3>
-      <datepicker language="he"></datepicker>
+      <datepicker :language="languages.he"></datepicker>
       <code>
-          &lt;datepicker language="he"&gt;&lt;/datepicker&gt;
+          &lt;datepicker :language="languages.he"&gt;&lt;/datepicker&gt;
       </code>
     </div>
 
@@ -231,9 +231,9 @@
 
     <div class="example">
       <h3>Day view only RTL</h3>
-      <datepicker :minimumView="'day'" :maximumView="'day'" language="he"></datepicker>
+      <datepicker :minimumView="'day'" :maximumView="'day'" :language="languages.he"></datepicker>
       <code>
-        &lt;datepicker :minimumView="'day'" :maximumView="'day'" language="he"&gt;&lt;/datepicker&gt;
+        &lt;datepicker :minimumView="'day'" :maximumView="'day'" :language="languages.he"&gt;&lt;/datepicker&gt;
       </code>
     </div>
 
@@ -266,8 +266,8 @@
 
 <script>
 import Datepicker from '../src/components/Datepicker.vue'
-import moment from 'moment'
-import 'moment/min/locales.min' // include all moment js locales for demo project, see https://momentjs.com/docs/#/i18n/
+import { parse } from 'date-fns'
+import { enUS, ru, he } from 'date-fns/locale'
 
 const state = {
   date1: new Date()
@@ -281,7 +281,7 @@ export default {
   data () {
     return {
       styleInput: null,
-      format: 'd MMMM YYYY',
+      format: 'dd.MM.yyyy',
       disabledDates: {},
       openDate: null,
       disabledFn: {
@@ -302,8 +302,8 @@ export default {
       eventMsg: null,
       state: state,
       vModelExample: null,
-      languages: moment.locales(),
-      language: 'en'
+      languages: { enUS, ru, he },
+      language: enUS
     }
   },
   computed: {
@@ -376,10 +376,10 @@ export default {
     },
     parseTypedDate (input) {
       console.log('input', input)
-      let momentDate = moment(input, 'DD.MM.YYYY')
-      console.log('momentDate.toDate()', momentDate.toDate())
+      let date = parse(input, 'dd.MM.yyyy', new Date())
+      console.log('date-fns/parse', date)
 
-      return momentDate.toDate()
+      return date
     }
   }
 }

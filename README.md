@@ -23,8 +23,8 @@ which includes following breaking changes:
 * Merged #626: fixes missing close and open events
 * Based on #536: Allow custom types, I changed the method to getTypedDate which should return a fully parsed Date object. 
 * Added a beforeDateInput slot.
-* uses moment.js for translations  (**breaking change v2+**) see [momentjs / translations](#momentjs-and-translations)
-* dropped internal formatting rules and also used moment.js (**breaking change 2.x+**) see [momentjs / formatting](#momentjs-and-formatting)
+* uses date-fns for translations  (**breaking change v2+**) see [date-fns / translations](#date-fns-and-translations)
+* dropped internal formatting rules and also used date-fns (**breaking change 2.x+**) see [date-fns / formatting](#date-fns-and-formatting)
 
 ## Demo
 
@@ -58,37 +58,35 @@ export default {
 ## Upgrade
 To upgrade to version 2+ check:
 * add explicit css inclues, see [regarding CSS / styles](#regarding-css)
-* change translation to moment.js, see [momentjs / translations](#momentjs-and-translations)
-* change date formats to moment.js, see [momentjs / formatting](#momentjs-and-formatting)
+* change translation to date-fns, see [date-fns / translations](#date-fns-and-translations)
+* change date formats to date-fns, see [date-fns / formatting](#date-fns-and-formatting)
 
-### momentjs and translations
+### date-fns and translations
 
-I've dropped the additional translations and use the moment.js directly, 
-therefore you need to remove all dependenices
+I have changed the translations from internal to use the date-fns, 
+therefore you need to change imports
 for the "locale" imports e.g.:
 ```import {en, es} from 'vuejs-datepicker/dist/locale'```
+change to:
+```import { enUS } from 'date-fns/locale'```
 
-The language property changed from an locale object to a simple string (en,de,..)!
 Please see [Translations](#translations) section how to set up your language.
 
-### momentjs and formatting
+### date-fns and formatting
 
-change custom date formatting to moment js date formatting: https://momentjs.com/docs/#/displaying/
+change custom date formatting to date-fns date formatting: https://date-fns.org/docs/format
 Examples:
 
-| Old                          | New (moment.js)  | Displays          |
+| Old                           | New (date-fns)  | Displays          |
 |-------------------------------|-----------------|------------------ |
-| d MMM yyyy                    | D MMM YYYY      | 12 Feb 2016       |
-| d MMMM yyyy                   | D MMMM YYYY     | 12 February 2016  |
-| yyyy-MM-dd                    | YYYY-MM-DD      | 2016-02-12        |
-| dsu MMM yyyy                  | Do MMM YYYY     | 12th Feb 2016     |
-| D dsu MMM yyyy                | ddd Do MMM YYYY | Sat 12th Feb 2016 |
+| dsu MMM yyyy                  | do MMM yyyy     | 12th Feb 2016     |
+| D dsu MMM yyyy                | eee do MMM yyyy | Sat 12th Feb 2016 |
 
 ### regarding CSS
 As this bundle is also useable for SSR rendering, you have to take care of css yourself. 
 (see also https://github.com/vuejs/rollup-plugin-vue/issues/266)
 I strongly recommend to create a custom component, that wraps the vuejs-datepicker. Then
-it's easy to add custom css and have a consistent style for the datepicker.
+it is easy to add custom css and have a consistent style for the datepicker.
 
 #### Method 1: try to include the css directly.
 Ensure you have postcss-import up and running. (https://github.com/postcss/postcss-import)
@@ -115,9 +113,6 @@ css: [
 ```
 
 #### Method 3: Copy the relevant css selectors to your custom component.
-I'm using this method, as I actually customized the datepicker and therefore don't need to
-overwrite css classes again with my style.
-
 ```
 <style lang="scss">
 	.vdp-datepicker {
@@ -128,8 +123,6 @@ overwrite css classes again with my style.
 	...
 </style>
 ```
-
-Ping me if you have any better approaches! :)
 
 ## Usage
 
@@ -170,9 +163,9 @@ Inline always open version
 | value                         | Date\|String    |             | Date value of the datepicker             |
 | name                          | String          |             | Input name property                      |
 | id                            | String          |             | Input id                                 |
-| format                        | String\|Function| DD MMM YYYY | Date formatting string or function       |
+| format                        | String\|Function| dd MMM yyyy | Date formatting string or function       |
 | full-month-name               | Boolean         | false       | To show the full month name              |
-| language                      | String          | en          | Translation for days and months          |
+| language                      | Object          | enUS        | Translation for days and months          |
 | disabled-dates                | Object          |             | See below for configuration              |
 | placeholder                   | String          |             | Input placeholder text                   |
 | inline                        | Boolean         |             | To show the datepicker always open       |
@@ -196,6 +189,7 @@ Inline always open version
 | minimum-view                  | String          | 'day'       | If set, lower-level views won't show     |
 | maximum-view                  | String          | 'year'      | If set, higher-level views won't show    |
 | parse-typed-date	          	| Function: Date  |             | Use to parse custom date for typed input |
+| highlighted                   | Object          |             | Dates to be highlighted                  |
 
 ## Events
 
@@ -218,30 +212,30 @@ These events are emitted on actions in the datepicker
 
 #### String formatter
 
-Uses moment.js for date formatting.
-See https://momentjs.com/docs/#/displaying/
+Uses date-fns for date formatting.
+See https://date-fns.org/docs/format
 Examples:
 
-| Example        | Displays          |
-|------------------|------------------ |
-| D MMM YYYY      | 12 Feb 2016       |
-| D MMMM YYYY     | 12 February 2016  |
-| YYYY-MM-DD      | 2016-02-12        |
-| Do MMM YYYY     | 12th Feb 2016     |
-| ddd Do MMM YYYY | Sat 12th Feb 2016 |
+| Example         | Displays          |
+|-----------------|------------------ |
+| d MMM yyyy      | 12 Feb 2016       |
+| d MMMM yyyy     | 12 February 2016  |
+| yyyy-MM-dd      | 2016-02-12        |
+| do MMM yyyy     | 12th Feb 2016     |
+| eee do MMM yyyy | Sat 12th Feb 2016 |
 
-| Token | Desc                   | Example     | Version <2.0 |
-|-------|------------------------|-------------| ---- |
-| D     | day                    | 1           | d |
-| DD    | 0 prefixed day         | 01          | dd |
-| dd    | abbr day               | Mon         | D |
-| Do    | date of Month          | 1st 2nd ... 30th 31st  | (su) |
-| M     | month number (1 based) | 1 (for Jan) | M |
-| MM    | 0 prefixed month       | 01          | MM |
-| MMM   | abbreviated month name | Jan         | MMM |
-| MMMM  | month name             | January     | MMMM | 
-| YY    | two digit year         | 16          | yy |
-| YYYY  | four digit year        | 2016        | yyyy |
+| Token | Desc                   | Example               | Version <2.0 |
+|-------|------------------------|-----------------------|--------------|
+| d     | day                    | 1                     | d            |
+| dd    | 0 prefixed day         | 01                    | dd           |
+| ccc   | abbr day               | Mon                   | D            |
+| do    | date of Month          | 1st 2nd ... 30th 31st | (su)         |
+| M     | month number (1 based) | 1 (for Jan)           | M            |
+| MM    | 0 prefixed month       | 01                    | MM           |
+| MMM   | abbreviated month name | Jan                   | MMM          |
+| MMMM  | month name             | January               | MMMM         | 
+| yy    | two digit year         | 16                    | yy           |
+| yyyy  | four digit year        | 2016                  | yyyy         |
 
 #### Function formatter
 
@@ -253,7 +247,7 @@ This allow us to use date-fns, globalize or any other library to format date.
 <script>
   methods: {
     customFormatter(date) {
-      return moment(date).format('MMMM Do YYYY, h:mm:ss a');
+      return format(date, 'MMMM Do yyyy, h:mm:ss a');
     }
   }
 </script>
@@ -354,7 +348,7 @@ to show some custom text:
 
 #### beforeDateInput
 
-To implement some custom styling on DateINput, you might need to add elemnt beore the DateInput. Similar to afterDateInput, just it is before in the html DOM.
+To implement some custom styling on DateInput, you might need to add elemnt before the DateInput. Similar to afterDateInput, just it is before in the html DOM.
 
 #### afterDateInput
 
@@ -374,23 +368,13 @@ To implement some custom styling (for instance to add an animated placeholder) o
 
 ### How to apply language
 
-See also https://momentjs.com/docs/#/i18n/loading-into-browser/
+See also https://date-fns.org/docs/I18n
 Especially if you use webpack!
 
 1. You need to load the language file for the locale, e.g. 
 Node:
 ```javascript
-import 'moment/locale/de';
-```
-
-Browser:
-```html
-<script src="locale/de.js" charset="UTF-8"></script>
-```
-
-There is also a minified version including all versions:
-```javascript
-import 'moment/min/locales.min'
+import { de } from 'date-fns/locale';
 ```
 
 2. specify the language in the datepicker component:
@@ -398,6 +382,6 @@ import 'moment/min/locales.min'
 <datepicker language="de"></datepicker>
 ```
   
-Available languages are all that moment.js supports.
-See demo file or https://github.com/moment/moment/tree/develop/locale for a list of available languages and the correct language code for it.
+Available languages are all that date-fs supports.
+See demo file or https://github.com/date-fns/date-fns/tree/main/src/locale for a list of available languages and the correct language code for it.
 

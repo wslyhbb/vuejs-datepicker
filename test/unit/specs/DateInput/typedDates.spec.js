@@ -7,7 +7,7 @@ describe('DateInput', () => {
   beforeEach(() => {
     wrapper = shallowMount(DateInput, {
       propsData: {
-        format: 'dd MMM YYYY',
+        format: 'dd MMM yyyy',
 
         typeable: true
       }
@@ -32,7 +32,7 @@ describe('DateInput', () => {
 
   it('emits the date when typed', () => {
     const input = wrapper.find('input')
-    wrapper.vm.input.value = '2018-04-24'
+    wrapper.vm.input.value = '24 Jul 2018'
     input.trigger('keyup')
     expect(wrapper.emitted().typedDate).toBeDefined()
     expect(wrapper.emitted().typedDate[0][0]).toBeInstanceOf(Date)
@@ -41,7 +41,7 @@ describe('DateInput', () => {
   it('allows custom date format', async () => {
     const dateString = '24/06/2018'
     wrapper.setProps({
-      selectedDate: new Date(dateString),
+      selectedDate: new Date(),
       typeable: true,
       parseTypedDate: function (dateString) {
         const result = dateString.split('/')

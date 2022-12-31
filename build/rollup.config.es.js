@@ -11,7 +11,7 @@ const config = Object.assign({}, base, {
     }
   },
   external: [
-    'moment'
+    'date-fns'
   ]
 })
 
