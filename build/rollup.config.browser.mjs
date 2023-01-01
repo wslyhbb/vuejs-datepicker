@@ -1,5 +1,5 @@
-import base, { banner } from './rollup.config.base'
-import { terser } from 'rollup-plugin-terser'
+import base, { banner } from './rollup.config.base.mjs'
+import terser from '@rollup/plugin-terser'
 
 const config = Object.assign({}, base, {
   output: {

@@ -1,4 +1,5 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 import vue from 'rollup-plugin-vue'
 import babel from '@rollup/plugin-babel'
 import postcss from 'rollup-plugin-postcss'
@@ -11,7 +12,13 @@ import CleanCSS from 'clean-css'
 
 import fs from 'fs'
 
-const version = require('../package.json').version
+import { readFile } from 'fs/promises'
+const packageJson = JSON.parse(
+  await readFile(
+    new URL('../package.json', import.meta.url)
+  )
+)
+const version = packageJson.version
 export const banner =
   '/*!\n' +
   ' * vuejs-datepicker v' + version + '\n' +
@@ -20,7 +27,7 @@ export const banner =
   ' */'
 
 export default {
-  input: path.join(__dirname, '..', 'src', 'components', 'Datepicker.vue'),
+  input: path.join(path.dirname(fileURLToPath(import.meta.url)), '../src/components/Datepicker.vue'),
   plugins: [
     node({
       extensions: ['.js', '.jsx', '.vue']

@@ -1,18 +1,16 @@
-import base, { banner } from './rollup.config.base'
+import base, { banner } from './rollup.config.base.mjs'
 
 const config = Object.assign({}, base, {
   output: {
+    exports: 'named',
     name: 'vuejsDatepicker',
-    file: 'dist/vuejs-datepicker.esm.js',
-    format: 'es',
+    file: 'dist/vuejs-datepicker.umd.js',
+    format: 'umd',
     banner,
     globals: {
       vue: 'Vue'
     }
-  },
-  external: [
-    'date-fns'
-  ]
+  }
 })
 
 export default config

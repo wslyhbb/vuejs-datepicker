@@ -1,4 +1,5 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 import serve from 'rollup-plugin-serve'
 import livereload from 'rollup-plugin-livereload'
 import vue from 'rollup-plugin-vue'
@@ -7,10 +8,12 @@ import replace from 'rollup-plugin-replace'
 import common from '@rollup/plugin-commonjs'
 import babel from '@rollup/plugin-babel'
 
+const __filename = fileURLToPath(import.meta.url)
+
 export default {
-  input: path.join(__dirname, '..', 'example', 'main.js'),
+  input: path.join(path.dirname(__filename), '../example/main.js'),
   output: {
-    file: path.join(__dirname, '..', 'example', 'demo.js'),
+    file: path.join(path.dirname(__filename), '../example/demo.js'),
     format: 'iife',
     name: 'demo',
     sourcemap: true,
@@ -34,13 +37,13 @@ export default {
       extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.vue']
     }),
     serve({
-      contentBase: path.join(__dirname, '..', 'example'),
+      contentBase: path.join(path.dirname(__filename), '../example'),
       host: 'localhost',
       port: 10001
     }),
     livereload({
       verbose: true,
-      watch: path.join(__dirname, '..', 'example')
+      watch: path.join(path.dirname(__filename), '../example')
     })
   ]
 }
