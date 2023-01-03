@@ -22,7 +22,7 @@ const version = packageJson.version
 export const banner =
   '/*!\n' +
   ' * vuejs-datepicker v' + version + '\n' +
-  ' * (c) 2016-' + new Date().getFullYear() + ' Charlie Kassel\n' +
+  ' * (c) 2023-' + new Date().getFullYear() + ' Wesley Hobbie\n' +
   ' * Released under the MIT License.\n' +
   ' */'
 
@@ -32,7 +32,6 @@ export default {
     node({
       extensions: ['.js', '.jsx', '.vue']
     }),
-    common(),
     css({
       output: (style) => {
         fs.writeFileSync('dist/vuejs-datepicker.css', new CleanCSS().minify(style).styles)
@@ -45,6 +44,7 @@ export default {
         isProduction: true
       }
     }),
+    common(),
     postcss({
       plugins: [
         autoprefixer()

@@ -1,6 +1,6 @@
 # Datepicker 2
 
-A datepicker Vue component. Compatible with Vue 2.x
+A datepicker Vue component.
 
 - [Demo](#demo)
 - [Install](#install)
@@ -35,11 +35,23 @@ To view demo examples locally clone the repo and run `npm install && npm run ser
 
 ## Install
 
+| Vue version | npm Package                   |
+| ----------- | ----------------------------- |
+| Vue 2       | `@wslyhbb/vuejs-datepicker@3` |
+| Vue 3       | `@wslyhbb/vuejs-datepicker@4` |
+
 ``` bash
-npm install @wslyhbb/vuejs-datepicker
+# Vue 2
+npm install @wslyhbb/vuejs-datepicker@3
+
+yarn add @wslyhbb/vuejs-datepicker@3
 ```
-or
+
+### Vue 3
 ``` bash
+# Vue 3
+npm install @wslyhbb/vuejs-datepicker
+
 yarn add @wslyhbb/vuejs-datepicker
 ```
 

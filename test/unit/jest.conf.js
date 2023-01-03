@@ -12,7 +12,7 @@ module.exports = {
   },
   transform: {
     '^.+\\.jsx?$': 'babel-jest',
-    '.*\\.(vue)$': '@vue/vue2-jest'
+    '.*\\.(vue)$': '@vue/vue3-jest'
   },
   setupFiles: ['<rootDir>/test/unit/setup'],
   coverageDirectory: '<rootDir>/test/unit/coverage',
@@ -20,5 +20,8 @@ module.exports = {
     'src/**/*.{js,vue}',
     '!src/locale/translations/**/*.js'
   ],
-  testEnvironment: 'jsdom'
+  testEnvironment: 'jsdom',
+  testEnvironmentOptions: {
+    customExportConditions: ['node', 'node-addons']
+  }
 }

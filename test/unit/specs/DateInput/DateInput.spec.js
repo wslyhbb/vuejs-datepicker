@@ -105,6 +105,5 @@ describe('DateInput', () => {
     })
     wrapper.find('input').trigger('focus')
     expect(wrapper.emitted().showCalendar).toBeTruthy()
-    wrapper.destroy()
   })
 })
