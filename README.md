@@ -47,7 +47,6 @@ npm install @wslyhbb/vuejs-datepicker@3
 yarn add @wslyhbb/vuejs-datepicker@3
 ```
 
-### Vue 3
 ``` bash
 # Vue 3
 npm install @wslyhbb/vuejs-datepicker
@@ -291,9 +290,9 @@ var state = {
       to: new Date(2017, 2, 25)
     }],
     // a custom function that returns true if the date is disabled
-    // this can be used for wiring you own logic to disable a date if none
+    // this can be used for wiring your own logic to disable a date if none
     // of the above conditions serve your purpose
-    // this function should accept a date and return true if is disabled
+    // this function should accept a date and return true if it is disabled
     customPredictor: function(date) {
       // disables the date if it is a multiple of 5
       if(date.getDate() % 5 == 0){
