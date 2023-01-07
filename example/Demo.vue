@@ -193,7 +193,7 @@
 
     <div class="example">
       <h3>Translations</h3>
-      <h5>{{ language }} datepicker</h5>
+      <h5>{{ language.code }} datepicker</h5>
 
       <datepicker :language="language" format="d MMMM yyyy"></datepicker>
       <code>
@@ -202,7 +202,7 @@
       <div class="settings">
         <h5>Settings</h5>
         <select v-model="language">
-          <option :value="language" v-for="(language, key) in languages" :key="key">{{ language }}</option>
+          <option :value="language" v-for="(language, key) in languages" :key="key.code">{{ language.code }}</option>
         </select>
       </div>
     </div>
