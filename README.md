@@ -29,7 +29,10 @@ which includes following breaking changes:
 ## Demo
 
 To view a demo online:
+##### Vue 2
 https://codesandbox.io/s/vue-datepicker-demo-hjktwc
+##### Vue 3
+https://stackblitz.com/edit/vitejs-vite-hgm3ct
 
 To view demo examples locally clone the repo and run `npm install && npm run serve`
 

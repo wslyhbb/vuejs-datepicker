@@ -48,7 +48,7 @@
     "build:main": "vite build",
     "prepublishOnly": "npm run lint && npm run build",
     "dev": "vite build --config build/vite.config.es.js --mode development --watch",
-    "serve": "vite --mode loc",
+    "serve": "vite",
     "test": "jest --config test/unit/jest.conf.js --coverage",
     "lint": "eslint --ext .js,.vue,.ts src test/unit/specs"
   },
