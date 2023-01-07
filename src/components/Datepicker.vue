@@ -104,7 +104,6 @@
   </div>
 </template>
 <script>
-// import en from '../locale/languages/en'
 import DateInput from './DateInput.vue'
 import PickerDay from './PickerDay.vue'
 import PickerMonth from './PickerMonth.vue'
