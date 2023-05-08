@@ -2,9 +2,10 @@
   <div :class="{'input-group' : bootstrapStyling}">
     <!-- Calendar Button -->
     <span v-if="calendarButton" class="vdp-datepicker__calendar-button"
-          :class="{'input-group-prepend' : bootstrapStyling}" @click="showCalendar"
-          :style="{'cursor:not-allowed;' : disabled}">
-      <span :class="{'input-group-text' : bootstrapStyling}">
+          :class="{'input-group-prepend' : bootstrapStyling}"
+          :style="{'cursor:not-allowed;' : disabled}" @click="showCalendar"
+          @keyup.enter="showCalendar" @keyup.space="showCalendar">
+      <span :class="{'input-group-text' : bootstrapStyling}" tabindex="0">
         <i :class="calendarButtonIcon">
           {{ calendarButtonIconContent }}
           <span v-if="!calendarButtonIcon">&hellip;</span>
@@ -32,7 +33,8 @@
       @blur="inputBlurred"
       autocomplete="off">
     <!-- Clear Button -->
-    <span v-if="clearButton && selectedDate" class="vdp-datepicker__clear-button" :class="{'input-group-append' : bootstrapStyling}" @click="clearDate()">
+    <span v-if="clearButton && selectedDate" class="vdp-datepicker__clear-button"
+          :class="{'input-group-append' : bootstrapStyling}" @click="clearDate()">
       <span :class="{'input-group-text' : bootstrapStyling}">
         <i :class="clearButtonIcon">
           <span v-if="!clearButtonIcon">&times;</span>
