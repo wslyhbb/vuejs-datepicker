@@ -3,26 +3,32 @@
     <slot name="beforeCalendarHeader"></slot>
     <header>
       <span
-        @click="isRtl ? nextMonth() : previousMonth()"
-        class="prev"
-        :class="{'disabled': isLeftNavDisabled}">&lt;</span>
-      <span class="day__month_btn" @click="showMonthCalendar" :class="allowedToShowView('month') ? 'up' : ''">{{ isYmd ? currYearName : currMonthName }} {{ isYmd ? currMonthName : currYearName }}</span>
+        class="prev" tabindex="0"
+        :class="{'disabled': isLeftNavDisabled}"
+        @click="isRtl ? nextMonth() : previousMonth()">&lt;</span>
+      <span class="day__month_btn" tabindex="0"
+            :class="allowedToShowView('month') ? 'up' : ''"
+            @click="showMonthCalendar">
+            {{ isYmd ? currYearName : currMonthName }} {{ isYmd ? currMonthName : currYearName }}
+      </span>
       <span
-        @click="isRtl ? previousMonth() : nextMonth()"
-        class="next"
-        :class="{'disabled': isRightNavDisabled}">&gt;</span>
+        class="next" tabindex="0"
+        :class="{'disabled': isRightNavDisabled}"
+        @click="isRtl ? previousMonth() : nextMonth()">&gt;</span>
     </header>
     <div :class="isRtl ? 'flex-rtl' : ''">
       <span class="cell day-header" v-for="d in daysOfWeek" :key="d.timestamp">{{ d }}</span>
       <template v-if="blankDays > 0">
         <span class="cell day blank" v-for="d in blankDays" :key="d.timestamp"></span>
-      </template><!--
-      --><span class="cell day"
+      </template>
+      <span class="cell day" tabindex="0"
           v-for="day in days"
           :key="day.timestamp"
           :class="dayClasses(day)"
           v-html="dayCellContent(day)"
-          @click="selectDate(day)"></span>
+          @click="selectDate(day)"
+          @keypress.enter="selectDate(day)"
+          @keypress.space="selectDate(day)"></span>
     </div>
   </div>
 </template>

@@ -3,20 +3,24 @@
     <slot name="beforeCalendarHeader"></slot>
     <header>
       <span
-        @click="isRtl ? nextYear() : previousYear()"
-        class="prev"
-        :class="{'disabled': isLeftNavDisabled}">&lt;</span>
-      <span class="month__year_btn" @click="showYearCalendar" :class="allowedToShowView('year') ? 'up' : ''">{{ pageYearName }}</span>
+        class="prev" tabindex="0"
+        :class="{'disabled': isLeftNavDisabled}"
+        @click="isRtl ? nextYear() : previousYear()">&lt;</span>
+      <span class="month__year_btn" tabindex="0"
+            :class="allowedToShowView('year') ? 'up' : ''"
+            @click="showYearCalendar">{{ pageYearName }}</span>
       <span
-        @click="isRtl ? previousYear() : nextYear()"
-        class="next"
-        :class="{'disabled': isRightNavDisabled}">&gt;</span>
+        class="next" tabindex="0"
+        :class="{'disabled': isRightNavDisabled}"
+        @click="isRtl ? previousYear() : nextYear()">&gt;</span>
     </header>
-    <span class="cell month"
+    <span class="cell month" tabindex="0"
       v-for="month in months"
       :key="month.timestamp"
       :class="{'selected': month.isSelected, 'disabled': month.isDisabled}"
-      @click.stop="selectMonth(month)">{{ month.month }}</span>
+      @click.stop="selectMonth(month)"
+      @keypress.enter="selectMonth(month)"
+      @keypress.space="selectMonth(month)">{{ month.month }}</span>
   </div>
 </template>
 <script>

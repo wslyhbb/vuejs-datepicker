@@ -3,21 +3,23 @@
     <slot name="beforeCalendarHeader"></slot>
     <header>
       <span
-        @click="isRtl ? nextDecade() : previousDecade()"
-        class="prev"
-        :class="{'disabled': isLeftNavDisabled}">&lt;</span>
+        class="prev" tabindex="0"
+        :class="{'disabled': isLeftNavDisabled}"
+        @click="isRtl ? nextDecade() : previousDecade()">&lt;</span>
       <span>{{ getPageDecade }}</span>
       <span
-        @click="isRtl ? previousDecade() : nextDecade()"
-        class="next"
-        :class="{'disabled': isRightNavDisabled}">&gt;</span>
+        class="next" tabindex="0"
+        :class="{'disabled': isRightNavDisabled}"
+        @click="isRtl ? previousDecade() : nextDecade()">&gt;</span>
     </header>
     <span
-      class="cell year"
+      class="cell year" tabindex="0"
       v-for="year in years"
       :key="year.timestamp"
       :class="{ 'selected': year.isSelected, 'disabled': year.isDisabled }"
-      @click.stop="selectYear(year)">{{ year.year }}</span>
+      @click.stop="selectYear(year)"
+      @keypress.enter="selectYear(year)"
+      @keypress.space="selectYear(year)">{{ year.year }}</span>
   </div>
 </template>
 <script>
