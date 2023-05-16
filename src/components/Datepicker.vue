@@ -28,8 +28,14 @@
       @closeCalendar="close"
       @typedDate="setTypedDate"
       @clearDate="clearDate">
+      <template v-slot:calendarBtn>
+        <slot name="calendarBtn"></slot>
+      </template>
       <template v-slot:beforeDateInput>
         <slot name="beforeDateInput"></slot>
+      </template>
+      <template v-slot:clearBtn>
+        <slot name="clearBtn"></slot>
       </template>
       <template v-slot:afterDateInput>
         <slot name="afterDateInput"></slot>
