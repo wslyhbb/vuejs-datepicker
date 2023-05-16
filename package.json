@@ -84,7 +84,7 @@
     "jest-environment-jsdom": "^29.3.1",
     "postcss": "^8.4.20",
     "pre-commit": "^1.2.2",
-    "stylus": "^0.59.0",
+    "sass": "^1.62.1",
     "vite": "^4.0.3",
     "vue": "^3.2.45",
     "vue-eslint-parser": "^9.1.0"
