@@ -1,11 +1,10 @@
 <template>
   <div :class="{'input-group': bootstrapStyling}">
     <!-- Calendar Button -->
-    <span v-if="calendarButton" class="vdp-datepicker__calendar-button"
-          :class="{'input-group-prepend': bootstrapStyling}"
-          :style="{'cursor:not-allowed;': disabled}" @click="showCalendar"
-          @keyup.enter="showCalendar" @keyup.space="showCalendar">
-      <span :class="{'input-group-text' : bootstrapStyling}" tabindex="0">
+    <button v-if="calendarButton" class="vdp-datepicker__calendar-button"
+      :class="{'btn input-group-prepend': bootstrapStyling}"
+      :disabled="disabled" @click="showCalendar">
+      <span :class="{'input-group-text' : bootstrapStyling}">
         <slot name="calendarBtn">
           <i :class="calendarButtonIcon">
             {{ calendarButtonIconContent }}
@@ -13,7 +12,7 @@
           </i>
         </slot>
       </span>
-    </span>
+    </button>
     <slot name="beforeDateInput"></slot>
     <!-- Input -->
     <input
@@ -38,8 +37,9 @@
       @keyup="keyUp"
       @blur="inputBlurred">
     <!-- Clear Button -->
-    <span v-if="clearButton && selectedDate" class="vdp-datepicker__clear-button"
-          :class="{'input-group-append' : bootstrapStyling}" @click="clearDate()">
+    <button v-if="clearButton && selectedDate" class="vdp-datepicker__clear-button"
+          :class="{'btn input-group-append' : bootstrapStyling}"
+          :disabled="disabled" @click="clearDate()">
       <span :class="{'input-group-text' : bootstrapStyling}">
         <slot name="clearBtn">
           <i :class="clearButtonIcon">
@@ -47,7 +47,7 @@
           </i>
         </slot>
       </span>
-    </span>
+    </button>
     <slot name="afterDateInput"></slot>
   </div>
 </template>
