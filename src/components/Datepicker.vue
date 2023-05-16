@@ -486,6 +486,6 @@ export default {
 // eslint-disable-next-line
 ;
 </script>
-<style lang="stylus">
-@import '../styles/style'
+<style lang="scss">
+@import '../styles/style.scss'
 </style>
