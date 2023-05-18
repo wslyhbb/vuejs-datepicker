@@ -1,11 +1,8 @@
 <template>
   <div
-     class="vdp-datepicker"
-     :class="[wrapperClass, isRtl ? 'rtl' : '']"
-     @keydown.up.prevent="keyEventUp"
-     @keydown.down.prevent="keyEventDown"
-     @keydown.left.prevent="keyEventLeft"
-     @keydown.right.prevent="keyEventRight">
+    class="vdp-datepicker"
+    :class="[wrapperClass, isRtl ? 'rtl' : '']"
+    @keydown.capture="keyEvent">
     <date-input
       :selectedDate="selectedDate"
       :resetTypedDate="resetTypedDate"
@@ -483,24 +480,88 @@ export default {
         this.setInitialView()
       }
     },
-    keyEventUp () {
-      if (this.selectedDate !== null) {
-        this.setDate(this.selectedDate.getTime() - 1000 * 60 * 60 * 24 * 7)
+    keyEvent ($event) {
+      if (typeof this['keyEvent' + $event.key] === 'function') {
+        $event.preventDefault()
+        this['keyEvent' + $event.key]($event)
       }
     },
-    keyEventDown () {
+    keyEventArrowUp () {
       if (this.selectedDate !== null) {
-        this.setDate(this.selectedDate.getTime() + 1000 * 60 * 60 * 24 * 7)
+        const moveBy = 1000 * 60 * 60 * 24 * 7
+        if (this.selectedDate === null) {
+          this.setDate(this.pageTimestamp)
+        } else if (this.showDayView) {
+          this.setDate(this.selectedDate.getTime() - moveBy)
+        } else if (this.showMonthView) {
+          const newTime = new Date(this.selectedDate.getTime())
+          newTime.setMonth(newTime.getMonth() - 3)
+          this.setDate(newTime.getTime())
+        } else if (this.showYearView) {
+          const newTime = new Date(this.selectedDate.getTime())
+          newTime.setFullYear(newTime.getFullYear() - 3)
+          this.setDate(newTime.getTime())
+        }
       }
     },
-    keyEventLeft () {
+    keyEventArrowDown () {
       if (this.selectedDate !== null) {
-        this.setDate(this.selectedDate.getTime() - 1000 * 60 * 60 * 24)
+        const moveBy = 1000 * 60 * 60 * 24 * 7
+        if (this.selectedDate === null) {
+          this.setDate(this.pageTimestamp)
+        } else if (this.showDayView) {
+          this.setDate(this.selectedDate.getTime() + moveBy)
+        } else if (this.showMonthView) {
+          const newTime = new Date(this.selectedDate.getTime())
+          newTime.setMonth(newTime.getMonth() + 3)
+          this.setDate(newTime.getTime())
+        } else if (this.showYearView) {
+          const newTime = new Date(this.selectedDate.getTime())
+          newTime.setFullYear(newTime.getFullYear() + 3)
+          this.setDate(newTime.getTime())
+        }
       }
     },
-    keyEventRight () {
+    keyEventArrowLeft () {
       if (this.selectedDate !== null) {
-        this.setDate(this.selectedDate.getTime() + 1000 * 60 * 60 * 24)
+        let moveBy = 1000 * 60 * 60 * 24
+        if (this.isRtl) {
+          moveBy = -moveBy
+        }
+        if (this.selectedDate !== null) {
+          if (this.showDayView) {
+            this.setDate(this.selectedDate.getTime() - moveBy)
+          } else if (this.showMonthView) {
+            const newTime = new Date(this.selectedDate.getTime())
+            newTime.setMonth(newTime.getMonth() - 1)
+            this.setDate(newTime.getTime())
+          } else if (this.showYearView) {
+            const newTime = new Date(this.selectedDate.getTime())
+            newTime.setFullYear(newTime.getFullYear() - 1)
+            this.setDate(newTime.getTime())
+          }
+        }
+      }
+    },
+    keyEventArrowRight () {
+      if (this.selectedDate !== null) {
+        let moveBy = 1000 * 60 * 60 * 24
+        if (this.isRtl) {
+          moveBy = -moveBy
+        }
+        if (this.selectedDate !== null) {
+          if (this.showDayView) {
+            this.setDate(this.selectedDate.getTime() + moveBy)
+          } else if (this.showMonthView) {
+            const newTime = new Date(this.selectedDate.getTime())
+            newTime.setMonth(newTime.getMonth() + 1)
+            this.setDate(newTime.getTime())
+          } else if (this.showYearView) {
+            const newTime = new Date(this.selectedDate.getTime())
+            newTime.setFullYear(newTime.getFullYear() + 1)
+            this.setDate(newTime.getTime())
+          }
+        }
       }
     }
   },
@@ -508,8 +569,7 @@ export default {
     this.init()
   }
 }
-// eslint-disable-next-line
-;
+
 </script>
 <style lang="scss">
 @import '../styles/style.scss'
