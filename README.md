@@ -1,3 +1,9 @@
+[![@wslyhbb/vuejs-datepicker](https://badgen.net/bundlephobia/min/@wslyhbb/vuejs-datepicker)](https://bundlephobia.com/result?p=@wslyhbb/vuejs-datepicker)
+[![@wslyhbb/vuejs-datepicker](https://badgen.net/npm/v/@wslyhbb/vuejs-datepicker)](https://www.npmjs.com/package/@wslyhbb/vuejs-datepicker)
+[![@wslyhbb/vuejs-datepicker](https://badgen.net/badge/vue.js/3.0.x)](https://v3.vuejs.org/)
+[![@wslyhbb/vuejs-datepicker](https://badgen.net/npm/dt/@wslyhbb/vuejs-datepicker)](https://www.npmjs.com/package/@wslyhbb/vuejs-datepicker)
+[![@wslyhbb/vuejs-datepicker](https://badgen.net/npm/dw/@wslyhbb/vuejs-datepicker)](https://www.npmjs.com/package/@wslyhbb/vuejs-datepicker)
+
 # Datepicker 2
 
 A datepicker Vue component.
