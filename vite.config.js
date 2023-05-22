@@ -4,59 +4,48 @@ import vue from '@vitejs/plugin-vue'
 import pkg from './package.json'
 import { resolve } from 'path'
 
-export default defineConfig(({ command }) => {
-  if (command === 'serve') {
-    return {
-      // local specific config
-      plugins: [vue()],
-      resolve: {
-        alias: {
-          '@': fileURLToPath(new URL('./example', import.meta.url))
+export default defineConfig(() => {
+  const banner =
+    '/*!\n' +
+    ' * vuejs-datepicker v' + pkg.version + '\n' +
+    ' * (c) 2023-' + new Date().getFullYear() + ' Wesley Hobbie\n' +
+    ' * Released under the MIT License.\n' +
+    ' */'
+  return {
+    plugins: [vue()],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      }
+    },
+    build: {
+      lib: {
+        entry: resolve(__dirname, './src/components/Datepicker.vue'),
+        name: 'vuejsDatepicker',
+        formats: ['es', 'umd', 'iife', 'cjs'],
+        fileName: (format) => {
+          if (format === 'es') {
+            return 'vuejs-datepicker.mjs'
+          } else if (format === 'iife') {
+            return 'vuejs-datepicker.min.js'
+          } else if (format === 'cjs') {
+            return 'vuejs-datepicker.common.js'
+          } else {
+            return `vuejs-datepicker.${format}.js`
+          }
         }
       },
-      server: {
-        host: 'localhost',
-        port: 10001
-      }
-    }
-  } else {
-    const banner =
-      '/*!\n' +
-      ' * vuejs-datepicker v' + pkg.version + '\n' +
-      ' * (c) 2023-' + new Date().getFullYear() + ' Wesley Hobbie\n' +
-      ' * Released under the MIT License.\n' +
-      ' */'
-    return {
-      plugins: [vue()],
-      build: {
-        lib: {
-          entry: resolve(__dirname, './src/components/Datepicker.vue'),
-          name: 'vuejsDatepicker',
-          formats: ['es', 'umd', 'iife', 'cjs'],
-          fileName: (format) => {
-            if (format === 'es') {
-              return 'vuejs-datepicker.mjs'
-            } else if (format === 'iife') {
-              return 'vuejs-datepicker.min.js'
-            } else if (format === 'cjs') {
-              return 'vuejs-datepicker.common.js'
-            } else {
-              return `vuejs-datepicker.${format}.js`
-            }
-          }
-        },
-        rollupOptions: {
-          external: ['vue', 'date-fns'],
-          output: {
-            banner,
-            globals: {
-              vue: 'Vue',
-              'date-fns': 'dateFns'
-            },
-            assetFileNames: (assetInfo) => {
-              if (assetInfo.name === 'style.css') return 'vuejs-datepicker.css'
-              return assetInfo.name
-            }
+      rollupOptions: {
+        external: ['vue', 'date-fns'],
+        output: {
+          banner,
+          globals: {
+            vue: 'Vue',
+            'date-fns': 'dateFns'
+          },
+          assetFileNames: (assetInfo) => {
+            if (assetInfo.name === 'style.css') return 'vuejs-datepicker.css'
+            return assetInfo.name
           }
         }
       }
