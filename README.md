@@ -165,13 +165,15 @@ Inline always open version
 ## Available props
 
 | Prop                          | Type            | Default     | Description                                                    |
-|-------------------------------|-----------------|-------------|------------------------------------------|
+|-------------------------------|-----------------|-------------|----------------------------------------------------------------|
+| autofocus                     | String          |             | Sets html `autofocus` attribute on input                       |
 | value                         | Date\|String    |             | Date value of the datepicker                                   |
 | name                          | String          |             | Input name property                                            |
 | id                            | String          |             | Input id                                                       |
 | format                        | String\|Function| dd MMM yyyy | Date formatting string or function                             |
 | full-month-name               | Boolean         | false       | To show the full month name                                    |
 | language                      | Object          | enUS        | Translation for days and months                                |
+| maxlength                     | String          |             | Sets html `maxlength` attribute on input                       |
 | disabled-dates                | Object          |             | See below for configuration                                    |
 | placeholder                   | String          |             | Input placeholder text                                         |
 | inline                        | Boolean         |             | To show the datepicker always open                             |
@@ -193,6 +195,7 @@ Inline always open version
 | typeable                      | Boolean         | false       | If true, allow the user to type the date                       |
 | use-utc                       | Boolean         | false       | use UTC for time calculations                                  |
 | open-date                     | Date\|String    |             | If set, open on that date                                      |
+| pattern                       | String          |             | Sets html `pattern` attribute on input                         |
 | minimum-view                  | String          | 'day'       | If set, lower-level views won't show                           |
 | maximum-view                  | String          | 'year'      | If set, higher-level views won't show                          |
 | parse-typed-date	          	| Function: Date  |             | Use to parse custom date for typed input                       |
@@ -285,9 +288,9 @@ var state = {
       to: new Date(2017, 2, 25)
     }],
     // a custom function that returns true if the date is disabled
-    // this can be used for wiring you own logic to disable a date if none
+    // this can be used for wiring your own logic to disable a date if none
     // of the above conditions serve your purpose
-    // this function should accept a date and return true if is disabled
+    // this function should accept a date and return true if it is disabled
     customPredictor: function(date) {
       // disables the date if it is a multiple of 5
       if(date.getDate() % 5 == 0){

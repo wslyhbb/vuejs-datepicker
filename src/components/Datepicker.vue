@@ -4,12 +4,13 @@
     :class="[wrapperClass, isRtl ? 'rtl' : '']"
     @keydown.capture="keyEvent">
     <date-input
+      :id="id"
+      :autofocus="autofocus"
       :selectedDate="selectedDate"
       :resetTypedDate="resetTypedDate"
       :format="format"
       :language="language"
       :inline="inline"
-      :id="id"
       :name="name"
       :refName="refName"
       :openDate="openDate"
@@ -24,6 +25,8 @@
       :calendarButtonIconContent="calendarButtonIconContent"
       :disabled="disabled"
       :required="required"
+      :maxlength="maxlength"
+      :pattern="pattern"
       :bootstrapStyling="bootstrapStyling"
       :use-utc="useUtc"
       :show-calendar-on-focus="showCalendarOnFocus"
@@ -179,7 +182,22 @@ export default {
       type: String,
       default: 'year'
     },
-    showCalendarOnFocus: Boolean
+    showCalendarOnFocus: Boolean,
+    autofocus: {
+      type: Boolean,
+      default: false
+    },
+    maxlength: {
+      type: [
+        Number,
+        String
+      ],
+      default: null
+    },
+    pattern: {
+      type: String,
+      default: null
+    }
   },
   data () {
     const startDate = this.openDate ? new Date(this.openDate) : new Date()

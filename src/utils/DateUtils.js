@@ -61,6 +61,7 @@ const utils = {
   /**
    * Sets the full year, using UTC or not
    * @param {Date} date
+   * @param {String, Number} value
    */
   setFullYear (date, value) {
     return this.useUtc ? date.setUTCFullYear(value) : date.setFullYear(value)
@@ -69,6 +70,7 @@ const utils = {
   /**
    * Sets the month, using UTC or not
    * @param {Date} date
+   * @param {String, Number} value
    */
   setMonth (date, value) {
     return this.useUtc ? date.setUTCMonth(value) : date.setMonth(value)
@@ -77,7 +79,7 @@ const utils = {
   /**
    * Sets the date, using UTC or not
    * @param {Date} date
-   * @param {Number} value
+   * @param {String, Number} value
    */
   setDate (date, value) {
     return this.useUtc ? date.setUTCDate(value) : date.setDate(value)

@@ -21,6 +21,7 @@
       :ref="refName"
       autocomplete="off"
       :type="inline ? 'hidden' : 'text'"
+      :autofocus="autofocus"
       :class="computedInputClass"
       :name="name"
       :value="formattedValue"
@@ -28,6 +29,8 @@
       :placeholder="placeholder"
       :clear-button="clearButton"
       :disabled="disabled"
+      :maxlength="maxlength"
+      :pattern="pattern"
       :required="required"
       :readonly="!typeable"
       @click="showCalendar"
@@ -48,8 +51,10 @@
     <slot name="afterDateInput"></slot>
   </div>
 </template>
+
 <script>
 import { makeDateUtils } from '../utils/DateUtils'
+
 export default {
   props: {
     selectedDate: Date,
@@ -73,7 +78,22 @@ export default {
     typeable: Boolean,
     parseTypedDate: Function,
     bootstrapStyling: Boolean,
-    showCalendarOnFocus: Boolean
+    showCalendarOnFocus: Boolean,
+    autofocus: {
+      type: Boolean,
+      default: false
+    },
+    maxlength: {
+      type: [
+        Number,
+        String
+      ],
+      default: null
+    },
+    pattern: {
+      type: String,
+      default: null
+    }
   },
   data () {
     const constructedDateUtils = makeDateUtils(this.useUtc, this.language)
@@ -95,7 +115,6 @@ export default {
         ? this.format(this.selectedDate)
         : this.utils.formatDate(this.selectedDate, this.format)
     },
-
     computedInputClass () {
       if (this.bootstrapStyling) {
         if (typeof this.inputClass === 'string') {
@@ -188,6 +207,4 @@ export default {
     this.input = this.$el.querySelector('input')
   }
 }
-// eslint-disable-next-line
-;
 </script>
