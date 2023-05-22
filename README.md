@@ -1,6 +1,6 @@
 [![@wslyhbb/vuejs-datepicker](https://badgen.net/bundlephobia/min/@wslyhbb/vuejs-datepicker)](https://bundlephobia.com/result?p=@wslyhbb/vuejs-datepicker)
 [![@wslyhbb/vuejs-datepicker](https://badgen.net/npm/v/@wslyhbb/vuejs-datepicker)](https://www.npmjs.com/package/@wslyhbb/vuejs-datepicker)
-[![@wslyhbb/vuejs-datepicker](https://badgen.net/badge/vue.js/3.0.x)](https://v3.vuejs.org/)
+[![@wslyhbb/vuejs-datepicker](https://badgen.net/badge/vue.js/3.1.x)](https://v3.vuejs.org/)
 [![@wslyhbb/vuejs-datepicker](https://badgen.net/npm/dt/@wslyhbb/vuejs-datepicker)](https://www.npmjs.com/package/@wslyhbb/vuejs-datepicker)
 [![@wslyhbb/vuejs-datepicker](https://badgen.net/npm/dw/@wslyhbb/vuejs-datepicker)](https://www.npmjs.com/package/@wslyhbb/vuejs-datepicker)
 
@@ -179,13 +179,15 @@ Inline always open version
 ## Available props
 
 | Prop                          | Type            | Default     | Description                                                    |
-|-------------------------------|-----------------|-------------|------------------------------------------|
+|-------------------------------|-----------------|-------------|----------------------------------------------------------------|
+| autofocus                     | String          |             | Sets html `autofocus` attribute on input                       |
 | value                         | Date\|String    |             | Date value of the datepicker                                   |
 | name                          | String          |             | Input name property                                            |
 | id                            | String          |             | Input id                                                       |
 | format                        | String\|Function| dd MMM yyyy | Date formatting string or function                             |
 | full-month-name               | Boolean         | false       | To show the full month name                                    |
 | language                      | Object          | enUS        | Translation for days and months                                |
+| maxlength                     | String          |             | Sets html `maxlength` attribute on input                       |
 | disabled-dates                | Object          |             | See below for configuration                                    |
 | placeholder                   | String          |             | Input placeholder text                                         |
 | inline                        | Boolean         |             | To show the datepicker always open                             |
@@ -207,6 +209,7 @@ Inline always open version
 | typeable                      | Boolean         | false       | If true, allow the user to type the date                       |
 | use-utc                       | Boolean         | false       | use UTC for time calculations                                  |
 | open-date                     | Date\|String    |             | If set, open on that date                                      |
+| pattern                       | String          |             | Sets html `pattern` attribute on input                         |
 | minimum-view                  | String          | 'day'       | If set, lower-level views won't show                           |
 | maximum-view                  | String          | 'year'      | If set, higher-level views won't show                          |
 | parse-typed-date	          	| Function: Date  |             | Use to parse custom date for typed input                       |
