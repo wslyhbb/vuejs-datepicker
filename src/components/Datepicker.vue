@@ -115,9 +115,11 @@
     </picker-year>
   </div>
 </template>
+
 <script>
 // import en from '../locale/languages/en'
 import DateInput from './DateInput.vue'
+import inputProps from '@/mixins/inputProps.js'
 import PickerDay from './PickerDay.vue'
 import PickerMonth from './PickerMonth.vue'
 import PickerYear from './PickerYear.vue'
@@ -125,22 +127,17 @@ import utils, { makeDateUtils, rtlLangs } from '../utils/DateUtils'
 import { enUS } from 'date-fns/locale'
 
 export default {
+  name: 'DatePicker',
   components: {
     DateInput,
     PickerDay,
     PickerMonth,
     PickerYear
   },
+  mixins: [inputProps],
   props: {
     value: {
       validator: val => utils.validateDateInput(val)
-    },
-    name: String,
-    refName: String,
-    id: String,
-    format: {
-      type: [String, Function],
-      default: 'dd MMM yyyy'
     },
     language: {
       type: Object,
@@ -155,25 +152,12 @@ export default {
     fullMonthName: Boolean,
     disabledDates: Object,
     highlighted: Object,
-    placeholder: String,
-    inline: Boolean,
     calendarClass: [String, Object, Array],
-    inputClass: [String, Object, Array],
     wrapperClass: [String, Object, Array],
     mondayFirst: Boolean,
     twoLetterAbbr: Boolean,
-    clearButton: Boolean,
-    clearButtonIcon: String,
-    calendarButton: Boolean,
-    calendarButtonIcon: String,
-    calendarButtonIconContent: String,
-    bootstrapStyling: Boolean,
     initialView: String,
-    disabled: Boolean,
-    required: Boolean,
-    typeable: Boolean,
     parseTypedDate: Function,
-    useUtc: Boolean,
     minimumView: {
       type: String,
       default: 'day'
@@ -181,22 +165,6 @@ export default {
     maximumView: {
       type: String,
       default: 'year'
-    },
-    showCalendarOnFocus: Boolean,
-    autofocus: {
-      type: Boolean,
-      default: false
-    },
-    maxlength: {
-      type: [
-        Number,
-        String
-      ],
-      default: null
-    },
-    pattern: {
-      type: String,
-      default: null
     }
   },
   data () {

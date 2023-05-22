@@ -54,46 +54,17 @@
 
 <script>
 import { makeDateUtils } from '../utils/DateUtils'
+import inputProps from '@/mixins/inputProps.js'
 
 export default {
+  name: 'DateInput',
+  mixins: [inputProps],
   props: {
     selectedDate: Date,
     resetTypedDate: [Date],
-    format: [String, Function],
     language: Object,
-    inline: Boolean,
-    id: String,
-    name: String,
-    refName: String,
     openDate: Date,
-    placeholder: String,
-    inputClass: [String, Object, Array],
-    clearButton: Boolean,
-    clearButtonIcon: String,
-    calendarButton: Boolean,
-    calendarButtonIcon: String,
-    calendarButtonIconContent: String,
-    disabled: Boolean,
-    required: Boolean,
-    typeable: Boolean,
-    parseTypedDate: Function,
-    bootstrapStyling: Boolean,
-    showCalendarOnFocus: Boolean,
-    autofocus: {
-      type: Boolean,
-      default: false
-    },
-    maxlength: {
-      type: [
-        Number,
-        String
-      ],
-      default: null
-    },
-    pattern: {
-      type: String,
-      default: null
-    }
+    parseTypedDate: Function
   },
   data () {
     const constructedDateUtils = makeDateUtils(this.useUtc, this.language)

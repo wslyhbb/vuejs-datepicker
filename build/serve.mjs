@@ -7,6 +7,7 @@ import resolve from '@rollup/plugin-node-resolve'
 import replace from 'rollup-plugin-replace'
 import common from '@rollup/plugin-commonjs'
 import babel from '@rollup/plugin-babel'
+import alias from '@rollup/plugin-alias'
 
 const __filename = fileURLToPath(import.meta.url)
 
@@ -23,6 +24,14 @@ export default {
   },
   plugins: [
     common(),
+    alias({
+      entries: [
+        {
+          find: '@',
+          replacement: path.join(path.dirname(fileURLToPath(import.meta.url)), '../src')
+        }
+      ]
+    }),
     vue({
       css: true
     }),

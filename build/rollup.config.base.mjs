@@ -9,6 +9,7 @@ import replace from 'rollup-plugin-replace'
 import node from '@rollup/plugin-node-resolve'
 import css from 'rollup-plugin-css-only'
 import CleanCSS from 'clean-css'
+import alias from '@rollup/plugin-alias'
 
 import fs from 'fs'
 
@@ -37,6 +38,14 @@ export default {
       output: (style) => {
         fs.writeFileSync('dist/vuejs-datepicker.css', new CleanCSS().minify(style).styles)
       }
+    }),
+    alias({
+      entries: [
+        {
+          find: '@',
+          replacement: path.join(path.dirname(fileURLToPath(import.meta.url)), '../src')
+        }
+      ]
     }),
     vue({
       css: false,
