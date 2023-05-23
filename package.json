@@ -51,6 +51,7 @@
     "dev": "vite build --mode development --watch",
     "serve": "vite ./example",
     "test": "jest --config test/unit/jest.conf.js --coverage",
+    "test:watch": "jest --config test/unit/jest.conf.js --watch",
     "lint": "eslint --ext .js,.vue,.ts src test/unit/specs"
   },
   "pre-commit": [
