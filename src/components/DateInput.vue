@@ -1,9 +1,9 @@
 <template>
-  <div :class="{'input-group' : bootstrapStyling}">
+  <div :class="{'input-group': bootstrapStyling}">
     <!-- Calendar Button -->
     <span v-if="calendarButton" class="vdp-datepicker__calendar-button"
-          :class="{'input-group-prepend' : bootstrapStyling}"
-          :style="{'cursor:not-allowed;' : disabled}" @click="showCalendar"
+          :class="{'input-group-prepend': bootstrapStyling}"
+          :style="{'cursor:not-allowed;': disabled}" @click="showCalendar"
           @keyup.enter="showCalendar" @keyup.space="showCalendar">
       <span :class="{'input-group-text' : bootstrapStyling}" tabindex="0">
         <slot name="calendarBtn">
@@ -20,19 +20,19 @@
       :id="id"
       :ref="refName"
       autocomplete="off"
-      :type="inline ? 'hidden' : 'text'"
       :autofocus="autofocus"
       :class="computedInputClass"
-      :name="name"
-      :value="formattedValue"
-      :open-date="openDate"
-      :placeholder="placeholder"
       :clear-button="clearButton"
       :disabled="disabled"
       :maxlength="maxlength"
+      :name="name"
+      :open-date="openDate"
       :pattern="pattern"
-      :required="required"
+      :placeholder="placeholder"
       :readonly="!typeable"
+      :required="required"
+      :type="inline ? 'hidden' : 'text'"
+      :value="formattedValue"
       @click="showCalendar"
       @focus="showFocusCalendar"
       @keyup="keyUp"
@@ -60,11 +60,11 @@ export default {
   name: 'DateInput',
   mixins: [inputProps],
   props: {
-    selectedDate: Date,
-    resetTypedDate: [Date],
     language: Object,
     openDate: Date,
-    parseTypedDate: Function
+    parseTypedDate: Function,
+    resetTypedDate: [Date],
+    selectedDate: Date
   },
   data () {
     const constructedDateUtils = makeDateUtils(this.useUtc, this.language)

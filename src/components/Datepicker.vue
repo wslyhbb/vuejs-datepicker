@@ -6,45 +6,45 @@
     <date-input
       :id="id"
       :autofocus="autofocus"
-      :selectedDate="selectedDate"
-      :resetTypedDate="resetTypedDate"
-      :format="format"
-      :language="language"
-      :inline="inline"
-      :name="name"
-      :refName="refName"
-      :openDate="openDate"
-      :placeholder="placeholder"
-      :inputClass="inputClass"
-      :typeable="typeable"
-      :parse-typed-date="parseTypedDate"
-      :clearButton="clearButton"
-      :clearButtonIcon="clearButtonIcon"
-      :calendarButton="calendarButton"
-      :calendarButtonIcon="calendarButtonIcon"
-      :calendarButtonIconContent="calendarButtonIconContent"
+      :bootstrap-styling="bootstrapStyling"
+      :calendar-button="calendarButton"
+      :calendar-button-icon="calendarButtonIcon"
+      :calendar-button-icon-content="calendarButtonIconContent"
+      :clear-button="clearButton"
+      :clear-button-icon="clearButtonIcon"
       :disabled="disabled"
-      :required="required"
+      :format="format"
+      :inline="inline"
+      :input-class="inputClass"
+      :language="language"
       :maxlength="maxlength"
+      :name="name"
+      :open-date="openDate"
+      :parse-typed-date="parseTypedDate"
       :pattern="pattern"
-      :bootstrapStyling="bootstrapStyling"
-      :use-utc="useUtc"
+      :placeholder="placeholder"
+      :ref-name="refName"
+      :required="required"
+      :reset-typed-date="resetTypedDate"
+      :selected-date="selectedDate"
       :show-calendar-on-focus="showCalendarOnFocus"
+      :typeable="typeable"
+      :use-utc="useUtc"
       @showCalendar="showCalendar"
       @closeCalendar="close"
       @typedDate="setTypedDate"
       @clearDate="clearDate">
-      <template v-slot:calendarBtn>
-        <slot name="calendarBtn"></slot>
+      <template #calendarBtn>
+        <slot name="calendarBtn" />
       </template>
-      <template v-slot:beforeDateInput>
-        <slot name="beforeDateInput"></slot>
+      <template #beforeDateInput>
+        <slot name="beforeDateInput" />
       </template>
-      <template v-slot:clearBtn>
-        <slot name="clearBtn"></slot>
+      <template #clearBtn>
+        <slot name="clearBtn" />
       </template>
-      <template v-slot:afterDateInput>
-        <slot name="afterDateInput"></slot>
+      <template #afterDateInput>
+        <slot name="afterDateInput" />
       </template>
     </date-input>
 
