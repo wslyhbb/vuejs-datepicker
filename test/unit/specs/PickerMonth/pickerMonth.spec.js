@@ -1,10 +1,10 @@
 import PickerMonth from '@/components/PickerMonth.vue'
-import { shallowMount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 
 describe('PickerMonth', () => {
   let wrapper
   beforeEach(() => {
-    wrapper = shallowMount(PickerMonth, {
+    wrapper = mount(PickerMonth, {
       propsData: {
         allowedToShowView: () => true,
 
@@ -14,24 +14,37 @@ describe('PickerMonth', () => {
     })
   })
 
+  afterEach(() => {
+    wrapper.unmount()
+  })
+
   it('knows the selected month', async () => {
     const newDate = new Date(2016, 9, 15)
-    wrapper.setProps({
+    await wrapper.setProps({
       selectedDate: newDate
     })
-    await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.isSelectedMonth(newDate)).toEqual(true)
     expect(wrapper.vm.isSelectedMonth(new Date(2017, 1, 1))).toEqual(false)
   })
 
+  it('knows the selected month when useUtc = true', async () => {
+    const newDate = new Date(2016, 9, 15)
+    await wrapper.setProps({
+      selectedDate: newDate,
+      useUtc: true
+    })
+    expect(wrapper.vm.isSelectedMonth(newDate)).toEqual(true)
+    expect(wrapper.vm.isSelectedMonth(new Date(2017, 1, 1))).toEqual(false)
+  })
+
   it('can set the next year', () => {
-    wrapper.vm.nextYear()
+    wrapper.vm.changePage({ incrementBy: 1 })
     expect(wrapper.emitted().changedYear[0][0].getFullYear()).toEqual(2019)
   })
 
   it('can set the previous year', () => {
-    wrapper.vm.previousYear()
+    wrapper.vm.changePage({ incrementBy: -1 })
     expect(wrapper.emitted().changedYear[0][0].getFullYear()).toEqual(2017)
   })
 

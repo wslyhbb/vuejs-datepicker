@@ -1,17 +1,13 @@
 <template>
   <div :class="[calendarClass, 'vdp-datepicker__calendar']" v-show="showYearView" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
-    <header>
-      <span
-        class="prev" tabindex="0"
-        :class="{'disabled': isLeftNavDisabled}"
-        @click="isRtl ? nextDecade() : previousDecade()">&lt;</span>
+    <picker-header
+      :is-next-disabled="isNextDecadeDisabled(pageTimestamp)"
+      :is-previous-disabled="isPreviousDecadeDisabled(pageTimestamp)"
+      :is-rtl="isRtl"
+      @page-change="changePage($event)">
       <span>{{ getPageDecade }}</span>
-      <span
-        class="next" tabindex="0"
-        :class="{'disabled': isRightNavDisabled}"
-        @click="isRtl ? previousDecade() : nextDecade()">&gt;</span>
-    </header>
+    </picker-header>
     <span
       class="cell year" tabindex="0"
       v-for="year in years"
@@ -22,9 +18,16 @@
       @keypress.space="selectYear(year)">{{ year.year }}</span>
   </div>
 </template>
+
 <script>
+import PickerHeader from './PickerHeader.vue'
 import { makeDateUtils, rtlLangs, langYearSuffix } from '../utils/DateUtils'
+
 export default {
+  name: 'PickerYear',
+  components: {
+    PickerHeader
+  },
   props: {
     showYearView: Boolean,
     selectedDate: Date,
@@ -76,24 +79,6 @@ export default {
       const decadeEnd = decadeStart + 9
       const yearSuffix = langYearSuffix[this.language] || ''
       return `${decadeStart} - ${decadeEnd}${yearSuffix}`
-    },
-    /**
-     * Is the left hand navigation button disabled?
-     * @return {Boolean}
-     */
-    isLeftNavDisabled () {
-      return this.isRtl
-        ? this.isNextDecadeDisabled(this.pageTimestamp)
-        : this.isPreviousDecadeDisabled(this.pageTimestamp)
-    },
-    /**
-     * Is the right hand navigation button disabled?
-     * @return {Boolean}
-     */
-    isRightNavDisabled () {
-      return this.isRtl
-        ? this.isPreviousDecadeDisabled(this.pageTimestamp)
-        : this.isNextDecadeDisabled(this.pageTimestamp)
     }
   },
   data () {
@@ -114,12 +99,6 @@ export default {
       this.utils.setFullYear(date, this.utils.getFullYear(date) + incrementBy)
       this.$emit('changedDecade', date)
     },
-    previousDecade () {
-      if (this.isPreviousDecadeDisabled()) {
-        return false
-      }
-      this.changeYear(-10)
-    },
     isPreviousDecadeDisabled () {
       if (!this.disabledDates || !this.disabledDates.to) {
         return false
@@ -128,11 +107,20 @@ export default {
       const lastYearInPreviousPage = Math.floor(this.utils.getFullYear(this.pageDate) / 10) * 10 - 1
       return disabledYear > lastYearInPreviousPage
     },
-    nextDecade () {
-      if (this.isNextDecadeDisabled()) {
-        return false
+    /**
+     * Changes the page up or down
+     * @param {Number} incrementBy
+     */
+    changePage ({ incrementBy }) {
+      if (incrementBy === 1) {
+        if (!this.isNextDecadeDisabled()) {
+          this.changeYear(incrementBy * 10)
+        }
+      } else if (incrementBy === -1) {
+        if (!this.isPreviousDecadeDisabled()) {
+          this.changeYear(incrementBy * 10)
+        }
       }
-      this.changeYear(10)
     },
     isNextDecadeDisabled () {
       if (!this.disabledDates || !this.disabledDates.from) {
