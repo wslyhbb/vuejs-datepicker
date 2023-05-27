@@ -119,7 +119,7 @@ const utils = {
 
   /**
    * Return abbreviated week day name
-   * @param {Date}
+   * @param {Date} date
    * @return {String}
    */
   getDayNameAbbr (date) {
@@ -131,8 +131,7 @@ const utils = {
 
   /**
    * Return name of the month
-   * @param {Number|Date}
-   * @param {Array}
+   * @param {Number|Date} date
    * @return {String}
    */
   getMonthName (date) {
@@ -147,7 +146,7 @@ const utils = {
 
   /**
    * Return an abbreviated version of the month
-   * @param {Number|Date}
+   * @param {Number|Date} date
    * @return {String}
    */
   getMonthNameAbbr (date) {
@@ -163,7 +162,7 @@ const utils = {
   /**
    * Alternative get total number of days in month
    * @param {Number} year
-   * @param {Number} m
+   * @param {Number} month
    * @return {Number}
    */
   daysInMonth (year, month) {
@@ -214,15 +213,20 @@ const utils = {
 
   /**
    * Formats date object
-   * @param {Date}
-   * @param {String}
-   * @param {Object}
+   * @param {Date} date
+   * @param {String} formatString
    * @return {String}
    */
   formatDate (date, formatString) {
     return format(date, formatString, { locale: this.language })
   },
 
+  /**
+   * Parses a date from a string
+   * @param {String}          dateStr
+   * @param {Strin}           formatString
+   * @return {Date}
+   */
   parseDate (dateValue, formatString = 'yyyy-MM-dd') {
     if (typeof dateValue === 'string') {
       return parse(dateValue, formatString, new Date(), { locale: this.language })
