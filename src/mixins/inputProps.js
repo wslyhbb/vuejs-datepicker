@@ -76,6 +76,10 @@ export default {
       type: Boolean,
       default: false
     },
+    tabindex: {
+      type: [Number, String],
+      default: null
+    },
     typeable: {
       type: Boolean,
       default: false

@@ -30,6 +30,7 @@
       :placeholder="placeholder"
       :readonly="!typeable"
       :required="required"
+      :tabindex="tabindex"
       :type="inline ? 'hidden' : 'text'"
       :value="formattedValue"
       @blur="inputBlurred"

@@ -28,6 +28,7 @@
       :reset-typed-date="resetTypedDate"
       :selected-date="selectedDate"
       :show-calendar-on-focus="showCalendarOnFocus"
+      :tabindex="tabindex"
       :typeable="typeable"
       :use-utc="useUtc"
       @showCalendar="showCalendar"

@@ -423,12 +423,12 @@ pre {
 
 .settings {
     margin: 2em 0;
-    border-top : 1px solid #bbb;
+    border-top: 1px solid #bbb;
     background: #eee;
 }
 
 h5 {
-    font-size:100%;
+    font-size: 100%;
     padding: 0;
 }
 

@@ -192,6 +192,7 @@ Inline always open version
 | initial-view                  | String          | minimumView | If set, open on that view                                      |
 | disabled                      | Boolean         | false       | If true, disable Datepicker on screen                          |
 | required                      | Boolean         | false       | Sets html required attribute on input                          |
+| tabindex                      | String\|Number  |             | Tabindex for the input                                         |
 | typeable                      | Boolean         | false       | If true, allow the user to type the date                       |
 | use-utc                       | Boolean         | false       | use UTC for time calculations                                  |
 | open-date                     | Date\|String    |             | If set, open on that date                                      |
