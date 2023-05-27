@@ -41,6 +41,15 @@ export default {
     allowedToShowView: Function,
     useUtc: Boolean
   },
+  emits: {
+    changedYear: (date) => {
+      return typeof date === 'object'
+    },
+    selectMonth: (date) => {
+      return typeof date === 'object'
+    },
+    showYearCalendar: null
+  },
   data () {
     const constructedDateUtils = makeDateUtils(this.useUtc, this.language)
     return {

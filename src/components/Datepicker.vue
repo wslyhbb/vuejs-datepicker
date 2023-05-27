@@ -167,6 +167,26 @@ export default {
       default: 'year'
     }
   },
+  emits: {
+    changedMonth: (date) => {
+      return typeof date === 'object'
+    },
+    changedYear: (date) => {
+      return typeof date === 'object'
+    },
+    cleared: null,
+    closed: null,
+    input: (date) => {
+      return date instanceof Date || date === null
+    },
+    opened: null,
+    selected: (date) => {
+      return date instanceof Date || date === null
+    },
+    selectedDisabled: (date) => {
+      return typeof date === 'object'
+    }
+  },
   data () {
     const startDate = this.openDate ? new Date(this.openDate) : new Date()
     const constructedDateUtils = makeDateUtils(this.useUtc, this.language)

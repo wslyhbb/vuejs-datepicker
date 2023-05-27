@@ -28,6 +28,11 @@ export default {
       required: true
     }
   },
+  emits: {
+    pageChange: (page) => {
+      return typeof page === 'object'
+    }
+  },
   computed: {
     /**
      * Is the left hand navigation button disabled?

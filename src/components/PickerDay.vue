@@ -59,6 +59,18 @@ export default {
     twoLetterAbbr: Boolean,
     useUtc: Boolean
   },
+  emits: {
+    changedMonth: (date) => {
+      return typeof date === 'object'
+    },
+    selectDate: (date) => {
+      return typeof date === 'object'
+    },
+    selectedDisabled: (date) => {
+      return typeof date === 'object'
+    },
+    showMonthCalendar: null
+  },
   data () {
     const constructedDateUtils = makeDateUtils(this.useUtc, this.language)
     return {

@@ -67,6 +67,14 @@ export default {
     resetTypedDate: [Date],
     selectedDate: Date
   },
+  emits: {
+    closeCalendar: null,
+    clearDate: null,
+    showCalendar: null,
+    typedDate: (date) => {
+      return date === null || date instanceof Date
+    }
+  },
   data () {
     const constructedDateUtils = makeDateUtils(this.useUtc, this.language)
     return {

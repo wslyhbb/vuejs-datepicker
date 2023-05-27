@@ -41,6 +41,14 @@ export default {
     allowedToShowView: Function,
     useUtc: Boolean
   },
+  emits: {
+    changedDecade: (date) => {
+      return typeof date === 'object'
+    },
+    selectYear: (date) => {
+      return typeof date === 'object'
+    }
+  },
   watch: {
     language (newLanguage) {
       this.utils = makeDateUtils(this.useUtc, newLanguage)
