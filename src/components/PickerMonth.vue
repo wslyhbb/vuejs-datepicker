@@ -1,19 +1,15 @@
 <template>
   <div :class="[calendarClass, 'vdp-datepicker__calendar']" v-show="showMonthView" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
-    <header>
-      <span
-        class="prev" tabindex="0"
-        :class="{'disabled': isLeftNavDisabled}"
-        @click="isRtl ? nextYear() : previousYear()">&lt;</span>
+    <picker-header
+      :is-next-disabled="isNextYearDisabled(pageTimestamp)"
+      :is-previous-disabled="isPreviousYearDisabled(pageTimestamp)"
+      :is-rtl="isRtl"
+      @pageChange="changePage($event)">
       <span class="month__year_btn" tabindex="0"
             :class="allowedToShowView('year') ? 'up' : ''"
             @click="showYearCalendar">{{ pageYearName }}</span>
-      <span
-        class="next" tabindex="0"
-        :class="{'disabled': isRightNavDisabled}"
-        @click="isRtl ? previousYear() : nextYear()">&gt;</span>
-    </header>
+    </picker-header>
     <span class="cell month" tabindex="0"
       v-for="month in months"
       :key="month.timestamp"
@@ -23,9 +19,16 @@
       @keypress.space="selectMonth(month)">{{ month.month }}</span>
   </div>
 </template>
+
 <script>
+import PickerHeader from './PickerHeader.vue'
 import { makeDateUtils, rtlLangs, langYearSuffix } from '../utils/DateUtils'
+
 export default {
+  name: 'PickerMonth',
+  components: {
+    PickerHeader
+  },
   props: {
     showMonthView: Boolean,
     selectedDate: Date,
@@ -81,24 +84,6 @@ export default {
     pageYearName () {
       const yearSuffix = langYearSuffix[this.language] || ''
       return `${this.utils.getFullYear(this.pageDate)}${yearSuffix}`
-    },
-    /**
-     * Is the left hand navigation disabled
-     * @return {Boolean}
-     */
-    isLeftNavDisabled () {
-      return this.isRtl
-        ? this.isNextYearDisabled(this.pageTimestamp)
-        : this.isPreviousYearDisabled(this.pageTimestamp)
-    },
-    /**
-     * Is the right hand navigation disabled
-     * @return {Boolean}
-     */
-    isRightNavDisabled () {
-      return this.isRtl
-        ? this.isPreviousYearDisabled(this.pageTimestamp)
-        : this.isNextYearDisabled(this.pageTimestamp)
     }
   },
   methods: {
@@ -122,14 +107,6 @@ export default {
       this.$emit('changedYear', date)
     },
     /**
-     * Decrements the year
-     */
-    previousYear () {
-      if (!this.isPreviousYearDisabled()) {
-        this.changeYear(-1)
-      }
-    },
-    /**
      * Checks if the previous year is disabled or not
      * @return {Boolean}
      */
@@ -140,11 +117,18 @@ export default {
       return this.utils.getFullYear(this.disabledDates.to) >= this.utils.getFullYear(this.pageDate)
     },
     /**
-     * Increments the year
+     * Changes the page up or down
+     * @param {Number} incrementBy
      */
-    nextYear () {
-      if (!this.isNextYearDisabled()) {
-        this.changeYear(1)
+    changePage ({ incrementBy }) {
+      if (incrementBy === 1) {
+        if (!this.isNextYearDisabled()) {
+          this.changeYear(incrementBy)
+        }
+      } else if (incrementBy === -1) {
+        if (!this.isPreviousYearDisabled()) {
+          this.changeYear(incrementBy)
+        }
       }
     },
     /**
@@ -209,6 +193,4 @@ export default {
     }
   }
 }
-// eslint-disable-next-line
-;
 </script>

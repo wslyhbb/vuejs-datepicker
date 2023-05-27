@@ -1,10 +1,10 @@
 import PickerDay from '@/components/PickerDay.vue'
-import { shallowMount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 
 describe('PickerDay: DOM', () => {
   let wrapper
   beforeEach(() => {
-    wrapper = shallowMount(PickerDay, {
+    wrapper = mount(PickerDay, {
       propsData: {
         allowedToShowView: () => true,
 
@@ -16,13 +16,22 @@ describe('PickerDay: DOM', () => {
 
   it('knows the selected date', async () => {
     const newDate = new Date(2016, 9, 15)
-    wrapper.setProps({
+    await wrapper.setProps({
       selectedDate: newDate
     })
-    await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.isSelectedDate(newDate)).toEqual(true)
     expect(wrapper.vm.isSelectedDate(new Date(2017, 1, 1))).toEqual(false)
+  })
+
+  it('can set the next month', () => {
+    wrapper.vm.changePage({ incrementBy: 1 })
+    expect(wrapper.emitted().changedMonth[0][0].getMonth()).toEqual(2)
+  })
+
+  it('can set the previous month', () => {
+    wrapper.vm.changePage({ incrementBy: -1 })
+    expect(wrapper.emitted().changedMonth[0][0].getMonth()).toEqual(0)
   })
 
   it('emits an event when selected', () => {

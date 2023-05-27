@@ -1,10 +1,10 @@
 import PickerYear from '@/components/PickerYear.vue'
-import { shallowMount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 
 describe('PickerYear', () => {
   let wrapper
   beforeEach(() => {
-    wrapper = shallowMount(PickerYear, {
+    wrapper = mount(PickerYear, {
       propsData: {
         allowedToShowView: () => true,
 
@@ -23,11 +23,6 @@ describe('PickerYear', () => {
     expect(wrapper.vm.selectYear(year)).toEqual(false)
   })
 
-  it('cant navigate to a disabled year', () => {
-    expect(wrapper.vm.previousDecade()).toEqual(false)
-    expect(wrapper.vm.nextDecade()).toEqual(false)
-  })
-
   it('can\'t change decade when previous or next decades are disabled', () => {
     wrapper.setProps({
       pageDate: new Date(2016, 9, 15),
@@ -41,21 +36,20 @@ describe('PickerYear', () => {
   })
 
   it('can change decade despite having a disabled decade', async () => {
-    wrapper.setProps({
+    await wrapper.setProps({
       pageDate: new Date(2016, 9, 15),
       disabledDates: {
         to: new Date(2010, 11, 19),
         from: new Date(2021, 11, 19)
       }
     })
-    await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.isPreviousDecadeDisabled()).toEqual(true)
     expect(wrapper.vm.isNextDecadeDisabled()).toEqual(false)
   })
 
   it('can accept a customPredictor to check if the year is disabled', async () => {
-    wrapper.setProps({
+    await wrapper.setProps({
       disabledDates: {
         customPredictor (date) {
           if (date.getFullYear() % 3 === 0) {
@@ -64,7 +58,6 @@ describe('PickerYear', () => {
         }
       }
     })
-    await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.isDisabledYear(new Date(2018, 4, 29))).toEqual(false)
     expect(wrapper.vm.isDisabledYear(new Date(2019, 9, 28))).toEqual(true)
@@ -74,13 +67,12 @@ describe('PickerYear', () => {
   })
 
   it('does not disable the next decade button when disabled from date is in the first year of the next decade', async () => {
-    wrapper.setProps({
+    await wrapper.setProps({
       pageDate: new Date(1998, 9, 15),
       disabledDates: {
         from: new Date(2000, 0, 1)
       }
     })
-    await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.isNextDecadeDisabled()).toEqual(false)
   })

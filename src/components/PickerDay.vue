@@ -1,21 +1,18 @@
 <template>
-  <div :class="[calendarClass, 'vdp-datepicker__calendar']" v-show="showDayView" :style="calendarStyle" @mousedown.prevent>
-    <slot name="beforeCalendarHeader"></slot>
-    <header>
-      <span
-        class="prev" tabindex="0"
-        :class="{'disabled': isLeftNavDisabled}"
-        @click="isRtl ? nextMonth() : previousMonth()">&lt;</span>
+  <div :class="[calendarClass, 'vdp-datepicker__calendar']"
+       v-show="showDayView" :style="calendarStyle" @mousedown.prevent>
+    <slot name="beforeCalendarHeader" />
+    <picker-header
+      :is-next-disabled="isNextMonthDisabled(pageTimestamp)"
+      :is-previous-disabled="isPreviousMonthDisabled(pageTimestamp)"
+      :is-rtl="isRtl"
+      @pageChange="changePage($event)">
       <span class="day__month_btn" tabindex="0"
             :class="allowedToShowView('month') ? 'up' : ''"
             @click="showMonthCalendar">
             {{ isYmd ? currYearName : currMonthName }} {{ isYmd ? currMonthName : currYearName }}
       </span>
-      <span
-        class="next" tabindex="0"
-        :class="{'disabled': isRightNavDisabled}"
-        @click="isRtl ? previousMonth() : nextMonth()">&gt;</span>
-    </header>
+    </picker-header>
     <div :class="isRtl ? 'flex-rtl' : ''">
       <span class="cell day-header" v-for="d in daysOfWeek" :key="d.timestamp">{{ d }}</span>
       <template v-if="blankDays > 0">
@@ -32,10 +29,16 @@
     </div>
   </div>
 </template>
+
 <script>
+import PickerHeader from './PickerHeader.vue'
 import { makeDateUtils, rtlLangs, langYearSuffix, ymdLangs } from '../utils/DateUtils'
 
 export default {
+  name: 'PickerDay',
+  components: {
+    PickerHeader
+  },
   props: {
     showDayView: Boolean,
     selectedDate: Date,
@@ -146,24 +149,6 @@ export default {
      */
     isYmd () {
       return ymdLangs.indexOf(this.language) !== -1
-    },
-    /**
-     * Is the left hand navigation button disabled?
-     * @return {Boolean}
-     */
-    isLeftNavDisabled () {
-      return this.isRtl
-        ? this.isNextMonthDisabled(this.pageTimestamp)
-        : this.isPreviousMonthDisabled(this.pageTimestamp)
-    },
-    /**
-     * Is the right hand navigation button disabled?
-     * @return {Boolean}
-     */
-    isRightNavDisabled () {
-      return this.isRtl
-        ? this.isPreviousMonthDisabled(this.pageTimestamp)
-        : this.isNextMonthDisabled(this.pageTimestamp)
     }
   },
   methods: {
@@ -196,14 +181,6 @@ export default {
       this.$emit('changedMonth', date)
     },
     /**
-     * Decrement the page month
-     */
-    previousMonth () {
-      if (!this.isPreviousMonthDisabled()) {
-        this.changeMonth(-1)
-      }
-    },
-    /**
      * Is the previous month disabled?
      * @return {Boolean}
      */
@@ -216,11 +193,18 @@ export default {
         this.utils.getFullYear(this.disabledDates.to) >= this.utils.getFullYear(d)
     },
     /**
-     * Increment the current page month
+     * Changes the page up or down
+     * @param {Number} incrementBy
      */
-    nextMonth () {
-      if (!this.isNextMonthDisabled()) {
-        this.changeMonth(+1)
+    changePage ({ incrementBy }) {
+      if (incrementBy === 1) {
+        if (!this.isNextMonthDisabled()) {
+          this.changeMonth(incrementBy)
+        }
+      } else if (incrementBy === -1) {
+        if (!this.isPreviousMonthDisabled()) {
+          this.changeMonth(incrementBy)
+        }
       }
     },
     /**
@@ -382,6 +366,4 @@ export default {
     }
   }
 }
-// eslint-disable-next-line
-;
 </script>

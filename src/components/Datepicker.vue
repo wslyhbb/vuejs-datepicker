@@ -117,7 +117,6 @@
 </template>
 
 <script>
-// import en from '../locale/languages/en'
 import DateInput from './DateInput.vue'
 import inputProps from '@/mixins/inputProps.js'
 import PickerDay from './PickerDay.vue'

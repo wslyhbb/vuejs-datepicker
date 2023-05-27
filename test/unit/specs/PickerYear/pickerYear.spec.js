@@ -16,37 +16,47 @@ describe('PickerYear', () => {
 
   it('knows the selected year', async () => {
     const newDate = new Date(2016, 9, 15)
-    wrapper.setProps({
+
+    await wrapper.setProps({
       selectedDate: newDate
     })
-    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.isSelectedYear(newDate)).toEqual(true)
+    expect(wrapper.vm.isSelectedYear(new Date(2017, 1, 1))).toEqual(false)
+  })
+
+  it('knows the selected year when useUtc = true', async () => {
+    const newDate = new Date(2016, 9, 15)
+
+    await wrapper.setProps({
+      selectedDate: newDate,
+      useUtc: true
+    })
 
     expect(wrapper.vm.isSelectedYear(newDate)).toEqual(true)
     expect(wrapper.vm.isSelectedYear(new Date(2017, 1, 1))).toEqual(false)
   })
 
   it('can set the next decade', () => {
-    wrapper.vm.nextDecade()
+    wrapper.vm.changePage({ incrementBy: 1 })
     expect(wrapper.emitted().changedDecade).toBeTruthy()
   })
 
   it('can set the previous decade', () => {
-    wrapper.vm.previousDecade()
+    wrapper.vm.changePage({ incrementBy: -1 })
     expect(wrapper.emitted().changedDecade).toBeTruthy()
   })
 
   it('formats the decade range', async () => {
-    wrapper.setProps({
+    await wrapper.setProps({
       pageDate: new Date(2021, 1, 1)
     })
-    await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.getPageDecade).toEqual('2020 - 2029')
 
-    wrapper.setProps({
+    await wrapper.setProps({
       pageDate: new Date(2001, 1, 1)
     })
-    await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.getPageDecade).toEqual('2000 - 2009')
   })
