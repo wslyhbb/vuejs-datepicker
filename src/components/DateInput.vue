@@ -65,7 +65,10 @@ export default {
     openDate: Date,
     parseTypedDate: Function,
     resetTypedDate: [Date],
-    selectedDate: Date
+    selectedDate: {
+      type: Date,
+      default: null
+    }
   },
   data () {
     const constructedDateUtils = makeDateUtils(this.useUtc, this.language)

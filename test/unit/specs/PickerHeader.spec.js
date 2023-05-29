@@ -14,6 +14,10 @@ describe('PickerHeader', () => {
     })
   })
 
+  afterEach(() => {
+    wrapper.destroy()
+  })
+
   it('decrements the page on clicking the `previous` button', async () => {
     const prevButton = wrapper.find('span.prev')
     await prevButton.trigger('click')

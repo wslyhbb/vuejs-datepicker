@@ -174,13 +174,15 @@ Inline always open version
 | full-month-name               | Boolean         | false       | To show the full month name                                    |
 | language                      | Object          | enUS        | Translation for days and months                                |
 | maxlength                     | String          |             | Sets html `maxlength` attribute on input                       |
+| disabled                      | Boolean         | false       | If true, disable Datepicker on screen                          |
 | disabled-dates                | Object          |             | See below for configuration                                    |
 | placeholder                   | String          |             | Input placeholder text                                         |
 | inline                        | Boolean         |             | To show the datepicker always open                             |
 | calendar-class                | String\|Object  |             | CSS class applied to the calendar el                           |
 | input-class                   | String\|Object  |             | CSS class applied to the input el                              |
 | wrapper-class                 | String\|Object  |             | CSS class applied to the outer div                             |
-| monday-first                  | Boolean         | false       | To start the week on Monday                                    |
+| monday-first                  | Boolean         | false       | (Deprecated for first-day-of-week) To start the week           |
+| first-day-of-week             | String          | sun         | Sets the first day of the week.                                |
 | two-letter-abbr               |                 | false       | Show day abbreviations in two letters                          |
 | clear-button                  | Boolean         | false       | Show an icon for clearing the date                             |
 | clear-button-icon             | String          |             | (Deprecated for slot) Use icon for button (ex: fa fa-times)    |
@@ -190,7 +192,6 @@ Inline always open version
 | day-cell-content              | Function        |             | Use to render custom content in day cell                       |
 | bootstrap-styling             | Boolean         | false       | Output bootstrap v4 styling classes.                           |
 | initial-view                  | String          | minimumView | If set, open on that view                                      |
-| disabled                      | Boolean         | false       | If true, disable Datepicker on screen                          |
 | required                      | Boolean         | false       | Sets html required attribute on input                          |
 | tabindex                      | String\|Number  |             | Tabindex for the input                                         |
 | typeable                      | Boolean         | false       | If true, allow the user to type the date                       |

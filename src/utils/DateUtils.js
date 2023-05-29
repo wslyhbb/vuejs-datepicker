@@ -130,6 +130,25 @@ const utils = {
   },
 
   /**
+   * Return day number from abbreviated week day name
+   * @param {String} abbr
+   * @return {Number}
+   */
+  getDayFromAbbr (abbr) {
+    const now = new Date()
+    const dates = [0, 1, 2, 3, 4, 5, 6]
+    const days = dates.map((day) => format(
+      setDay(now, day), 'ccc',
+      { locale: this.language }))
+    for (let i = 0; i < days.length; i++) {
+      if (abbr.toLowerCase() === days[i].toLowerCase()) {
+        return i
+      }
+    }
+    throw TypeError('Invalid week day')
+  },
+
+  /**
    * Return name of the month
    * @param {Number|Date} date
    * @return {String}
@@ -193,19 +212,19 @@ const utils = {
 
   /**
    * Return abbreviated week day name
-   * @param {Boolean} mondayFirst
+   * @param {Number} firstDayOfWeek
    * @param {Boolean} twoLetter
    * @returns {Array}
    */
-  getDaysOfWeek (mondayFirst, twoLetter = false) {
-    const plainDate = new Date()
+  getDaysStartingOn (firstDayOfWeek, twoLetter = false) {
+    const now = new Date()
     const dates = [0, 1, 2, 3, 4, 5, 6]
     let formatString = 'ccc'
     if (twoLetter) {
       formatString = 'cccccc'
     }
-    return dates.map((v) => format(
-      setDay(plainDate, mondayFirst ? v + 1 : v),
+    return dates.map((day) => format(
+      setDay(now, day + firstDayOfWeek),
       formatString,
       { locale: this.language }
     ))

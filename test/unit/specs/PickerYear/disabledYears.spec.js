@@ -18,6 +18,10 @@ describe('PickerYear', () => {
     })
   })
 
+  afterEach(() => {
+    wrapper.destroy()
+  })
+
   it('cant select a disabled year', () => {
     const year = { isDisabled: true }
     expect(wrapper.vm.selectYear(year)).toEqual(false)

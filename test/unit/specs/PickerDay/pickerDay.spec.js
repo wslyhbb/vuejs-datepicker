@@ -14,6 +14,10 @@ describe('PickerDay: DOM', () => {
     })
   })
 
+  afterEach(() => {
+    wrapper.destroy()
+  })
+
   it('knows the selected date', async () => {
     const newDate = new Date(2016, 9, 15)
     await wrapper.setProps({

@@ -14,6 +14,10 @@ describe('PickerMonth', () => {
     })
   })
 
+  afterEach(() => {
+    wrapper.destroy()
+  })
+
   it('knows the selected month', async () => {
     const newDate = new Date(2016, 9, 15)
     await wrapper.setProps({

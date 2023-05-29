@@ -18,6 +18,10 @@ describe('PickerMonth', () => {
     })
   })
 
+  afterEach(() => {
+    wrapper.destroy()
+  })
+
   it('cant select a disabled month', () => {
     const month = { isDisabled: true }
     expect(wrapper.vm.selectMonth(month)).toEqual(false)

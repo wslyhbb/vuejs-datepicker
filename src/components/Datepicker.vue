@@ -52,20 +52,21 @@
     <!-- Day View -->
     <picker-day
       v-if="allowedToShowView('day')"
-      :pageDate="pageDate"
-      :selectedDate="selectedDate"
-      :showDayView="showDayView"
-      :fullMonthName="fullMonthName"
       :allowedToShowView="allowedToShowView"
-      :disabledDates="disabledDates"
-      :highlighted="highlighted"
       :calendarClass="calendarClass"
       :calendarStyle="calendarStyle"
-      :language="language"
-      :pageTimestamp="pageTimestamp"
-      :mondayFirst="mondayFirst"
-      :twoLetterAbbr="twoLetterAbbr"
       :dayCellContent="dayCellContent"
+      :disabledDates="disabledDates"
+      :firstDayOfWeek="firstDayOfWeek"
+      :highlighted="highlighted"
+      :language="language"
+      :mondayFirst="mondayFirst"
+      :pageDate="pageDate"
+      :pageTimestamp="pageTimestamp"
+      :selectedDate="selectedDate"
+      :showDayView="showDayView"
+      :showFullMonthName="fullMonthName"
+      :twoLetterAbbr="twoLetterAbbr"
       :use-utc="useUtc"
       @changedMonth="handleChangedMonthFromDayPicker"
       @selectDate="selectDate"
@@ -136,8 +137,28 @@ export default {
   },
   mixins: [inputProps],
   props: {
-    value: {
-      validator: val => utils.validateDateInput(val)
+    calendarClass: {
+      type: [String, Object, Array],
+      default: ''
+    },
+    dayCellContent: {
+      type: Function
+    },
+    disabledDates: {
+      type: Object
+    },
+    firstDayOfWeek: {
+      type: String
+    },
+    fullMonthName: {
+      type: Boolean
+    },
+    highlighted: {
+      type: Object
+    },
+    initialView: {
+      type: String,
+      default: ''
     },
     language: {
       type: Object,
@@ -145,26 +166,32 @@ export default {
         return enUS
       }
     },
-    openDate: {
-      validator: val => utils.validateDateInput(val)
+    maximumView: {
+      type: String,
+      default: 'year'
     },
-    dayCellContent: Function,
-    fullMonthName: Boolean,
-    disabledDates: Object,
-    highlighted: Object,
-    calendarClass: [String, Object, Array],
-    wrapperClass: [String, Object, Array],
-    mondayFirst: Boolean,
-    twoLetterAbbr: Boolean,
-    initialView: String,
-    parseTypedDate: Function,
     minimumView: {
       type: String,
       default: 'day'
     },
-    maximumView: {
-      type: String,
-      default: 'year'
+    mondayFirst: {
+      type: Boolean
+    },
+    openDate: {
+      validator: val => utils.validateDateInput(val)
+    },
+    parseTypedDate: {
+      type: Function
+    },
+    twoLetterAbbr: {
+      type: Boolean
+    },
+    value: {
+      validator: val => utils.validateDateInput(val)
+    },
+    wrapperClass: {
+      type: [String, Object, Array],
+      default: ''
     }
   },
   data () {
