@@ -14,6 +14,10 @@ describe('PickerYear', () => {
     })
   })
 
+  afterEach(() => {
+    wrapper.unmount()
+  })
+
   it('knows the selected year', async () => {
     const newDate = new Date(2016, 9, 15)
 

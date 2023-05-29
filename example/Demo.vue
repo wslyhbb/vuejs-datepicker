@@ -10,6 +10,15 @@
     </div>
 
     <div class="example">
+      <h3>Custom first-day-of-week datepicker</h3>
+      <datepicker placeholder="Select date" first-day-of-week="mon" />
+      <code>
+        &lt;datepicker placeholder="Select date"
+        first-day-of-week="mon"&gt;&lt;/datepicker&gt;
+      </code>
+    </div>
+
+    <div class="example">
       <h3>Typeable datepicker</h3>
       <datepicker placeholder="Type or select date" :typeable="true" />
       <code>
@@ -336,7 +345,9 @@ export default {
       if (elem.target.value === 'undefined') {
         return
       }
-      let highlightedDays = elem.target.value.split(',').map(day => parseInt(day))
+      const highlightedDays = elem.target.value
+        .split(',')
+        .map((day) => parseInt(day, 10))
       this.highlighted = {
         from: this.highlighted.from,
         to: this.highlighted.to,
@@ -347,7 +358,9 @@ export default {
       if (elem.target.value === 'undefined') {
         return
       }
-      let disabledDays = elem.target.value.split(',').map(day => parseInt(day))
+      const disabledDays = elem.target.value
+        .split(',')
+        .map((day) => parseInt(day, 10))
       this.disabledDates = {
         from: this.disabledDates.from,
         to: this.disabledDates.to,

@@ -40,23 +40,43 @@ export default {
     PickerHeader
   },
   props: {
-    showDayView: Boolean,
-    selectedDate: Date,
-    pageDate: Date,
-    pageTimestamp: Number,
-    fullMonthName: Boolean,
     allowedToShowView: Function,
+    calendarClass: [String, Object, Array],
+    calendarStyle: {
+      type: Object
+    },
     dayCellContent: {
       type: Function,
       default: day => day.date
     },
-    disabledDates: Object,
-    highlighted: Object,
-    calendarClass: [String, Object, Array],
-    calendarStyle: Object,
-    language: Object,
+    disabledDates: {
+      type: Object
+    },
+    firstDayOfWeek: {
+      type: String
+    },
+    highlighted: {
+      type: Object,
+      default () {
+        return {}
+      }
+    },
+    language: {
+      type: Object
+    },
     mondayFirst: Boolean,
-    twoLetterAbbr: Boolean,
+    pageDate: Date,
+    pageTimestamp: Number,
+    selectedDate: Date,
+    showDayView: Boolean,
+    showFullMonthName: {
+      type: Boolean,
+      default: false
+    },
+    twoLetterAbbr: {
+      type: Boolean,
+      default: false
+    },
     useUtc: Boolean
   },
   emits: {
@@ -94,7 +114,20 @@ export default {
      * @return {String[]}
      */
     daysOfWeek () {
-      return this.utils.getDaysOfWeek(this.mondayFirst, this.twoLetterAbbr)
+      return this.utils.getDaysStartingOn(this.firstDayOfWeekNumber, this.twoLetterAbbr)
+    },
+    /**
+     * Returns first-day-of-week as a number (Sunday is 0)
+     * @return {Number}
+     */
+    firstDayOfWeekNumber () {
+      if (this.mondayFirst) {
+        return 1
+      } else if (this.firstDayOfWeek) {
+        return this.utils.getDayFromAbbr(this.firstDayOfWeek)
+      } else {
+        return 0
+      }
     },
     /**
      * Returns the day number of the week less one for the first of the current month
@@ -102,26 +135,20 @@ export default {
      * @return {Number}
      */
     blankDays () {
-      const d = this.pageDate
-      const dObj = this.useUtc
-        ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
-        : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
+      const dObj = this.newPageDate()
       if (this.mondayFirst) {
-        return this.utils.getDay(dObj) > 0 ? this.utils.getDay(dObj) - 1 : 6
+        return (6 + this.utils.getDay(dObj)) % 7
       }
-      return this.utils.getDay(dObj)
+      return (7 - this.firstDayOfWeekNumber + this.utils.getDay(dObj)) % 7
     },
     /**
      * @return {Object[]}
      */
     days () {
-      const d = this.pageDate
       const days = []
-      // set up a new date object to the beginning of the current 'page'
-      const dObj = this.useUtc
-        ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
-        : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
-      const daysInMonth = this.utils.daysInMonth(this.utils.getFullYear(dObj), this.utils.getMonth(dObj))
+      const dObj = this.newPageDate()
+      const daysInMonth = this.utils.daysInMonth(
+        this.utils.getFullYear(dObj), this.utils.getMonth(dObj))
       for (let i = 0; i < daysInMonth; i++) {
         days.push({
           date: this.utils.getDate(dObj),
@@ -375,6 +402,16 @@ export default {
      */
     isDefined (prop) {
       return typeof prop !== 'undefined' && prop
+    },
+    /**
+     * Set up a new date object to the first day of the current 'page'
+     * @return Date
+     */
+    newPageDate () {
+      const d = this.pageDate
+      return this.useUtc
+        ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
+        : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
     }
   }
 }

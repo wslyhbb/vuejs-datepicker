@@ -112,7 +112,7 @@ describe('daysInMonth', () => {
   })
 })
 
-describe('daysInWeek', () => {
+describe('getDaysStartingOn', () => {
   it('should give the correct days in a week', () => {
     const mondayFirst = [
       'Mon', 'Tue',
@@ -126,8 +126,8 @@ describe('daysInWeek', () => {
       'Thu', 'Fri',
       'Sat'
     ]
-    expect(DateUtils.getDaysOfWeek(true)).toEqual(mondayFirst)
-    expect(DateUtils.getDaysOfWeek(false)).toEqual(sundayFirst)
+    expect(DateUtils.getDaysStartingOn(1)).toEqual(mondayFirst)
+    expect(DateUtils.getDaysStartingOn(0)).toEqual(sundayFirst)
   })
 
   it('should give the correct days in a week with two letter abbreviation', () => {
@@ -143,8 +143,14 @@ describe('daysInWeek', () => {
       'Th', 'Fr',
       'Sa'
     ]
-    expect(DateUtils.getDaysOfWeek(true, true)).toEqual(mondayFirst)
-    expect(DateUtils.getDaysOfWeek(false, true)).toEqual(sundayFirst)
+    expect(DateUtils.getDaysStartingOn(1, true)).toEqual(mondayFirst)
+    expect(DateUtils.getDaysStartingOn(0, true)).toEqual(sundayFirst)
+  })
+
+  it('returns the correct day number from an abbreviated day name', () => {
+    expect(DateUtils.getDayFromAbbr('sun')).toEqual(0)
+    expect(DateUtils.getDayFromAbbr('sat')).toEqual(6)
+    expect(() => DateUtils.getDayFromAbbr('nonsense')).toThrow('Invalid week day')
   })
 })
 
