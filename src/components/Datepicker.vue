@@ -65,6 +65,7 @@
       :pageTimestamp="pageTimestamp"
       :selectedDate="selectedDate"
       :showDayView="showDayView"
+      :showEdgeDates="showEdgeDates"
       :showFullMonthName="fullMonthName"
       :twoLetterAbbr="twoLetterAbbr"
       :use-utc="useUtc"
@@ -182,6 +183,10 @@ export default {
     },
     parseTypedDate: {
       type: Function
+    },
+    showEdgeDates: {
+      type: Boolean,
+      default: false
     },
     twoLetterAbbr: {
       type: Boolean
