@@ -193,6 +193,7 @@ Inline always open version
 | bootstrap-styling             | Boolean         | false       | Output bootstrap v4 styling classes.                           |
 | initial-view                  | String          | minimumView | If set, open on that view                                      |
 | required                      | Boolean         | false       | Sets html required attribute on input                          |
+| show-edge-dates               | Boolean         | false       | If `false`, dates from previous/next months won't show         |
 | tabindex                      | String\|Number  |             | Tabindex for the input                                         |
 | typeable                      | Boolean         | false       | If true, allow the user to type the date                       |
 | use-utc                       | Boolean         | false       | use UTC for time calculations                                  |

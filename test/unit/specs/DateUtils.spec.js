@@ -90,7 +90,7 @@ describe('DateUtils', () => {
     expect(DateUtils.getMonthNameAbbr(new Date(2016, 9, 10))).toEqual('Oct')
   })
 
-  it('getMonthName accepts a number', () => {
+  it('getMonthNameAbbr accepts a number', () => {
     expect(DateUtils.getMonthNameAbbr(3)).toEqual('Apr')
   })
 })

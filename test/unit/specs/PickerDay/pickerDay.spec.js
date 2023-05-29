@@ -43,8 +43,14 @@ describe('PickerDay: DOM', () => {
     expect(wrapper.emitted().selectDate).toBeTruthy()
   })
 
-  it('knows the current page month', () => {
-    expect(wrapper.vm.getPageMonth()).toEqual(1)
+  it('knows the current page month', async () => {
+    expect(wrapper.vm.pageMonth).toEqual(1)
+    expect(wrapper.vm.currMonthName).toEqual('Feb')
+
+    await wrapper.setProps({
+      showFullMonthName: true
+    })
+    expect(wrapper.vm.currMonthName).toEqual('February')
   })
 
   it('emits show year calendar event when clicked on the year', () => {

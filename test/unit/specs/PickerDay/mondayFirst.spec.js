@@ -22,21 +22,23 @@ describe('PickerDay: Datepicker with monday as first day of week', () => {
     expect(wrapper.vm.daysOfWeek[6]).toEqual('Sun')
   })
 
-  it('should have 6 blankDays when month starts from Sunday', async () => {
-    wrapper.setProps({
-      pageDate: new Date(2018, 3, 1)
+  it('should have 6 days when month starts from Sunday', async () => {
+    await wrapper.setProps({
+      pageDate: new Date(2020, 10, 1)
     })
-    await wrapper.vm.$nextTick()
 
-    expect(wrapper.vm.blankDays).toEqual(6)
+    for (let i = 0; i < 6; i++) {
+      expect(wrapper.vm.days[i].isPreviousMonth).toBeTruthy()
+      expect(wrapper.vm.days[i].isNextMonth).toBeFalsy()
+    }
   })
 
-  it('should have no blankDays when month starts from Monday', async () => {
-    wrapper.setProps({
-      pageDate: new Date(2018, 9, 1)
+  it('should have no days when month starts from Monday', async () => {
+    await wrapper.setProps({
+      pageDate: new Date(2020, 5, 1)
     })
-    await wrapper.vm.$nextTick()
 
-    expect(wrapper.vm.blankDays).toEqual(0)
+    expect(wrapper.vm.days[0].isPreviousMonth).toBeFalsy()
+    expect(wrapper.vm.days[0].isNextMonth).toBeFalsy()
   })
 })

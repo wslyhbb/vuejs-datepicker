@@ -35,6 +35,15 @@
     </div>
 
     <div class="example">
+      <h3>Show dates from other months datepicker</h3>
+      <datepicker placeholder="Select date" :show-edge-dates="true" />
+      <code>
+        &lt;datepicker placeholder="Select date"
+        :show-edge-dates="true"&gt;&lt;/datepicker&gt;
+      </code>
+    </div>
+
+    <div class="example">
       <h3>datepicker opens on focus</h3>
       <datepicker placeholder="Type or select date" :typeable="true" :show-calendar-on-focus="true"/>
       <code>

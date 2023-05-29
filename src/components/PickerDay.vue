@@ -15,17 +15,15 @@
     </picker-header>
     <div :class="isRtl ? 'flex-rtl' : ''">
       <span class="cell day-header" v-for="d in daysOfWeek" :key="d.timestamp">{{ d }}</span>
-      <template v-if="blankDays > 0">
-        <span class="cell day blank" v-for="d in blankDays" :key="d.timestamp"></span>
-      </template>
       <span class="cell day" tabindex="0"
           v-for="day in days"
           :key="day.timestamp"
           :class="dayClasses(day)"
-          v-html="dayCellContent(day)"
           @click="selectDate(day)"
           @keypress.enter="selectDate(day)"
-          @keypress.space="selectDate(day)"></span>
+          @keypress.space="selectDate(day)">
+        {{ dayCellContent(day) }}
+      </span>
     </div>
   </div>
 </template>
@@ -64,11 +62,21 @@ export default {
     language: {
       type: Object
     },
-    mondayFirst: Boolean,
+    mondayFirst: {
+      type: Boolean,
+      default: false
+    },
     pageDate: Date,
     pageTimestamp: Number,
     selectedDate: Date,
-    showDayView: Boolean,
+    showDayView: {
+      type: Boolean,
+      default: false
+    },
+    showEdgeDates: {
+      type: Boolean,
+      default: false
+    },
     showFullMonthName: {
       type: Boolean,
       default: false
@@ -94,8 +102,62 @@ export default {
     }
   },
   computed: {
-    isRtl () {
-      return rtlLangs.indexOf(this.language) !== -1
+    /**
+     * Gets the name of the month the current page is on
+     * @return {String}
+     */
+    currMonthName () {
+      return this.showFullMonthName
+        ? this.utils.getMonthName(this.pageMonth)
+        : this.utils.getMonthNameAbbr(this.pageMonth)
+    },
+    /**
+     * Gets the name of the year that current page is on
+     * @return {Number}
+     */
+    currYearName () {
+      const yearSuffix = langYearSuffix[this.language] || ''
+      return `${this.utils.getFullYear(this.pageDate)}${yearSuffix}`
+    },
+    /**
+     * @return {Object[]}
+     */
+    days () {
+      const days = []
+      const daysInCalendar =
+        this.daysFromPrevMonth + this.daysInMonth + this.daysFromNextMonth
+      const dObj = this.firstDayCellDate()
+
+      for (let i = 0; i < daysInCalendar; i++) {
+        days.push(this.makeDay(dObj))
+        this.utils.setDate(dObj, this.utils.getDate(dObj) + 1)
+      }
+
+      return days
+    },
+    /**
+     * Calculates how many days to show from the next month
+     * @return {number}
+     */
+    daysFromNextMonth () {
+      const daysThisAndPrevMonth = this.daysFromPrevMonth + this.daysInMonth
+      return (Math.ceil(daysThisAndPrevMonth / 7) * 7) - daysThisAndPrevMonth
+    },
+    /**
+     * Calculates how many days to show from the previous month
+     * @return {number}
+     */
+    daysFromPrevMonth () {
+      const dObj = this.newPageDate()
+      return (7 - this.firstDayOfWeekNumber + this.utils.getDay(dObj)) % 7
+    },
+    /**
+     * Returns the number of days in this month
+     * @return {String[]}
+     */
+    daysInMonth () {
+      const dObj = this.newPageDate()
+      return this.utils.getDaysInMonth(dObj)
     },
     /**
      * Returns an array of day names
@@ -118,57 +180,15 @@ export default {
       }
     },
     /**
-     * Returns the day number of the week less one for the first of the current month
-     * Used to show amount of empty cells before the first in the day calendar layout
-     * @return {Number}
+     * The first day of the next page's month.
+     * @return {Date}
      */
-    blankDays () {
-      const dObj = this.newPageDate()
-      if (this.mondayFirst) {
-        return (6 + this.utils.getDay(dObj)) % 7
-      }
-      return (7 - this.firstDayOfWeekNumber + this.utils.getDay(dObj)) % 7
+    firstOfNextMonth () {
+      const d = new Date(this.pageDate)
+      return new Date(this.utils.setMonth(d, this.utils.getMonth(d) + 1))
     },
-    /**
-     * @return {Object[]}
-     */
-    days () {
-      const days = []
-      const dObj = this.newPageDate()
-      const daysInMonth = this.utils.daysInMonth(
-        this.utils.getFullYear(dObj), this.utils.getMonth(dObj))
-      for (let i = 0; i < daysInMonth; i++) {
-        days.push({
-          date: this.utils.getDate(dObj),
-          timestamp: dObj.getTime(),
-          isSelected: this.isSelectedDate(dObj),
-          isDisabled: this.isDisabledDate(dObj),
-          isHighlighted: this.isHighlightedDate(dObj),
-          isHighlightStart: this.isHighlightStart(dObj),
-          isHighlightEnd: this.isHighlightEnd(dObj),
-          isToday: this.utils.compareDates(dObj, new Date()),
-          isWeekend: this.utils.getDay(dObj) === 0 || this.utils.getDay(dObj) === 6,
-          isSaturday: this.utils.getDay(dObj) === 6,
-          isSunday: this.utils.getDay(dObj) === 0
-        })
-        this.utils.setDate(dObj, this.utils.getDate(dObj) + 1)
-      }
-      return days
-    },
-    /**
-     * Gets the name of the month the current page is on
-     * @return {String}
-     */
-    currMonthName () {
-      return this.utils.getMonthNameAbbr(this.pageDate)
-    },
-    /**
-     * Gets the name of the year that current page is on
-     * @return {Number}
-     */
-    currYearName () {
-      const yearSuffix = langYearSuffix[this.language] || ''
-      return `${this.utils.getFullYear(this.pageDate)}${yearSuffix}`
+    isRtl () {
+      return rtlLangs.indexOf(this.language) !== -1
     },
     /**
      * Is this language using year/month/day format?
@@ -176,21 +196,31 @@ export default {
      */
     isYmd () {
       return ymdLangs.indexOf(this.language) !== -1
+    },
+    /**
+     * Returns the current page's month as an integer.
+     * @return {Number}
+     */
+    pageMonth () {
+      return this.utils.getMonth(this.pageDate)
     }
   },
   methods: {
+    /**
+     * Set up a new date object to the first day of the current 'page'
+     * @return {Date}
+     */
+    firstDayCellDate () {
+      const pageDate = new Date(this.pageDate)
+
+      return new Date(this.utils.setDate(pageDate, 1 - this.daysFromPrevMonth))
+    },
     selectDate (date) {
       if (date.isDisabled) {
         this.$emit('selectedDisabled', date)
         return false
       }
       this.$emit('selectDate', date)
-    },
-    /**
-     * @return {Number}
-     */
-    getPageMonth () {
-      return this.utils.getMonth(this.pageDate)
     },
     /**
      * Emit an event to show the month picker
@@ -346,9 +376,11 @@ export default {
     },
     dayClasses (day) {
       return {
+        blank: day.date === '',
         selected: day.isSelected,
         disabled: day.isDisabled,
         highlighted: day.isHighlighted,
+        muted: day.isPreviousMonth || day.isNextMonth,
         today: day.isToday,
         weekend: day.isWeekend,
         sat: day.isSaturday,
@@ -400,6 +432,35 @@ export default {
       return this.useUtc
         ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
         : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
+    },
+    /**
+     * Defines the objects within the days array
+     * @param  {Date} dObj
+     * @return {Object}
+     */
+    makeDay (dObj) {
+      const dayOfWeek = this.utils.getDay(dObj)
+      const isNextMonth = dObj >= this.firstOfNextMonth
+      const isPreviousMonth = dObj < this.pageDate
+      const isSaturday = dayOfWeek === 6
+      const isSunday = dayOfWeek === 0
+      const showDate = this.showEdgeDates || !(isPreviousMonth || isNextMonth)
+
+      return {
+        date: showDate ? this.utils.getDate(dObj) : '',
+        timestamp: dObj.getTime(),
+        isSelected: this.isSelectedDate(dObj),
+        isDisabled: this.isDisabledDate(dObj),
+        isHighlighted: this.isHighlightedDate(dObj),
+        isHighlightStart: this.isHighlightStart(dObj),
+        isHighlightEnd: this.isHighlightEnd(dObj),
+        isToday: this.utils.compareDates(dObj, new Date()),
+        isWeekend: isSaturday || isSunday,
+        isSaturday,
+        isSunday,
+        isPreviousMonth,
+        isNextMonth
+      }
     }
   }
 }
