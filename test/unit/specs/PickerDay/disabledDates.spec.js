@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
 import PickerDay from '@/components/PickerDay.vue'
+import { enGB } from 'date-fns/locale'
 
 describe('PickerDay: disabled', () => {
   let wrapper
@@ -9,7 +10,8 @@ describe('PickerDay: disabled', () => {
         allowedToShowView: () => true,
         showMonthCalendar: () => {},
 
-        pageDate: new Date(2016, 9, 1)
+        pageDate: new Date(2016, 9, 1),
+        language: enGB
       }
     })
   })
