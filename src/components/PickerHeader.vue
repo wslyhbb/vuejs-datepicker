@@ -3,12 +3,12 @@
     <span
       class="prev" tabindex="0"
       :class="{'disabled': isLeftNavDisabled}"
-      @click="isRtl ? goToNextPage() : goToPrevPage()">&lt;</span>
+      @click="isRtl ? goToNextPage() : goToPreviousPage()">&lt;</span>
     <slot />
     <span
       class="next" tabindex="0"
       :class="{'disabled': isRightNavDisabled}"
-      @click="isRtl ? goToPrevPage() : goToNextPage()">&gt;</span>
+      @click="isRtl ? goToPreviousPage() : goToNextPage()">&gt;</span>
   </header>
 </template>
 
@@ -52,7 +52,7 @@ export default {
     goToNextPage () {
       this.$emit('pageChange', { incrementBy: 1 })
     },
-    goToPrevPage () {
+    goToPreviousPage () {
       this.$emit('pageChange', { incrementBy: -1 })
     }
   }

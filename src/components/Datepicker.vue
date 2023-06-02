@@ -62,7 +62,6 @@
       :language="language"
       :mondayFirst="mondayFirst"
       :pageDate="pageDate"
-      :pageTimestamp="pageTimestamp"
       :selectedDate="selectedDate"
       :showDayView="showDayView"
       :showEdgeDates="showEdgeDates"

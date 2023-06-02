@@ -10,7 +10,7 @@
       <span class="day__month_btn" tabindex="0"
             :class="allowedToShowView('month') ? 'up' : ''"
             @click="showMonthCalendar">
-            {{ isYmd ? currYearName : currMonthName }} {{ isYmd ? currMonthName : currYearName }}
+        {{ pageTitleDay }}
       </span>
     </picker-header>
     <div :class="isRtl ? 'flex-rtl' : ''">
@@ -40,7 +40,7 @@ export default {
   props: {
     dayCellContent: {
       type: Function,
-      default: day => day.date
+      default: (day) => day.date
     },
     firstDayOfWeek: {
       type: String
@@ -84,7 +84,7 @@ export default {
     },
     /**
      * Gets the name of the year that current page is on
-     * @return {Number}
+     * @return {String}
      */
     currYearName () {
       const yearSuffix = langYearSuffix[this.language] || ''
@@ -119,16 +119,15 @@ export default {
      * @return {number}
      */
     daysFromPrevMonth () {
-      const dObj = this.newPageDate
-      return (7 - this.firstDayOfWeekNumber + this.utils.getDay(dObj)) % 7
+      const firstOfMonthDayNumber = this.utils.getDay(this.pageDate)
+      return (7 - this.firstDayOfWeekNumber + firstOfMonthDayNumber) % 7
     },
     /**
      * Returns the number of days in this month
      * @return {String[]}
      */
     daysInMonth () {
-      const dObj = this.newPageDate
-      return this.utils.getDaysInMonth(dObj)
+      return this.utils.getDaysInMonth(this.pageDate)
     },
     /**
      * Returns an array of day names
@@ -181,13 +180,6 @@ export default {
         this.disabledConfig.to.year >= this.pageYear
     },
     /**
-     * Is this language using year/month/day format?
-     * @return {Boolean}
-     */
-    isYmd () {
-      return ymdLangs.indexOf(this.language) !== -1
-    },
-    /**
      * Returns the current page's month as an integer.
      * @return {Number}
      */
@@ -195,14 +187,13 @@ export default {
       return this.utils.getMonth(this.pageDate)
     },
     /**
-     * Set up a new date object to the first day of the current 'page'
-     * @return Date
+     * Display the current page's month & year as the title.
+     * @return {String}
      */
-    newPageDate () {
-      const d = this.pageDate
-      return this.useUtc
-        ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
-        : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
+    pageTitleDay () {
+      return ymdLangs.indexOf(this.language) !== -1
+        ? `${this.currYearName} ${this.currMonthName}`
+        : `${this.currMonthName} ${this.currYearName}`
     }
   },
   methods: {
@@ -254,7 +245,7 @@ export default {
     },
     /**
      * Whether a day is selected
-     * @param {Date}
+     * @param {Date} dObj to check if selected
      * @return {Boolean}
      */
     isSelectedDate (dObj) {
@@ -305,7 +296,7 @@ export default {
     /**
      * Whether a day is highlighted and it is the first date
      * in the highlighted range of dates
-     * @param {Date}
+     * @param {Date} date
      * @return {Boolean}
      */
     isHighlightStart (date) {
@@ -320,7 +311,7 @@ export default {
     /**
      * Whether a day is highlighted and it is the first date
      * in the highlighted range of dates
-     * @param {Date}
+     * @param {Date} date
      * @return {Boolean}
      */
     isHighlightEnd (date) {

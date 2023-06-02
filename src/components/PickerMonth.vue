@@ -8,7 +8,9 @@
       @pageChange="changePage($event)">
       <span class="month__year_btn" tabindex="0"
             :class="allowedToShowView('year') ? 'up' : ''"
-            @click="showYearCalendar">{{ pageYearName }}</span>
+            @click="showYearCalendar">
+        {{ pageTitleMonth }}
+      </span>
     </picker-header>
     <span class="cell month" tabindex="0"
       v-for="month in months"
@@ -71,10 +73,10 @@ export default {
       return months
     },
     /**
-     * Get year name on current page.
+     * Display the current page's year as the title.
      * @return {String}
      */
-    pageYearName () {
+    pageTitleMonth () {
       const yearSuffix = langYearSuffix[this.language] || ''
       return `${this.pageYear}${yearSuffix}`
     }
@@ -122,7 +124,7 @@ export default {
     },
     /**
      * Whether the selected date is in this month
-     * @param {Date}
+     * @param {Date} date
      * @return {Boolean}
      */
     isSelectedMonth (date) {
@@ -132,7 +134,7 @@ export default {
     },
     /**
      * Whether a month is disabled
-     * @param {Date}
+     * @param {Date} date
      * @return {Boolean}
      */
     isDisabledMonth (date) {
