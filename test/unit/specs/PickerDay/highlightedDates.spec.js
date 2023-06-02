@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
 import PickerDay from '@/components/PickerDay.vue'
+import { enGB } from 'date-fns/locale'
 
 describe('PickerDay highlight date', () => {
   let wrapper
@@ -8,7 +9,8 @@ describe('PickerDay highlight date', () => {
       propsData: {
         allowedToShowView: () => true,
 
-        pageDate: new Date(2016, 9, 1)
+        pageDate: new Date(2016, 9, 1),
+        language: enGB
       }
     })
   })

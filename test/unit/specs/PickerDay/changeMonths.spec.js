@@ -1,13 +1,14 @@
 import PickerDay from '@/components/PickerDay.vue'
 import { mount } from '@vue/test-utils'
+import { enGB } from 'date-fns/locale'
 
 describe('PickerDay: changing months', () => {
   let wrapper
   beforeEach(() => {
     wrapper = mount(PickerDay, {
       propsData: {
-
         allowedToShowView: () => true,
+        language: enGB,
         selectedDate: new Date(2018, 2, 24),
         pageDate: new Date(2018, 1, 1)
       }

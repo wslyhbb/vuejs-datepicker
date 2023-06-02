@@ -191,7 +191,7 @@ export default {
      * @return {String}
      */
     pageTitleDay () {
-      return ymdLangs.indexOf(this.language) !== -1
+      return ymdLangs.indexOf(this.language.code) !== -1
         ? `${this.currYearName} ${this.currMonthName}`
         : `${this.currMonthName} ${this.currYearName}`
     }
