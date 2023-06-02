@@ -56,13 +56,13 @@ describe('PickerYear', () => {
       pageDate: new Date(2021, 1, 1)
     })
 
-    expect(wrapper.vm.getPageDecade).toEqual('2020 - 2029')
+    expect(wrapper.vm.pageTitleYear).toEqual('2020 - 2029')
 
     await wrapper.setProps({
       pageDate: new Date(2001, 1, 1)
     })
 
-    expect(wrapper.vm.getPageDecade).toEqual('2000 - 2009')
+    expect(wrapper.vm.pageTitleYear).toEqual('2000 - 2009')
   })
 
   it('emits an event when selected', () => {

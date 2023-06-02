@@ -6,7 +6,7 @@
       :is-previous-disabled="isPreviousDisabled"
       :is-rtl="isRtl"
       @page-change="changePage($event)">
-      <span>{{ getPageDecade }}</span>
+      <span>{{ pageTitleYear }}</span>
     </picker-header>
     <span
       class="cell year" tabindex="0"
@@ -98,9 +98,10 @@ export default {
       return years
     },
     /**
+     * Display the current page's decade (or year range) as the title.
      * @return {String}
      */
-    getPageDecade () {
+    pageTitleYear () {
       const yearSuffix = langYearSuffix[this.language] || ''
       return `${this.pageDecadeStart} - ${this.pageDecadeEnd}${yearSuffix}`
     }
@@ -134,7 +135,7 @@ export default {
     },
     /**
      * Whether the selected date is in this year
-     * @param {Date}
+     * @param {Date} date
      * @return {Boolean}
      */
     isSelectedYear (date) {
@@ -142,7 +143,7 @@ export default {
     },
     /**
      * Whether a year is disabled
-     * @param {Date}
+     * @param {Date} date
      * @return {Boolean}
      */
     isDisabledYear (date) {

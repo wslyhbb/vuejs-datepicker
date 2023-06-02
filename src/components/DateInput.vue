@@ -79,11 +79,10 @@ export default {
     }
   },
   data () {
-    const constructedDateUtils = makeDateUtils(this.useUtc, this.language)
     return {
       input: null,
       typedDate: false,
-      utils: constructedDateUtils
+      utils: makeDateUtils(this.useUtc, this.language)
     }
   },
   computed: {
