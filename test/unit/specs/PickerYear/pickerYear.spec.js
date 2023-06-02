@@ -1,10 +1,10 @@
+import { mount } from '@vue/test-utils'
 import PickerYear from '@/components/PickerYear.vue'
-import { shallowMount } from '@vue/test-utils'
 
 describe('PickerYear', () => {
   let wrapper
   beforeEach(() => {
-    wrapper = shallowMount(PickerYear, {
+    wrapper = mount(PickerYear, {
       propsData: {
         allowedToShowView: () => true,
 

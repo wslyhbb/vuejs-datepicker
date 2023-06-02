@@ -3,8 +3,8 @@
        v-show="showDayView" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader" />
     <picker-header
-      :is-next-disabled="isNextMonthDisabled(pageTimestamp)"
-      :is-previous-disabled="isPreviousMonthDisabled(pageTimestamp)"
+      :is-next-disabled="isNextDisabled"
+      :is-previous-disabled="isPreviousDisabled"
       :is-rtl="isRtl"
       @page-change="changePage($event)">
       <span class="day__month_btn" tabindex="0"
@@ -29,26 +29,18 @@
 </template>
 
 <script>
-import PickerHeader from './PickerHeader.vue'
-import { makeDateUtils, rtlLangs, langYearSuffix, ymdLangs } from '../utils/DateUtils'
+import pickerMixin from '@/mixins/pickerMixin.js'
+import { langYearSuffix, ymdLangs } from '../utils/DateUtils'
+import DisabledDate from '@/utils/DisabledDate'
+import HighlightedDate from '@/utils/HighlightedDate'
 
 export default {
   name: 'PickerDay',
-  components: {
-    PickerHeader
-  },
+  mixins: [pickerMixin],
   props: {
-    allowedToShowView: Function,
-    calendarClass: [String, Object, Array],
-    calendarStyle: {
-      type: Object
-    },
     dayCellContent: {
       type: Function,
       default: day => day.date
-    },
-    disabledDates: {
-      type: Object
     },
     firstDayOfWeek: {
       type: String
@@ -59,16 +51,10 @@ export default {
         return {}
       }
     },
-    language: {
-      type: Object
-    },
     mondayFirst: {
       type: Boolean,
       default: false
     },
-    pageDate: Date,
-    pageTimestamp: Number,
-    selectedDate: Date,
     showDayView: {
       type: Boolean,
       default: false
@@ -84,8 +70,7 @@ export default {
     twoLetterAbbr: {
       type: Boolean,
       default: false
-    },
-    useUtc: Boolean
+    }
   },
   emits: {
     changedMonth: (date) => {
@@ -98,20 +83,6 @@ export default {
       return typeof date === 'object'
     },
     showMonthCalendar: null
-  },
-  data () {
-    const constructedDateUtils = makeDateUtils(this.useUtc, this.language)
-    return {
-      utils: constructedDateUtils
-    }
-  },
-  watch: {
-    language (newLanguage) {
-      this.utils = makeDateUtils(this.useUtc, newLanguage)
-    },
-    useUtc (newUtc) {
-      this.utils = makeDateUtils(newUtc, this.language)
-    }
   },
   computed: {
     /**
@@ -129,7 +100,7 @@ export default {
      */
     currYearName () {
       const yearSuffix = langYearSuffix[this.language] || ''
-      return `${this.utils.getFullYear(this.pageDate)}${yearSuffix}`
+      return `${this.pageYear}${yearSuffix}`
     },
     /**
      * @return {Object[]}
@@ -160,7 +131,7 @@ export default {
      * @return {number}
      */
     daysFromPrevMonth () {
-      const dObj = this.newPageDate()
+      const dObj = this.newPageDate
       return (7 - this.firstDayOfWeekNumber + this.utils.getDay(dObj)) % 7
     },
     /**
@@ -168,7 +139,7 @@ export default {
      * @return {String[]}
      */
     daysInMonth () {
-      const dObj = this.newPageDate()
+      const dObj = this.newPageDate
       return this.utils.getDaysInMonth(dObj)
     },
     /**
@@ -199,8 +170,27 @@ export default {
       const d = new Date(this.pageDate)
       return new Date(this.utils.setMonth(d, this.utils.getMonth(d) + 1))
     },
-    isRtl () {
-      return rtlLangs.indexOf(this.language) !== -1
+    /**
+     * Is the next month disabled?
+     * @return {Boolean}
+     */
+    isNextDisabled () {
+      if (!this.disabledConfig.has.from) {
+        return false
+      }
+      return this.disabledConfig.from.month <= this.pageMonth &&
+        this.disabledConfig.from.year <= this.pageYear
+    },
+    /**
+     * Is the previous month disabled?
+     * @return {Boolean}
+     */
+    isPreviousDisabled () {
+      if (!this.disabledConfig.has.to) {
+        return false
+      }
+      return this.disabledConfig.to.month >= this.pageMonth &&
+        this.disabledConfig.to.year >= this.pageYear
     },
     /**
      * Is this language using year/month/day format?
@@ -215,6 +205,16 @@ export default {
      */
     pageMonth () {
       return this.utils.getMonth(this.pageDate)
+    },
+    /**
+     * Set up a new date object to the first day of the current 'page'
+     * @return Date
+     */
+    newPageDate () {
+      const d = this.pageDate
+      return this.useUtc
+        ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
+        : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
     }
   },
   methods: {
@@ -250,43 +250,19 @@ export default {
       this.$emit('changedMonth', date)
     },
     /**
-     * Is the previous month disabled?
-     * @return {Boolean}
-     */
-    isPreviousMonthDisabled () {
-      if (!this.disabledDates || !this.disabledDates.to) {
-        return false
-      }
-      const d = this.pageDate
-      return this.utils.getMonth(this.disabledDates.to) >= this.utils.getMonth(d) &&
-        this.utils.getFullYear(this.disabledDates.to) >= this.utils.getFullYear(d)
-    },
-    /**
      * Changes the page up or down
      * @param {Number} incrementBy
      */
     changePage ({ incrementBy }) {
       if (incrementBy === 1) {
-        if (!this.isNextMonthDisabled()) {
+        if (!this.isNextDisabled) {
           this.changeMonth(incrementBy)
         }
       } else if (incrementBy === -1) {
-        if (!this.isPreviousMonthDisabled()) {
+        if (!this.isPreviousDisabled) {
           this.changeMonth(incrementBy)
         }
       }
-    },
-    /**
-     * Is the next month disabled?
-     * @return {Boolean}
-     */
-    isNextMonthDisabled () {
-      if (!this.disabledDates || !this.disabledDates.from) {
-        return false
-      }
-      const d = this.pageDate
-      return this.utils.getMonth(this.disabledDates.from) <= this.utils.getMonth(d) &&
-        this.utils.getFullYear(this.disabledDates.from) <= this.utils.getFullYear(d)
     },
     /**
      * Whether a day is selected
@@ -298,93 +274,30 @@ export default {
     },
     /**
      * Whether a day is disabled
-     * @param {Date}
+     * @param {Date} date to check if disabled
      * @return {Boolean}
      */
     isDisabledDate (date) {
-      let disabledDates = false
+      if (!this.disabledDates) return false
 
-      if (typeof this.disabledDates === 'undefined') {
-        return false
-      }
-
-      if (typeof this.disabledDates.dates !== 'undefined') {
-        this.disabledDates.dates.forEach((d) => {
-          if (this.utils.compareDates(date, d)) {
-            disabledDates = true
-            return true
-          }
-        })
-      }
-      if (typeof this.disabledDates.to !== 'undefined' && this.disabledDates.to && date < this.disabledDates.to) {
-        disabledDates = true
-      }
-      if (typeof this.disabledDates.from !== 'undefined' && this.disabledDates.from && date > this.disabledDates.from) {
-        disabledDates = true
-      }
-      if (typeof this.disabledDates.ranges !== 'undefined') {
-        this.disabledDates.ranges.forEach((range) => {
-          if (typeof range.from !== 'undefined' && range.from && typeof range.to !== 'undefined' && range.to) {
-            if (date < range.to && date > range.from) {
-              disabledDates = true
-              return true
-            }
-          }
-        })
-      }
-      if (typeof this.disabledDates.days !== 'undefined' && this.disabledDates.days.indexOf(this.utils.getDay(date)) !== -1) {
-        disabledDates = true
-      }
-      if (typeof this.disabledDates.daysOfMonth !== 'undefined' && this.disabledDates.daysOfMonth.indexOf(this.utils.getDate(date)) !== -1) {
-        disabledDates = true
-      }
-      if (typeof this.disabledDates.customPredictor === 'function' && this.disabledDates.customPredictor(date)) {
-        disabledDates = true
-      }
-      return disabledDates
+      return new DisabledDate(this.utils, this.disabledDates).isDateDisabled(
+        date
+      )
     },
     /**
-     * Whether a day is highlighted (only if it is not disabled already except when highlighted.includeDisabled is true)
-     * @param {Date}
+     * Whether a day is highlighted (N.B. Disabled dates are not highlighted unless
+     * `highlighted.includeDisabled` is true)
+     * @param {Date} date to check if highlighted
      * @return {Boolean}
      */
     isHighlightedDate (date) {
-      if (!(this.highlighted && this.highlighted.includeDisabled) && this.isDisabledDate(date)) {
-        return false
-      }
+      if (!this.highlighted) return false
 
-      let highlighted = false
-
-      if (typeof this.highlighted === 'undefined') {
-        return false
-      }
-
-      if (typeof this.highlighted.dates !== 'undefined') {
-        this.highlighted.dates.forEach((d) => {
-          if (this.utils.compareDates(date, d)) {
-            highlighted = true
-            return true
-          }
-        })
-      }
-
-      if (this.isDefined(this.highlighted.from) && this.isDefined(this.highlighted.to)) {
-        highlighted = date >= this.highlighted.from && date <= this.highlighted.to
-      }
-
-      if (typeof this.highlighted.days !== 'undefined' && this.highlighted.days.indexOf(this.utils.getDay(date)) !== -1) {
-        highlighted = true
-      }
-
-      if (typeof this.highlighted.daysOfMonth !== 'undefined' && this.highlighted.daysOfMonth.indexOf(this.utils.getDate(date)) !== -1) {
-        highlighted = true
-      }
-
-      if (typeof this.highlighted.customPredictor === 'function' && this.highlighted.customPredictor(date)) {
-        highlighted = true
-      }
-
-      return highlighted
+      return new HighlightedDate(
+        this.utils,
+        this.disabledDates,
+        this.highlighted
+      ).isDateHighlighted(date)
     },
     dayClasses (day) {
       return {
@@ -408,11 +321,13 @@ export default {
      * @return {Boolean}
      */
     isHighlightStart (date) {
-      return this.isHighlightedDate(date) &&
-        (this.highlighted.from instanceof Date) &&
-        (this.utils.getFullYear(this.highlighted.from) === this.utils.getFullYear(date)) &&
-        (this.utils.getMonth(this.highlighted.from) === this.utils.getMonth(date)) &&
-        (this.utils.getDate(this.highlighted.from) === this.utils.getDate(date))
+      if (!this.highlighted) return false
+
+      return new HighlightedDate(
+        this.utils,
+        this.disabledDates,
+        this.highlighted
+      ).isHighlightStart(date)
     },
     /**
      * Whether a day is highlighted and it is the first date
@@ -421,29 +336,13 @@ export default {
      * @return {Boolean}
      */
     isHighlightEnd (date) {
-      return this.isHighlightedDate(date) &&
-        (this.highlighted.to instanceof Date) &&
-        (this.utils.getFullYear(this.highlighted.to) === this.utils.getFullYear(date)) &&
-        (this.utils.getMonth(this.highlighted.to) === this.utils.getMonth(date)) &&
-        (this.utils.getDate(this.highlighted.to) === this.utils.getDate(date))
-    },
-    /**
-     * Helper
-     * @param  {mixed}  prop
-     * @return {Boolean}
-     */
-    isDefined (prop) {
-      return typeof prop !== 'undefined' && prop
-    },
-    /**
-     * Set up a new date object to the first day of the current 'page'
-     * @return Date
-     */
-    newPageDate () {
-      const d = this.pageDate
-      return this.useUtc
-        ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
-        : new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes())
+      if (!this.highlighted) return false
+
+      return new HighlightedDate(
+        this.utils,
+        this.disabledDates,
+        this.highlighted
+      ).isHighlightEnd(date)
     },
     /**
      * Defines the objects within the days array
@@ -451,7 +350,8 @@ export default {
      * @return {Object}
      */
     makeDay (dObj) {
-      const dayOfWeek = this.utils.getDay(dObj)
+      const { utils } = this
+      const dayOfWeek = utils.getDay(dObj)
       const isNextMonth = dObj >= this.firstOfNextMonth
       const isPreviousMonth = dObj < this.pageDate
       const isSaturday = dayOfWeek === 6
@@ -459,14 +359,14 @@ export default {
       const showDate = this.showEdgeDates || !(isPreviousMonth || isNextMonth)
 
       return {
-        date: showDate ? this.utils.getDate(dObj) : '',
+        date: showDate ? utils.getDate(dObj) : '',
         timestamp: dObj.getTime(),
         isSelected: this.isSelectedDate(dObj),
         isDisabled: this.isDisabledDate(dObj),
         isHighlighted: this.isHighlightedDate(dObj),
         isHighlightStart: this.isHighlightStart(dObj),
         isHighlightEnd: this.isHighlightEnd(dObj),
-        isToday: this.utils.compareDates(dObj, new Date()),
+        isToday: utils.compareDates(dObj, new Date()),
         isWeekend: isSaturday || isSunday,
         isSaturday,
         isSunday,

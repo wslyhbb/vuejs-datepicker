@@ -2,8 +2,8 @@
   <div :class="[calendarClass, 'vdp-datepicker__calendar']" v-show="showYearView" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
     <picker-header
-      :is-next-disabled="isNextDecadeDisabled(pageTimestamp)"
-      :is-previous-disabled="isPreviousDecadeDisabled(pageTimestamp)"
+      :is-next-disabled="isNextDisabled"
+      :is-previous-disabled="isPreviousDisabled"
       :is-rtl="isRtl"
       @page-change="changePage($event)">
       <span>{{ getPageDecade }}</span>
@@ -20,26 +20,21 @@
 </template>
 
 <script>
-import PickerHeader from './PickerHeader.vue'
-import { makeDateUtils, rtlLangs, langYearSuffix } from '../utils/DateUtils'
+import pickerMixin from '@/mixins/pickerMixin.js'
+import { langYearSuffix } from '../utils/DateUtils'
+import DisabledDate from '@/utils/DisabledDate'
 
 export default {
   name: 'PickerYear',
-  components: {
-    PickerHeader
-  },
+  mixins: [pickerMixin],
   props: {
-    showYearView: Boolean,
-    selectedDate: Date,
-    pageDate: Date,
-    pageTimestamp: Number,
-    disabledDates: Object,
-    highlighted: Object,
-    calendarClass: [String, Object, Array],
-    calendarStyle: Object,
-    language: Object,
-    allowedToShowView: Function,
-    useUtc: Boolean
+    highlighted: {
+      type: Object,
+      default () {
+        return {}
+      }
+    },
+    showYearView: Boolean
   },
   emits: {
     changedDecade: (date) => {
@@ -49,17 +44,40 @@ export default {
       return typeof date === 'object'
     }
   },
-  watch: {
-    language (newLanguage) {
-      this.utils = makeDateUtils(this.useUtc, newLanguage)
-    },
-    useUtc (newUtc) {
-      this.utils = makeDateUtils(newUtc, this.language)
-    }
-  },
   computed: {
-    isRtl () {
-      return rtlLangs.indexOf(this.language) !== -1
+    /**
+     * Is the next decade disabled?
+     * @return {Boolean}
+     */
+    isNextDisabled () {
+      if (!this.disabledConfig.has.from) {
+        return false
+      }
+      return this.disabledConfig.from.year <= this.pageDecadeEnd
+    },
+    /**
+     * Is the previous decade disabled?
+     * @return {Boolean}
+     */
+    isPreviousDisabled () {
+      if (!this.disabledConfig.has.to) {
+        return false
+      }
+      return this.disabledConfig.to.year >= this.pageDecadeStart
+    },
+    /**
+     * The year at which the current yearRange starts
+     * @return {Number}
+     */
+    pageDecadeStart () {
+      return Math.floor(this.pageYear / 10) * 10
+    },
+    /**
+     * The year at which the current yearRange ends
+     * @return {Number}
+     */
+    pageDecadeEnd () {
+      return this.pageDecadeStart + 10 - 1
     },
     years () {
       const d = this.pageDate
@@ -83,16 +101,8 @@ export default {
      * @return {String}
      */
     getPageDecade () {
-      const decadeStart = Math.floor(this.utils.getFullYear(this.pageDate) / 10) * 10
-      const decadeEnd = decadeStart + 9
       const yearSuffix = langYearSuffix[this.language] || ''
-      return `${decadeStart} - ${decadeEnd}${yearSuffix}`
-    }
-  },
-  data () {
-    const constructedDateUtils = makeDateUtils(this.useUtc, this.language)
-    return {
-      utils: constructedDateUtils
+      return `${this.pageDecadeStart} - ${this.pageDecadeEnd}${yearSuffix}`
     }
   },
   methods: {
@@ -107,38 +117,21 @@ export default {
       this.utils.setFullYear(date, this.utils.getFullYear(date) + incrementBy)
       this.$emit('changedDecade', date)
     },
-    isPreviousDecadeDisabled () {
-      if (!this.disabledDates || !this.disabledDates.to) {
-        return false
-      }
-      const disabledYear = this.utils.getFullYear(this.disabledDates.to)
-      const lastYearInPreviousPage = Math.floor(this.utils.getFullYear(this.pageDate) / 10) * 10 - 1
-      return disabledYear > lastYearInPreviousPage
-    },
     /**
      * Changes the page up or down
      * @param {Number} incrementBy
      */
     changePage ({ incrementBy }) {
       if (incrementBy === 1) {
-        if (!this.isNextDecadeDisabled()) {
+        if (!this.isNextDisabled) {
           this.changeYear(incrementBy * 10)
         }
       } else if (incrementBy === -1) {
-        if (!this.isPreviousDecadeDisabled()) {
+        if (!this.isPreviousDisabled) {
           this.changeYear(incrementBy * 10)
         }
       }
     },
-    isNextDecadeDisabled () {
-      if (!this.disabledDates || !this.disabledDates.from) {
-        return false
-      }
-      const disabledYear = this.utils.getFullYear(this.disabledDates.from)
-      const firstYearInNextPage = Math.ceil(this.utils.getFullYear(this.pageDate) / 10) * 10
-      return disabledYear < firstYearInNextPage
-    },
-
     /**
      * Whether the selected date is in this year
      * @param {Date}
@@ -153,30 +146,12 @@ export default {
      * @return {Boolean}
      */
     isDisabledYear (date) {
-      let disabledDates = false
-      if (typeof this.disabledDates === 'undefined' || !this.disabledDates) {
-        return false
-      }
+      if (!this.disabledDates) return false
 
-      if (typeof this.disabledDates.to !== 'undefined' && this.disabledDates.to) {
-        if (this.utils.getFullYear(date) < this.utils.getFullYear(this.disabledDates.to)) {
-          disabledDates = true
-        }
-      }
-      if (typeof this.disabledDates.from !== 'undefined' && this.disabledDates.from) {
-        if (this.utils.getFullYear(date) > this.utils.getFullYear(this.disabledDates.from)) {
-          disabledDates = true
-        }
-      }
-
-      if (typeof this.disabledDates.customPredictor === 'function' && this.disabledDates.customPredictor(date)) {
-        disabledDates = true
-      }
-
-      return disabledDates
+      return new DisabledDate(this.utils, this.disabledDates).isYearDisabled(
+        date
+      )
     }
   }
 }
-// eslint-disable-next-line
-;
 </script>

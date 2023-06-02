@@ -2,8 +2,8 @@
   <div :class="[calendarClass, 'vdp-datepicker__calendar']" v-show="showMonthView" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
     <picker-header
-      :is-next-disabled="isNextYearDisabled(pageTimestamp)"
-      :is-previous-disabled="isPreviousYearDisabled(pageTimestamp)"
+      :is-next-disabled="isNextDisabled"
+      :is-previous-disabled="isPreviousDisabled"
       :is-rtl="isRtl"
       @page-change="changePage($event)">
       <span class="month__year_btn" tabindex="0"
@@ -21,25 +21,15 @@
 </template>
 
 <script>
-import PickerHeader from './PickerHeader.vue'
-import { makeDateUtils, rtlLangs, langYearSuffix } from '../utils/DateUtils'
+import pickerMixin from '@/mixins/pickerMixin.js'
+import { langYearSuffix } from '../utils/DateUtils'
+import DisabledDate from '@/utils/DisabledDate'
 
 export default {
   name: 'PickerMonth',
-  components: {
-    PickerHeader
-  },
+  mixins: [pickerMixin],
   props: {
-    showMonthView: Boolean,
-    selectedDate: Date,
-    pageDate: Date,
-    pageTimestamp: Number,
-    disabledDates: Object,
-    calendarClass: [String, Object, Array],
-    calendarStyle: Object,
-    language: Object,
-    allowedToShowView: Function,
-    useUtc: Boolean
+    showMonthView: Boolean
   },
   emits: {
     changedYear: (date) => {
@@ -50,23 +40,26 @@ export default {
     },
     showYearCalendar: null
   },
-  data () {
-    const constructedDateUtils = makeDateUtils(this.useUtc, this.language)
-    return {
-      utils: constructedDateUtils
-    }
-  },
-  watch: {
-    language (newLanguage) {
-      this.utils = makeDateUtils(this.useUtc, newLanguage)
-    },
-    useUtc (newUtc) {
-      this.utils = makeDateUtils(newUtc, this.language)
-    }
-  },
   computed: {
-    isRtl () {
-      return rtlLangs.indexOf(this.language) !== -1
+    /**
+     * Is the next year disabled?
+     * @return {Boolean}
+     */
+    isNextDisabled () {
+      if (!this.disabledConfig.has.from) {
+        return false
+      }
+      return this.disabledConfig.from.year <= this.pageYear
+    },
+    /**
+     * Is the previous year disabled?
+     * @return {Boolean}
+     */
+    isPreviousDisabled () {
+      if (!this.disabledConfig.has.to) {
+        return false
+      }
+      return this.disabledConfig.to.year >= this.pageYear
     },
     months () {
       const d = this.pageDate
@@ -92,7 +85,7 @@ export default {
      */
     pageYearName () {
       const yearSuffix = langYearSuffix[this.language] || ''
-      return `${this.utils.getFullYear(this.pageDate)}${yearSuffix}`
+      return `${this.pageYear}${yearSuffix}`
     }
   },
   methods: {
@@ -116,39 +109,19 @@ export default {
       this.$emit('changedYear', date)
     },
     /**
-     * Checks if the previous year is disabled or not
-     * @return {Boolean}
-     */
-    isPreviousYearDisabled () {
-      if (!this.disabledDates || !this.disabledDates.to) {
-        return false
-      }
-      return this.utils.getFullYear(this.disabledDates.to) >= this.utils.getFullYear(this.pageDate)
-    },
-    /**
      * Changes the page up or down
      * @param {Number} incrementBy
      */
     changePage ({ incrementBy }) {
       if (incrementBy === 1) {
-        if (!this.isNextYearDisabled()) {
+        if (!this.isNextDisabled) {
           this.changeYear(incrementBy)
         }
       } else if (incrementBy === -1) {
-        if (!this.isPreviousYearDisabled()) {
+        if (!this.isPreviousDisabled) {
           this.changeYear(incrementBy)
         }
       }
-    },
-    /**
-     * Checks if the next year is disabled or not
-     * @return {Boolean}
-     */
-    isNextYearDisabled () {
-      if (!this.disabledDates || !this.disabledDates.from) {
-        return false
-      }
-      return this.utils.getFullYear(this.disabledDates.from) <= this.utils.getFullYear(this.pageDate)
     },
     /**
      * Emits an event that shows the year calendar
@@ -172,33 +145,11 @@ export default {
      * @return {Boolean}
      */
     isDisabledMonth (date) {
-      let disabledDates = false
+      if (!this.disabledDates) return false
 
-      if (typeof this.disabledDates === 'undefined') {
-        return false
-      }
-
-      if (typeof this.disabledDates.to !== 'undefined' && this.disabledDates.to) {
-        if (
-          (this.utils.getMonth(date) < this.utils.getMonth(this.disabledDates.to) && this.utils.getFullYear(date) <= this.utils.getFullYear(this.disabledDates.to)) ||
-          this.utils.getFullYear(date) < this.utils.getFullYear(this.disabledDates.to)
-        ) {
-          disabledDates = true
-        }
-      }
-      if (typeof this.disabledDates.from !== 'undefined' && this.disabledDates.from) {
-        if (
-          (this.utils.getMonth(date) > this.utils.getMonth(this.disabledDates.from) && this.utils.getFullYear(date) >= this.utils.getFullYear(this.disabledDates.from)) ||
-          this.utils.getFullYear(date) > this.utils.getFullYear(this.disabledDates.from)
-        ) {
-          disabledDates = true
-        }
-      }
-
-      if (typeof this.disabledDates.customPredictor === 'function' && this.disabledDates.customPredictor(date)) {
-        disabledDates = true
-      }
-      return disabledDates
+      return new DisabledDate(this.utils, this.disabledDates).isMonthDisabled(
+        date
+      )
     }
   }
 }
