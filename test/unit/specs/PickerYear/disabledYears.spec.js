@@ -35,8 +35,8 @@ describe('PickerYear', () => {
         from: new Date(2017, 10, 24)
       }
     })
-    expect(wrapper.vm.isPreviousDecadeDisabled()).toEqual(true)
-    expect(wrapper.vm.isNextDecadeDisabled()).toEqual(true)
+    expect(wrapper.vm.isPreviousDisabled).toEqual(true)
+    expect(wrapper.vm.isNextDisabled).toEqual(true)
   })
 
   it('can change decade despite having a disabled decade', async () => {
@@ -48,8 +48,8 @@ describe('PickerYear', () => {
       }
     })
 
-    expect(wrapper.vm.isPreviousDecadeDisabled()).toEqual(true)
-    expect(wrapper.vm.isNextDecadeDisabled()).toEqual(false)
+    expect(wrapper.vm.isPreviousDisabled).toEqual(true)
+    expect(wrapper.vm.isNextDisabled).toEqual(false)
   })
 
   it('can accept a customPredictor to check if the year is disabled', async () => {
@@ -78,7 +78,7 @@ describe('PickerYear', () => {
       }
     })
 
-    expect(wrapper.vm.isNextDecadeDisabled()).toEqual(false)
+    expect(wrapper.vm.isNextDisabled).toEqual(false)
   })
 
   it('does disable the next decade button when disabled from date is the last day year of the current decade', () => {
@@ -87,6 +87,6 @@ describe('PickerYear', () => {
         from: new Date(1999, 12, 31)
       }
     })
-    expect(wrapper.vm.isNextDecadeDisabled()).toEqual(true)
+    expect(wrapper.vm.isNextDisabled).toEqual(true)
   })
 })

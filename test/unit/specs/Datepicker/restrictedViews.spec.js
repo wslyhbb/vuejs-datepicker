@@ -1,5 +1,5 @@
-import Datepicker from '@/components/Datepicker.vue'
 import { mount } from '@vue/test-utils'
+import Datepicker from '@/components/Datepicker.vue'
 
 describe('Datepicker with restricted views', () => {
   let wrapper
