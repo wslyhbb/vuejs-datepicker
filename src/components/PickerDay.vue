@@ -15,20 +15,22 @@
     </picker-header>
     <div :class="{ 'flex-rtl': isRtl }">
       <span class="cell day-header" v-for="d in daysOfWeek" :key="d.timestamp">{{ d }}</span>
-      <span class="cell day" tabindex="0"
-          v-for="day in days"
-          :key="day.timestamp"
-          :class="dayClasses(day)"
-          @click="selectDate(day)"
-          @keypress.enter="selectDate(day)"
-          @keypress.space="selectDate(day)">
-        {{ dayCellContent(day) }}
-      </span>
+      <picker-cells
+        ref="cells"
+        v-slot="{ cell }"
+        :cells="days"
+        :show-edge-dates="showEdgeDates"
+        view="day"
+        @select="selectDate($event)">
+        {{ dayCellContent(cell) }}
+      </picker-cells>
     </div>
   </div>
 </template>
 
 <script>
+import PickerHeader from './PickerHeader.vue'
+import PickerCells from './PickerCells.vue'
 import pickerMixin from '@/mixins/pickerMixin.js'
 import { langYearSuffix, ymdLangs } from '../utils/DateUtils'
 import DisabledDate from '@/utils/DisabledDate'
@@ -36,6 +38,7 @@ import HighlightedDate from '@/utils/HighlightedDate'
 
 export default {
   name: 'PickerDay',
+  components: { PickerHeader, PickerCells },
   mixins: [pickerMixin],
   props: {
     dayCellContent: {
@@ -277,25 +280,6 @@ export default {
         this.disabledDates,
         this.highlighted
       ).isDateHighlighted(date)
-    },
-    dayClasses (day) {
-      return {
-        blank: day.date === '',
-        selected: this.showEdgeDates
-          ? day.isSelected
-          : day.isSelected && !day.isPreviousMonth && !day.isNextMonth,
-        disabled: day.isDisabled,
-        highlighted: day.isHighlighted,
-        muted: day.isPreviousMonth || day.isNextMonth,
-        today: this.showEdgeDates
-          ? day.isToday
-          : day.isToday && !day.isPreviousMonth && !day.isNextMonth,
-        weekend: day.isWeekend,
-        sat: day.isSaturday,
-        sun: day.isSunday,
-        'highlight-start': day.isHighlightStart,
-        'highlight-end': day.isHighlightEnd
-      }
     },
     /**
      * Whether a day is highlighted and it is the first date

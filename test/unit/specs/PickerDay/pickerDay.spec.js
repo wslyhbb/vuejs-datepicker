@@ -131,17 +131,17 @@ describe('PickerDay: DOM', () => {
       showEdgeDates: true
     })
 
-    let dayClasses = wrapper.vm.dayClasses(day)
+    let cellClasses = wrapper.vm.$refs.cells.cellClasses(day)
 
-    expect(dayClasses.today).toBeTruthy()
+    expect(cellClasses[2].today).toBeTruthy()
 
     await wrapper.setProps({
       showEdgeDates: false
     })
 
-    dayClasses = wrapper.vm.dayClasses(day)
+    cellClasses = wrapper.vm.$refs.cells.cellClasses(day)
 
-    expect(dayClasses.today).toBeFalsy()
+    expect(cellClasses[2].today).toBeFalsy()
   })
 
   it('only highlights selected edge date if shown', async () => {
@@ -156,16 +156,16 @@ describe('PickerDay: DOM', () => {
       showEdgeDates: true
     })
 
-    let dayClasses = wrapper.vm.dayClasses(day)
+    let cellClasses = wrapper.vm.$refs.cells.cellClasses(day)
 
-    expect(dayClasses.selected).toBeTruthy()
+    expect(cellClasses[2].selected).toBeTruthy()
 
     await wrapper.setProps({
       showEdgeDates: false
     })
 
-    dayClasses = wrapper.vm.dayClasses(day)
+    cellClasses = wrapper.vm.$refs.cells.cellClasses(day)
 
-    expect(dayClasses.selected).toBeFalsy()
+    expect(cellClasses[2].selected).toBeFalsy()
   })
 })

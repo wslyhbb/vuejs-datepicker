@@ -16,6 +16,10 @@ describe('PickerDay: DOM', () => {
     })
   })
 
+  afterEach(() => {
+    wrapper.destroy()
+  })
+
   it('should render correct contents', () => {
     expect(wrapper.findAll('.vdp-datepicker__calendar')).toHaveLength(1)
   })

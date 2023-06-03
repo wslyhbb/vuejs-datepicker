@@ -1,5 +1,6 @@
 <template>
-  <div :class="[calendarClass, 'vdp-datepicker__calendar']" v-show="showYearView" :style="calendarStyle" @mousedown.prevent>
+  <div :class="[calendarClass, 'vdp-datepicker__calendar']"
+       v-show="showYearView" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
     <picker-header
       :is-next-disabled="isNextDisabled"
@@ -8,24 +9,27 @@
       @pageChange="changePage($event)">
       <span>{{ pageTitleYear }}</span>
     </picker-header>
-    <span
-      class="cell year" tabindex="0"
-      v-for="year in years"
-      :key="year.timestamp"
-      :class="{ 'selected': year.isSelected, 'disabled': year.isDisabled }"
-      @click.stop="selectYear(year)"
-      @keypress.enter="selectYear(year)"
-      @keypress.space="selectYear(year)">{{ year.year }}</span>
+    <picker-cells
+      ref="cells"
+      v-slot="{ cell }"
+      :cells="years"
+      view="year"
+      @select="selectYear($event)">
+      {{ cell.year }}
+    </picker-cells>
   </div>
 </template>
 
 <script>
+import PickerHeader from './PickerHeader.vue'
+import PickerCells from './PickerCells.vue'
 import pickerMixin from '@/mixins/pickerMixin.js'
 import { langYearSuffix } from '../utils/DateUtils'
 import DisabledDate from '@/utils/DisabledDate'
 
 export default {
   name: 'PickerYear',
+  components: { PickerHeader, PickerCells },
   mixins: [pickerMixin],
   props: {
     highlighted: {

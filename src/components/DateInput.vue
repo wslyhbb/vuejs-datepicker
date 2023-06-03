@@ -61,7 +61,9 @@ export default {
   name: 'DateInput',
   mixins: [inputProps],
   props: {
-    language: Object,
+    language: {
+      type: Object
+    },
     openDate: Date,
     parseTypedDate: Function,
     resetTypedDate: [Date],

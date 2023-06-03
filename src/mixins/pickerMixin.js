@@ -1,9 +1,7 @@
-import PickerHeader from '@/components/PickerHeader.vue'
 import { makeDateUtils, rtlLangs } from '@/utils/DateUtils'
 import DisabledDate from '@/utils/DisabledDate'
 
 export default {
-  components: { PickerHeader },
   props: {
     allowedToShowView: {
       type: Function,
