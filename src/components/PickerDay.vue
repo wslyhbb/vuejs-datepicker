@@ -13,7 +13,7 @@
         {{ pageTitleDay }}
       </span>
     </picker-header>
-    <div :class="isRtl ? 'flex-rtl' : ''">
+    <div :class="{ 'flex-rtl': isRtl }">
       <span class="cell day-header" v-for="d in daysOfWeek" :key="d.timestamp">{{ d }}</span>
       <span class="cell day" tabindex="0"
           v-for="day in days"
@@ -281,11 +281,15 @@ export default {
     dayClasses (day) {
       return {
         blank: day.date === '',
-        selected: day.isSelected,
+        selected: this.showEdgeDates
+          ? day.isSelected
+          : day.isSelected && !day.isPreviousMonth && !day.isNextMonth,
         disabled: day.isDisabled,
         highlighted: day.isHighlighted,
         muted: day.isPreviousMonth || day.isNextMonth,
-        today: day.isToday,
+        today: this.showEdgeDates
+          ? day.isToday
+          : day.isToday && !day.isPreviousMonth && !day.isNextMonth,
         weekend: day.isWeekend,
         sat: day.isSaturday,
         sun: day.isSunday,

@@ -1,6 +1,6 @@
 import PickerDay from '@/components/PickerDay.vue'
 import { mount } from '@vue/test-utils'
-import { enGB } from 'date-fns/locale'
+import { enGB, mn } from 'date-fns/locale'
 
 describe('PickerDay: DOM', () => {
   let wrapper
@@ -55,9 +55,117 @@ describe('PickerDay: DOM', () => {
     expect(wrapper.vm.currMonthName).toEqual('February')
   })
 
+  it('displays page title correctly', async () => {
+    expect(wrapper.vm.pageTitleDay).toEqual('Feb 2018')
+
+    await wrapper.setProps({
+      language: mn // Mongolian has dates in ymd format
+    })
+
+    expect(wrapper.vm.pageTitleDay).toEqual('2018 2-р сар')
+  })
+
   it('emits show year calendar event when clicked on the year', () => {
     const yearBtn = wrapper.find('.day__month_btn')
     yearBtn.trigger('click')
     expect(wrapper.emitted().showMonthCalendar).toBeTruthy()
+  })
+
+  it('does not display edge dates by default', () => {
+    const cells = wrapper.findAll('span.cell.day')
+    const firstCell = cells.at(0)
+    const lastCell = cells.at(34)
+
+    expect(firstCell.text()).toBe('')
+    expect(lastCell.text()).toBe('')
+  })
+
+  it('displays edge dates when show-edge-dates = true', async () => {
+    await wrapper.setProps({
+      showEdgeDates: true
+    })
+
+    const cells = wrapper.findAll('span.cell.day')
+    const firstCell = cells.at(0)
+    const lastCell = cells.at(34)
+
+    expect(firstCell.text()).toBe('28')
+    expect(lastCell.text()).toBe('3')
+  })
+
+  it('selects an edge date from the previous month', async () => {
+    await wrapper.setProps({
+      showEdgeDates: true
+    })
+
+    const cells = wrapper.findAll('span.cell.day')
+    const firstCell = cells.at(0)
+
+    await firstCell.trigger('click')
+
+    expect(wrapper.emitted().selectDate[0][0].date).toBe(28)
+  })
+
+  it('selects an edge date from the next month', async () => {
+    await wrapper.setProps({
+      showEdgeDates: true
+    })
+
+    const cells = wrapper.findAll('span.cell.day')
+    const lastCell = cells.at(34)
+
+    await lastCell.trigger('click')
+
+    expect(wrapper.emitted().selectDate[0][0].date).toBe(3)
+  })
+
+  it("only highlights today's edge date if shown", async () => {
+    const day = {
+      date: 1,
+      isToday: true,
+      isPreviousMonth: false,
+      isNextMonth: true
+    }
+
+    await wrapper.setProps({
+      showEdgeDates: true
+    })
+
+    let dayClasses = wrapper.vm.dayClasses(day)
+
+    expect(dayClasses.today).toBeTruthy()
+
+    await wrapper.setProps({
+      showEdgeDates: false
+    })
+
+    dayClasses = wrapper.vm.dayClasses(day)
+
+    expect(dayClasses.today).toBeFalsy()
+  })
+
+  it('only highlights selected edge date if shown', async () => {
+    const day = {
+      date: 1,
+      isSelected: true,
+      isPreviousMonth: false,
+      isNextMonth: true
+    }
+
+    await wrapper.setProps({
+      showEdgeDates: true
+    })
+
+    let dayClasses = wrapper.vm.dayClasses(day)
+
+    expect(dayClasses.selected).toBeTruthy()
+
+    await wrapper.setProps({
+      showEdgeDates: false
+    })
+
+    dayClasses = wrapper.vm.dayClasses(day)
+
+    expect(dayClasses.selected).toBeFalsy()
   })
 })
