@@ -1,5 +1,6 @@
 <template>
-  <div :class="[calendarClass, 'vdp-datepicker__calendar']" v-show="showMonthView" :style="calendarStyle" @mousedown.prevent>
+  <div :class="[calendarClass, 'vdp-datepicker__calendar']"
+       v-show="showMonthView" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
     <picker-header
       :is-next-disabled="isNextDisabled"
@@ -12,23 +13,27 @@
         {{ pageTitleMonth }}
       </span>
     </picker-header>
-    <span class="cell month" tabindex="0"
-      v-for="month in months"
-      :key="month.timestamp"
-      :class="{'selected': month.isSelected, 'disabled': month.isDisabled}"
-      @click.stop="selectMonth(month)"
-      @keypress.enter="selectMonth(month)"
-      @keypress.space="selectMonth(month)">{{ month.month }}</span>
+    <picker-cells
+      ref="cells"
+      v-slot="{ cell }"
+      :cells="months"
+      view="month"
+      @select="selectMonth($event)">
+      {{ cell.month }}
+    </picker-cells>
   </div>
 </template>
 
 <script>
+import PickerHeader from './PickerHeader.vue'
+import PickerCells from './PickerCells.vue'
 import pickerMixin from '@/mixins/pickerMixin.js'
 import { langYearSuffix } from '../utils/DateUtils'
 import DisabledDate from '@/utils/DisabledDate'
 
 export default {
   name: 'PickerMonth',
+  components: { PickerHeader, PickerCells },
   mixins: [pickerMixin],
   props: {
     showMonthView: Boolean
