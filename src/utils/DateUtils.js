@@ -145,14 +145,27 @@ const utils = {
   getDayFromAbbr (abbr) {
     const now = new Date()
     const dates = [0, 1, 2, 3, 4, 5, 6]
-    const days = dates.map((day) => format(
+    let days = dates.map((day) => format(
       setDay(now, day), 'ccc',
-      { locale: this.language }))
+      { locale: enUS }))
     for (let i = 0; i < days.length; i++) {
       if (abbr.toLowerCase() === days[i].toLowerCase()) {
         return i
       }
     }
+
+    // check if day is in language days
+    if (this.language !== enUS) {
+      days = dates.map((day) => format(
+        setDay(now, day), 'ccc',
+        { locale: this.language }))
+      for (let i = 0; i < days.length; i++) {
+        if (abbr.toLowerCase() === days[i].toLowerCase()) {
+          return i
+        }
+      }
+    }
+
     throw TypeError('Invalid week day')
   },
 
