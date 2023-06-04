@@ -11,14 +11,12 @@ describe('Datepicker unmounted', () => {
     expect(typeof Datepicker.data).toEqual('function')
     const defaultData = Datepicker.data()
     expect(defaultData.selectedDate).toEqual(null)
-    expect(defaultData.showDayView).toEqual(false)
-    expect(defaultData.showMonthView).toEqual(false)
-    expect(defaultData.showYearView).toEqual(false)
+    expect(defaultData.view).toEqual('')
     expect(defaultData.calendarHeight).toEqual(0)
   })
 })
 
-describe('Datepicker mounted', () => {
+describe('Datepicker shallowMounted', () => {
   let wrapper
   let date
   beforeEach(() => {
@@ -29,6 +27,10 @@ describe('Datepicker mounted', () => {
         value: date
       }
     })
+  })
+
+  afterEach(() => {
+    wrapper.unmount()
   })
 
   it('correctly sets the value when created', () => {
@@ -80,22 +82,22 @@ describe('Datepicker mounted', () => {
     wrapper.vm.close()
     expect(wrapper.vm.isOpen).toEqual(false)
 
-    wrapper.vm.showMonthCalendar()
+    wrapper.vm.setView('day')
     expect(wrapper.vm.isOpen).toEqual(true)
 
     wrapper.vm.close()
     expect(wrapper.vm.isOpen).toEqual(false)
 
-    wrapper.vm.showYearCalendar()
+    wrapper.vm.setView('month')
     expect(wrapper.vm.isOpen).toEqual(true)
 
     wrapper.vm.close()
     expect(wrapper.vm.isOpen).toEqual(false)
 
-    wrapper.vm.showDayCalendar()
+    wrapper.vm.setView('year')
     expect(wrapper.vm.isOpen).toEqual(true)
-    // calendar is already open so acts as a toggle
-    wrapper.vm.showCalendar()
+
+    wrapper.vm.close()
     expect(wrapper.vm.isOpen).toEqual(false)
   })
 
@@ -107,29 +109,32 @@ describe('Datepicker mounted', () => {
 
   it('can select a day', () => {
     const date = new Date(2016, 9, 1)
+
+    wrapper.vm.setView('day')
     wrapper.vm.selectDate({ timestamp: date.getTime() })
     expect(wrapper.vm.pageTimestamp).toEqual(date.getTime())
     expect(wrapper.vm.selectedDate.getMonth()).toEqual(9)
-    expect(wrapper.vm.showDayView).toEqual(false)
     expect(wrapper.emitted().selected).toBeTruthy()
   })
 
   it('can select a month', () => {
     const date = new Date(2016, 9, 9)
+
+    wrapper.vm.setView('month')
     wrapper.vm.selectMonth({ timestamp: date.getTime() })
     expect(wrapper.emitted().changedMonth).toBeTruthy()
     expect(wrapper.emitted().changedMonth[0][0].timestamp).toEqual(date.getTime())
     expect(new Date(wrapper.vm.pageTimestamp).getMonth()).toEqual(date.getMonth())
-    expect(wrapper.vm.showDayView).toEqual(true)
   })
 
   it('can select a year', () => {
     const date = new Date(2018, 9, 9)
+
+    wrapper.vm.setView('year')
     wrapper.vm.selectYear({ timestamp: date.getTime() })
     expect(wrapper.emitted().changedYear).toBeTruthy()
     expect(wrapper.emitted().changedYear[0][0].timestamp).toEqual(date.getTime())
     expect(new Date(wrapper.vm.pageTimestamp).getFullYear()).toEqual(date.getFullYear())
-    expect(wrapper.vm.showMonthView).toEqual(true)
   })
 
   it('resets the default page date', () => {
@@ -284,9 +289,7 @@ describe('Datepicker with initial-view', () => {
     wrapper = shallowMount(Datepicker)
     wrapper.vm.showCalendar()
     expect(wrapper.vm.computedInitialView).toEqual('day')
-    expect(wrapper.vm.showDayView).toEqual(true)
-    expect(wrapper.vm.showMonthView).toEqual(false)
-    expect(wrapper.vm.showYearView).toEqual(false)
+    expect(wrapper.vm.view).toEqual('day')
   })
 
   it('should open in Month view', () => {
@@ -297,9 +300,7 @@ describe('Datepicker with initial-view', () => {
     })
     wrapper.vm.showCalendar()
     expect(wrapper.vm.computedInitialView).toEqual('month')
-    expect(wrapper.vm.showDayView).toEqual(false)
-    expect(wrapper.vm.showMonthView).toEqual(true)
-    expect(wrapper.vm.showYearView).toEqual(false)
+    expect(wrapper.vm.view).toEqual('month')
   })
 
   it('should open in Year view', () => {
@@ -310,8 +311,6 @@ describe('Datepicker with initial-view', () => {
     })
     wrapper.vm.showCalendar()
     expect(wrapper.vm.computedInitialView).toEqual('year')
-    expect(wrapper.vm.showDayView).toEqual(false)
-    expect(wrapper.vm.showMonthView).toEqual(false)
-    expect(wrapper.vm.showYearView).toEqual(true)
+    expect(wrapper.vm.view).toEqual('year')
   })
 })

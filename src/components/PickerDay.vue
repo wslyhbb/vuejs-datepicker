@@ -9,7 +9,7 @@
       @page-change="changePage($event)">
       <span class="day__month_btn" tabindex="0"
             :class="allowedToShowView('month') ? 'up' : ''"
-            @click="showMonthCalendar">
+            @click="$emit('setView', 'month')">
         {{ pageTitleDay }}
       </span>
     </picker-header>
@@ -227,12 +227,6 @@ export default {
         return false
       }
       this.$emit('selectDate', date)
-    },
-    /**
-     * Emit an event to show the month picker
-     */
-    showMonthCalendar () {
-      this.$emit('showMonthCalendar')
     },
     /**
      * Change the page month

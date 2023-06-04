@@ -9,7 +9,7 @@
       @page-change="changePage($event)">
       <span class="month__year_btn" tabindex="0"
             :class="allowedToShowView('year') ? 'up' : ''"
-            @click="showYearCalendar">
+            @click="$emit('setView', 'year')">
         {{ pageTitleMonth }}
       </span>
     </picker-header>
@@ -129,12 +129,6 @@ export default {
           this.changeYear(incrementBy)
         }
       }
-    },
-    /**
-     * Emits an event that shows the year calendar
-     */
-    showYearCalendar () {
-      this.$emit('showYearCalendar')
     },
     /**
      * Whether the selected date is in this month

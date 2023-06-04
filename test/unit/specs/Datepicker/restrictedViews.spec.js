@@ -42,36 +42,41 @@ describe('Datepicker with restricted views', () => {
     expect(date.getFullYear()).toEqual(wrapper.vm.selectedDate.getFullYear())
   })
 
-  it('should only allow views in min-max range', () => {
+  it('should only allow views in min-max range', async () => {
     wrapper = mount(Datepicker, {
       propsData: {
         minimumView: 'day',
         maximumView: 'month'
       }
     })
+    await wrapper.vm.$nextTick()
+
+    wrapper.vm.showCalendar()
+
     expect(wrapper.vm.allowedToShowView('year')).toEqual(false)
     expect(wrapper.vm.allowedToShowView('day')).toEqual(true)
     expect(wrapper.vm.allowedToShowView('month')).toEqual(true)
-    expect(wrapper.vm.showYearCalendar()).toEqual(false)
+    expect(wrapper.vm.view).toEqual('day')
 
-    wrapper = mount(Datepicker, {
-      propsData: {
-        minimumView: 'month',
-        maximumView: 'month'
-      }
+    const upButton = wrapper.find('.day__month_btn')
+    await upButton.trigger('click')
+    expect(wrapper.vm.view).toEqual('month')
+
+    await wrapper.setProps({
+      minimumView: 'month',
+      maximumView: 'month'
     })
+
     expect(wrapper.vm.allowedToShowView('day')).toEqual(false)
     expect(wrapper.vm.allowedToShowView('year')).toEqual(false)
     expect(wrapper.vm.allowedToShowView('month')).toEqual(true)
-    expect(wrapper.vm.showDayCalendar()).toEqual(false)
-    expect(wrapper.vm.showYearCalendar()).toEqual(false)
+    expect(wrapper.vm.view).toEqual('month')
 
-    wrapper = mount(Datepicker, {
-      propsData: {
-        minimumView: 'day',
-        maximumView: 'year'
-      }
+    await wrapper.setProps({
+      minimumView: 'day',
+      maximumView: 'year'
     })
+
     expect(wrapper.vm.allowedToShowView('day')).toEqual(true)
     expect(wrapper.vm.allowedToShowView('year')).toEqual(true)
     expect(wrapper.vm.allowedToShowView('month')).toEqual(true)
@@ -102,7 +107,7 @@ describe('Datepicker with restricted views', () => {
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar').length).toEqual(1)
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar .cell.month').length).toEqual(0)
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar .cell.year').length).toEqual(0)
-    expect(wrapper.vm.showMonthCalendar()).toEqual(false)
+    expect(wrapper.vm.view).not.toEqual('month')
 
     wrapper = mount(Datepicker, {
       propsData: {
