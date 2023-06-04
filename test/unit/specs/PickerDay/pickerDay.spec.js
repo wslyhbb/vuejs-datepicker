@@ -65,10 +65,10 @@ describe('PickerDay: DOM', () => {
     expect(wrapper.vm.pageTitleDay).toEqual('2018 2-р сар')
   })
 
-  it('emits show year calendar event when clicked on the year', () => {
+  it('emits set-view event with `month` when clicked on the month', async () => {
     const yearBtn = wrapper.find('.day__month_btn')
     yearBtn.trigger('click')
-    expect(wrapper.emitted().showMonthCalendar).toBeTruthy()
+    expect(wrapper.emitted('setView')[0][0]).toBe('month')
   })
 
   it('does not display edge dates by default', () => {

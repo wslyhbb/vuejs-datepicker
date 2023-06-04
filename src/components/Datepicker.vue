@@ -63,14 +63,14 @@
       :mondayFirst="mondayFirst"
       :pageDate="pageDate"
       :selectedDate="selectedDate"
-      :showDayView="showDayView"
+      :showDayView="view === 'day'"
       :showEdgeDates="showEdgeDates"
       :showFullMonthName="fullMonthName"
       :twoLetterAbbr="twoLetterAbbr"
       :use-utc="useUtc"
       @changedMonth="handleChangedMonthFromDayPicker"
       @selectDate="selectDate"
-      @showMonthCalendar="showMonthCalendar"
+      @setView="setView"
       @selectedDisabled="selectDisabledDate">
       <template v-slot:beforeCalendarHeader>
         <slot name="beforeCalendarHeader"></slot>
@@ -82,7 +82,7 @@
       v-if="allowedToShowView('month')"
       :pageDate="pageDate"
       :selectedDate="selectedDate"
-      :showMonthView="showMonthView"
+      :showMonthView="view === 'month'"
       :allowedToShowView="allowedToShowView"
       :disabledDates="disabledDates"
       :calendarClass="calendarClass"
@@ -90,7 +90,7 @@
       :language="language"
       :use-utc="useUtc"
       @selectMonth="selectMonth"
-      @showYearCalendar="showYearCalendar"
+      @setView="setView"
       @changedYear="setPageDate">
       <template v-slot:beforeCalendarHeader>
         <slot name="beforeCalendarHeader"></slot>
@@ -102,7 +102,7 @@
       v-if="allowedToShowView('year')"
       :pageDate="pageDate"
       :selectedDate="selectedDate"
-      :showYearView="showYearView"
+      :showYearView="view === 'year'"
       :allowedToShowView="allowedToShowView"
       :disabledDates="disabledDates"
       :calendarClass="calendarClass"
@@ -202,6 +202,7 @@ export default {
     const startDate = this.openDate ? new Date(this.openDate) : new Date()
     const constructedDateUtils = makeDateUtils(this.useUtc, this.language)
     const pageTimestamp = constructedDateUtils.setDate(startDate, 1)
+
     return {
       /*
        * Vue cannot observe changes to a Date Object so date must be stored as a timestamp
@@ -215,18 +216,12 @@ export default {
        */
       selectedDate: null,
       /*
-       * Flags to show calendar views
-       * {Boolean}
-       */
-      showDayView: false,
-      showMonthView: false,
-      showYearView: false,
-      /*
        * Positioning
        */
       calendarHeight: 0,
       resetTypedDate: new Date(),
-      utils: constructedDateUtils
+      utils: constructedDateUtils,
+      view: ''
     }
   },
   watch: {
@@ -264,7 +259,7 @@ export default {
       }
     },
     isOpen () {
-      return this.showDayView || this.showMonthView || this.showYearView
+      return this.view !== ''
     },
     isInline () {
       return !!this.inline
@@ -294,7 +289,7 @@ export default {
         return false
       }
       if (this.isOpen) {
-        return this.close(true)
+        return this.close()
       }
       this.setInitialView()
       this.$emit('opened')
@@ -305,19 +300,12 @@ export default {
     setInitialView () {
       const initialView = this.computedInitialView
       if (!this.allowedToShowView(initialView)) {
-        throw new Error(`initialView '${this.initialView}' cannot be rendered based on minimum '${this.minimumView}' and maximum '${this.maximumView}'`)
+        throw new Error(
+          `initialView '${this.initialView}' cannot be rendered based on minimum '${this.minimumView}' and maximum '${this.maximumView}'`
+        )
       }
-      switch (initialView) {
-        case 'year':
-          this.showYearCalendar()
-          break
-        case 'month':
-          this.showMonthCalendar()
-          break
-        default:
-          this.showDayCalendar()
-          break
-      }
+
+      this.setView(initialView)
     },
     /**
      * Are we allowed to show a specific picker view?
@@ -331,42 +319,6 @@ export default {
       const viewIndex = views.indexOf(view)
 
       return viewIndex >= minimumViewIndex && viewIndex <= maximumViewIndex
-    },
-    /**
-     * Show the day picker
-     * @return {Boolean}
-     */
-    showDayCalendar () {
-      if (!this.allowedToShowView('day')) {
-        return false
-      }
-      this.close()
-      this.showDayView = true
-      return true
-    },
-    /**
-     * Show the month picker
-     * @return {Boolean}
-     */
-    showMonthCalendar () {
-      if (!this.allowedToShowView('month')) {
-        return false
-      }
-      this.close()
-      this.showMonthView = true
-      return true
-    },
-    /**
-     * Show the year picker
-     * @return {Boolean}
-     */
-    showYearCalendar () {
-      if (!this.allowedToShowView('year')) {
-        return false
-      }
-      this.close()
-      this.showYearView = true
-      return true
     },
     /**
      * Set the selected date
@@ -395,7 +347,7 @@ export default {
     selectDate (date) {
       this.setDate(date.timestamp)
       if (!this.isInline) {
-        this.close(true)
+        this.close()
       }
       this.resetTypedDate = new Date()
     },
@@ -413,7 +365,7 @@ export default {
       if (this.allowedToShowView('day')) {
         this.setPageDate(date)
         this.$emit('changedMonth', month)
-        this.showDayCalendar()
+        this.setView('day')
       } else {
         this.selectDate(month)
       }
@@ -426,7 +378,7 @@ export default {
       if (this.allowedToShowView('month')) {
         this.setPageDate(date)
         this.$emit('changedYear', year)
-        this.showMonthCalendar()
+        this.setView('month')
       } else {
         this.selectDate(year)
       }
@@ -447,6 +399,15 @@ export default {
       }
       this.selectedDate = date
       this.setPageDate(date)
+    },
+    /**
+     * Set the picker view
+     * @param {String} view
+     */
+    setView (view) {
+      if (this.allowedToShowView(view)) {
+        this.view = view
+      }
     },
     /**
      * Sets the date that the calendar should open on
@@ -475,15 +436,12 @@ export default {
       this.setDate(date.getTime())
     },
     /**
-     * Close all calendar layers
-     * @param {Boolean} emitEvent - emit close event
+     * Close the calendar
      */
-    close (emitEvent) {
-      this.showDayView = this.showMonthView = this.showYearView = false
+    close () {
+      this.view = ''
       if (!this.isInline) {
-        if (emitEvent) {
-          this.$emit('closed')
-        }
+        this.$emit('closed')
         document.removeEventListener('click', this.clickOutside, false)
       }
     },
@@ -509,13 +467,13 @@ export default {
         const moveBy = 1000 * 60 * 60 * 24 * 7
         if (this.selectedDate === null) {
           this.setDate(this.pageTimestamp)
-        } else if (this.showDayView) {
+        } else if (this.view === 'day') {
           this.setDate(this.selectedDate.getTime() - moveBy)
-        } else if (this.showMonthView) {
+        } else if (this.view === 'month') {
           const newTime = new Date(this.selectedDate.getTime())
           newTime.setMonth(newTime.getMonth() - 3)
           this.setDate(newTime.getTime())
-        } else if (this.showYearView) {
+        } else if (this.view === 'year') {
           const newTime = new Date(this.selectedDate.getTime())
           newTime.setFullYear(newTime.getFullYear() - 3)
           this.setDate(newTime.getTime())
@@ -527,13 +485,13 @@ export default {
         const moveBy = 1000 * 60 * 60 * 24 * 7
         if (this.selectedDate === null) {
           this.setDate(this.pageTimestamp)
-        } else if (this.showDayView) {
+        } else if (this.view === 'day') {
           this.setDate(this.selectedDate.getTime() + moveBy)
-        } else if (this.showMonthView) {
+        } else if (this.view === 'month') {
           const newTime = new Date(this.selectedDate.getTime())
           newTime.setMonth(newTime.getMonth() + 3)
           this.setDate(newTime.getTime())
-        } else if (this.showYearView) {
+        } else if (this.view === 'year') {
           const newTime = new Date(this.selectedDate.getTime())
           newTime.setFullYear(newTime.getFullYear() + 3)
           this.setDate(newTime.getTime())
@@ -547,13 +505,13 @@ export default {
           moveBy = -moveBy
         }
         if (this.selectedDate !== null) {
-          if (this.showDayView) {
+          if (this.view === 'day') {
             this.setDate(this.selectedDate.getTime() - moveBy)
-          } else if (this.showMonthView) {
+          } else if (this.view === 'month') {
             const newTime = new Date(this.selectedDate.getTime())
             newTime.setMonth(newTime.getMonth() - 1)
             this.setDate(newTime.getTime())
-          } else if (this.showYearView) {
+          } else if (this.view === 'year') {
             const newTime = new Date(this.selectedDate.getTime())
             newTime.setFullYear(newTime.getFullYear() - 1)
             this.setDate(newTime.getTime())
@@ -568,13 +526,13 @@ export default {
           moveBy = -moveBy
         }
         if (this.selectedDate !== null) {
-          if (this.showDayView) {
+          if (this.view === 'day') {
             this.setDate(this.selectedDate.getTime() + moveBy)
-          } else if (this.showMonthView) {
+          } else if (this.view === 'month') {
             const newTime = new Date(this.selectedDate.getTime())
             newTime.setMonth(newTime.getMonth() + 1)
             this.setDate(newTime.getTime())
-          } else if (this.showYearView) {
+          } else if (this.view === 'year') {
             const newTime = new Date(this.selectedDate.getTime())
             newTime.setFullYear(newTime.getFullYear() + 1)
             this.setDate(newTime.getTime())

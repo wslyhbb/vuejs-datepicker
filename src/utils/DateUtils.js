@@ -308,6 +308,3 @@ export const langYearSuffix = {
   ja: '年',
   ko: '년'
 }
-
-// eslint-disable-next-line
-;

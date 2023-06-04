@@ -8,7 +8,6 @@ describe('PickerDay: disabled', () => {
     wrapper = mount(PickerDay, {
       propsData: {
         allowedToShowView: () => true,
-        showMonthCalendar: () => {},
 
         pageDate: new Date(2016, 9, 1),
         language: enGB
