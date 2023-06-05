@@ -7,7 +7,6 @@ describe('PickerDay: Set first day of week', () => {
   beforeEach(() => {
     wrapper = shallowMount(PickerDay, {
       propsData: {
-        allowedToShowView: () => true,
         firstDayOfWeek: 'mon',
         language: enGB,
         pageDate: new Date(2018, 1, 1)
@@ -53,7 +52,6 @@ describe('PickerDay: Datepicker with Saturday as first day of week', () => {
   beforeEach(() => {
     wrapper = shallowMount(PickerDay, {
       propsData: {
-        allowedToShowView: () => true,
         firstDayOfWeek: 'sat',
         language: enGB,
         pageDate: new Date(2018, 1, 1)

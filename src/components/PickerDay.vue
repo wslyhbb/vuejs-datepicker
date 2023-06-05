@@ -1,6 +1,6 @@
 <template>
   <div :class="[calendarClass, 'vdp-datepicker__calendar']"
-       v-show="showDayView" :style="calendarStyle" @mousedown.prevent>
+       v-show="visible" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader" />
     <picker-header
       :is-next-disabled="isNextDisabled"
@@ -8,7 +8,7 @@
       :is-rtl="isRtl"
       @page-change="changePage($event)">
       <span class="day__month_btn" tabindex="0"
-            :class="allowedToShowView('month') ? 'up' : ''"
+            :class="{ 'up': !isUpDisabled }"
             @click="$emit('setView', 'month')">
         {{ pageTitleDay }}
       </span>
@@ -21,7 +21,7 @@
         :cells="days"
         :show-edge-dates="showEdgeDates"
         view="day"
-        @select="selectDate($event)">
+        @select="select($event)">
         {{ dayCellContent(cell) }}
       </picker-cells>
     </div>
@@ -58,10 +58,6 @@ export default {
       type: Boolean,
       default: false
     },
-    showDayView: {
-      type: Boolean,
-      default: false
-    },
     showEdgeDates: {
       type: Boolean,
       default: false
@@ -76,16 +72,12 @@ export default {
     }
   },
   emits: {
-    changedMonth: (date) => {
-      return typeof date === 'object'
+    pageChange: (config) => {
+      return typeof config === 'object'
     },
-    selectDate: (date) => {
-      return typeof date === 'object'
-    },
-    selectedDisabled: (date) => {
-      return typeof date === 'object'
-    },
-    showMonthCalendar: null
+    setView: (view) => {
+      return view === 'month'
+    }
   },
   computed: {
     /**
@@ -221,13 +213,6 @@ export default {
 
       return new Date(this.utils.setDate(pageDate, 1 - this.daysFromPrevMonth))
     },
-    selectDate (date) {
-      if (date.isDisabled) {
-        this.$emit('selectedDisabled', date)
-        return false
-      }
-      this.$emit('selectDate', date)
-    },
     /**
      * Change the page month
      * @param {Number} incrementBy
@@ -235,7 +220,7 @@ export default {
     changeMonth (incrementBy) {
       const date = this.pageDate
       this.utils.setMonth(date, this.utils.getMonth(date) + incrementBy)
-      this.$emit('changedMonth', date)
+      this.$emit('pageChange', date)
     },
     /**
      * Changes the page up or down

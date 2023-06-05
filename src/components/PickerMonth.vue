@@ -1,6 +1,6 @@
 <template>
   <div :class="[calendarClass, 'vdp-datepicker__calendar']"
-       v-show="showMonthView" :style="calendarStyle" @mousedown.prevent>
+       v-show="visible" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
     <picker-header
       :is-next-disabled="isNextDisabled"
@@ -8,7 +8,7 @@
       :is-rtl="isRtl"
       @page-change="changePage($event)">
       <span class="month__year_btn" tabindex="0"
-            :class="allowedToShowView('year') ? 'up' : ''"
+            :class="{ 'up': !isUpDisabled }"
             @click="$emit('setView', 'year')">
         {{ pageTitleMonth }}
       </span>
@@ -18,7 +18,7 @@
       v-slot="{ cell }"
       :cells="months"
       view="month"
-      @select="selectMonth($event)">
+      @select="select($event)">
       {{ cell.month }}
     </picker-cells>
   </div>
@@ -35,17 +35,13 @@ export default {
   name: 'PickerMonth',
   components: { PickerHeader, PickerCells },
   mixins: [pickerMixin],
-  props: {
-    showMonthView: Boolean
-  },
   emits: {
-    changedYear: (date) => {
-      return typeof date === 'object'
+    pageChange: (config) => {
+      return typeof config === 'object'
     },
-    selectMonth: (date) => {
-      return typeof date === 'object'
-    },
-    showYearCalendar: null
+    setView: (view) => {
+      return view === 'year'
+    }
   },
   computed: {
     /**
@@ -97,23 +93,13 @@ export default {
   },
   methods: {
     /**
-     * Emits a selectMonth event
-     * @param {Object} month
-     */
-    selectMonth (month) {
-      if (month.isDisabled) {
-        return false
-      }
-      this.$emit('selectMonth', month)
-    },
-    /**
      * Changes the year up or down
      * @param {Number} incrementBy
      */
     changeYear (incrementBy) {
       const date = this.pageDate
       this.utils.setFullYear(date, this.utils.getFullYear(date) + incrementBy)
-      this.$emit('changedYear', date)
+      this.$emit('pageChange', date)
     },
     /**
      * Changes the page up or down

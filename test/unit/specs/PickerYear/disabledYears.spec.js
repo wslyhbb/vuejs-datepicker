@@ -6,8 +6,6 @@ describe('PickerYear', () => {
   beforeEach(() => {
     wrapper = mount(PickerYear, {
       propsData: {
-        allowedToShowView: () => true,
-
         pageDate: new Date(2018, 3, 1),
         selectedDate: new Date(2018, 3, 19),
         disabledDates: {
@@ -22,9 +20,9 @@ describe('PickerYear', () => {
     wrapper.unmount()
   })
 
-  it('cant select a disabled year', () => {
-    const year = { isDisabled: true }
-    expect(wrapper.vm.selectYear(year)).toEqual(false)
+  it('cannot select a disabled year', () => {
+    wrapper.vm.select({ isDisabled: true })
+    expect(wrapper.emitted().selectedDisabled).toBeTruthy()
   })
 
   it('can\'t change decade when previous or next decades are disabled', () => {

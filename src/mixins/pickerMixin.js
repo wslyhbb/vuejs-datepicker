@@ -3,16 +3,16 @@ import DisabledDate from '@/utils/DisabledDate'
 
 export default {
   props: {
-    allowedToShowView: {
-      type: Function,
-      default () {}
-    },
     calendarClass: [String, Object, Array],
     calendarStyle: {
       type: Object
     },
     disabledDates: {
       type: Object
+    },
+    isUpDisabled: {
+      type: Boolean,
+      default: false
     },
     language: {
       type: Object
@@ -28,6 +28,18 @@ export default {
     useUtc: {
       type: Boolean,
       default: false
+    },
+    visible: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: {
+    select: (cell) => {
+      return typeof cell === 'object'
+    },
+    selectedDisabled: (date) => {
+      return typeof date === 'object'
     }
   },
   data () {
@@ -70,6 +82,19 @@ export default {
      */
     pageYear () {
       return this.utils.getFullYear(this.pageDate)
+    }
+  },
+  methods: {
+    /**
+     * Determines which transition to use (for edge dates) and emits a 'select' event
+     * @param {Object} cell
+     */
+    select (cell) {
+      if (cell.isDisabled) {
+        this.$emit('selectedDisabled', cell)
+      } else {
+        this.$emit('select', cell)
+      }
     }
   }
 }

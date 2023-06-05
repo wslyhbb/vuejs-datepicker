@@ -1,6 +1,6 @@
 <template>
   <div :class="[calendarClass, 'vdp-datepicker__calendar']"
-       v-show="showYearView" :style="calendarStyle" @mousedown.prevent>
+       v-show="visible" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
     <picker-header
       :is-next-disabled="isNextDisabled"
@@ -14,7 +14,7 @@
       v-slot="{ cell }"
       :cells="years"
       view="year"
-      @select="selectYear($event)">
+      @select="select($event)">
       {{ cell.year }}
     </picker-cells>
   </div>
@@ -37,15 +37,11 @@ export default {
       default () {
         return {}
       }
-    },
-    showYearView: Boolean
+    }
   },
   emits: {
-    changedDecade: (date) => {
-      return typeof date === 'object'
-    },
-    selectYear: (date) => {
-      return typeof date === 'object'
+    pageChange: (config) => {
+      return typeof config === 'object'
     }
   },
   computed: {
@@ -111,16 +107,10 @@ export default {
     }
   },
   methods: {
-    selectYear (year) {
-      if (year.isDisabled) {
-        return false
-      }
-      this.$emit('selectYear', year)
-    },
     changeYear (incrementBy) {
       const date = this.pageDate
       this.utils.setFullYear(date, this.utils.getFullYear(date) + incrementBy)
-      this.$emit('changedDecade', date)
+      this.$emit('pageChange', date)
     },
     /**
      * Changes the page up or down

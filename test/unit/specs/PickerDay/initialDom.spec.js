@@ -7,8 +7,6 @@ describe('PickerDay: DOM', () => {
   beforeEach(() => {
     wrapper = shallowMount(PickerDay, {
       propsData: {
-        allowedToShowView: () => true,
-
         language: enGB,
         pageDate: new Date(2018, 1, 1),
         selectedDate: new Date(2018, 2, 24)

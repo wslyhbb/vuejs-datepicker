@@ -3,53 +3,56 @@ import Datepicker from '@/components/Datepicker.vue'
 
 describe('Datepicker with restricted views', () => {
   let wrapper
-  it('should default initialView to minimumView', () => {
-    wrapper = mount(Datepicker, {
-      propsData: {
-        minimumView: 'month',
-        maximumView: 'month'
-      }
+  beforeEach(() => {
+    wrapper = mount(Datepicker)
+  })
+
+  afterEach(() => {
+    wrapper.unmount()
+  })
+
+  it('should default initialView to minimumView', async () => {
+    await wrapper.setProps({
+      minimumView: 'month'
     })
+
     expect(wrapper.vm.computedInitialView).toEqual('month')
   })
 
-  it('should save and close when selecting on minimum-view "month"', () => {
-    wrapper = mount(Datepicker, {
-      propsData: {
-        minimumView: 'month',
-        maximumView: 'year'
-      }
+  it('should save and close when selecting on minimum-view "month"', async () => {
+    await wrapper.setProps({
+      minimumView: 'month'
     })
     const date = new Date(2016, 9, 12)
-    wrapper.vm.selectYear({ timestamp: date.getTime() })
+
+    await wrapper.vm.setView('month')
     expect(wrapper.vm.isOpen).toEqual(true)
-    wrapper.vm.selectMonth({ timestamp: date.getTime() })
+
+    wrapper.vm.handleSelect({ timestamp: date.getTime() })
     expect(date.getFullYear()).toEqual(wrapper.vm.selectedDate.getFullYear())
     expect(date.getMonth()).toEqual(wrapper.vm.selectedDate.getMonth())
     expect(wrapper.vm.isOpen).toEqual(false)
   })
 
-  it('should save and close when selecting on minimum-view "year"', () => {
-    wrapper = mount(Datepicker, {
-      propsData: {
-        minimumView: 'year',
-        maximumView: 'year'
-      }
+  it('should save and close when selecting on minimum-view "year"', async () => {
+    await wrapper.setProps({
+      minimumView: 'year'
     })
     const date = new Date(2016, 9, 12)
-    wrapper.vm.selectYear({ timestamp: date.getTime() })
+
+    await wrapper.vm.setView('year')
+    expect(wrapper.vm.isOpen).toEqual(true)
+
+    wrapper.vm.handleSelect({ timestamp: date.getTime() })
     expect(wrapper.vm.isOpen).toEqual(false)
     expect(date.getFullYear()).toEqual(wrapper.vm.selectedDate.getFullYear())
   })
 
   it('should only allow views in min-max range', async () => {
-    wrapper = mount(Datepicker, {
-      propsData: {
-        minimumView: 'day',
-        maximumView: 'month'
-      }
+    await wrapper.setProps({
+      minimumView: 'day',
+      maximumView: 'month'
     })
-    await wrapper.vm.$nextTick()
 
     wrapper.vm.showCalendar()
 
@@ -82,13 +85,11 @@ describe('Datepicker with restricted views', () => {
     expect(wrapper.vm.allowedToShowView('month')).toEqual(true)
   })
 
-  it('should throw an error on disallowed initial views', () => {
-    wrapper = mount(Datepicker, {
-      propsData: {
-        minimumView: 'day',
-        maximumView: 'month',
-        initialView: 'year'
-      }
+  it('should throw an error on disallowed initial views', async () => {
+    await wrapper.setProps({
+      minimumView: 'day',
+      maximumView: 'month',
+      initialView: 'year'
     })
 
     expect(function () {
@@ -96,12 +97,10 @@ describe('Datepicker with restricted views', () => {
     }).toThrow()
   })
 
-  it('should not render unused views', () => {
-    wrapper = mount(Datepicker, {
-      propsData: {
-        minimumView: 'day',
-        maximumView: 'day'
-      }
+  it('should not render unused views', async () => {
+    await wrapper.setProps({
+      minimumView: 'day',
+      maximumView: 'day'
     })
     wrapper.vm.showCalendar()
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar').length).toEqual(1)
@@ -109,15 +108,14 @@ describe('Datepicker with restricted views', () => {
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar .cell.year').length).toEqual(0)
     expect(wrapper.vm.view).not.toEqual('month')
 
-    wrapper = mount(Datepicker, {
-      propsData: {
-        minimumView: 'month',
-        maximumView: 'year'
-      }
+    await wrapper.setProps({
+      minimumView: 'month',
+      maximumView: 'year'
     })
+    await wrapper.vm.close()
     wrapper.vm.showCalendar()
-    expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar').length).toEqual(2)
+    expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar').length).toEqual(1)
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar .cell.day').length).toEqual(0)
-    expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar .cell.year').length).toBeGreaterThan(0)
+    expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar .cell.year').length).toEqual(0)
   })
 })

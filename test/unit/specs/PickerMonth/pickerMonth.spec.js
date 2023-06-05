@@ -6,8 +6,6 @@ describe('PickerMonth', () => {
   beforeEach(() => {
     wrapper = mount(PickerMonth, {
       propsData: {
-        allowedToShowView: () => true,
-
         pageDate: new Date(2018, 1, 1),
         selectedDate: new Date(2018, 2, 24)
       }
@@ -40,19 +38,19 @@ describe('PickerMonth', () => {
 
   it('can set the next year', () => {
     wrapper.vm.changePage({ incrementBy: 1 })
-    expect(wrapper.emitted().changedYear[0][0].getFullYear()).toEqual(2019)
+    expect(wrapper.emitted().pageChange[0][0].getFullYear()).toEqual(2019)
   })
 
   it('can set the previous year', () => {
     wrapper.vm.changePage({ incrementBy: -1 })
-    expect(wrapper.emitted().changedYear[0][0].getFullYear()).toEqual(2017)
+    expect(wrapper.emitted().pageChange[0][0].getFullYear()).toEqual(2017)
   })
 
   it('emits date on selection', () => {
     const time = new Date().getTime()
-    wrapper.vm.selectMonth({ timestamp: time })
-    expect(wrapper.emitted().selectMonth).toBeTruthy()
-    expect(wrapper.emitted().selectMonth[0][0].timestamp).toEqual(time)
+    wrapper.vm.select({ timestamp: time })
+    expect(wrapper.emitted().select).toBeTruthy()
+    expect(wrapper.emitted().select[0][0].timestamp).toEqual(time)
   })
 
   it('emits set-view event with `year` when clicked on the year', () => {

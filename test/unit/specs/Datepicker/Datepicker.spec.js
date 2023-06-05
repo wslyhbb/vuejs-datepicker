@@ -1,6 +1,6 @@
+import { shallowMount, mount } from '@vue/test-utils'
 import Datepicker from '@/components/Datepicker.vue'
 import DateInput from '@/components/DateInput.vue'
-import { shallowMount, mount } from '@vue/test-utils'
 
 describe('Datepicker unmounted', () => {
   it('has a mounted hook', () => {
@@ -111,7 +111,7 @@ describe('Datepicker shallowMounted', () => {
     const date = new Date(2016, 9, 1)
 
     wrapper.vm.setView('day')
-    wrapper.vm.selectDate({ timestamp: date.getTime() })
+    wrapper.vm.handleSelect({ timestamp: date.getTime() })
     expect(wrapper.vm.pageTimestamp).toEqual(date.getTime())
     expect(wrapper.vm.selectedDate.getMonth()).toEqual(9)
     expect(wrapper.emitted().selected).toBeTruthy()
@@ -121,20 +121,20 @@ describe('Datepicker shallowMounted', () => {
     const date = new Date(2016, 9, 9)
 
     wrapper.vm.setView('month')
-    wrapper.vm.selectMonth({ timestamp: date.getTime() })
+    wrapper.vm.handleSelect({ timestamp: date.getTime() })
     expect(wrapper.emitted().changedMonth).toBeTruthy()
     expect(wrapper.emitted().changedMonth[0][0].timestamp).toEqual(date.getTime())
-    expect(new Date(wrapper.vm.pageTimestamp).getMonth()).toEqual(date.getMonth())
+    expect(wrapper.vm.pageDate.getMonth()).toEqual(date.getMonth())
   })
 
   it('can select a year', () => {
     const date = new Date(2018, 9, 9)
 
     wrapper.vm.setView('year')
-    wrapper.vm.selectYear({ timestamp: date.getTime() })
+    wrapper.vm.handleSelect({ timestamp: date.getTime() })
     expect(wrapper.emitted().changedYear).toBeTruthy()
     expect(wrapper.emitted().changedYear[0][0].timestamp).toEqual(date.getTime())
-    expect(new Date(wrapper.vm.pageTimestamp).getFullYear()).toEqual(date.getFullYear())
+    expect(wrapper.vm.pageDate.getFullYear()).toEqual(date.getFullYear())
   })
 
   it('resets the default page date', () => {
@@ -194,22 +194,50 @@ describe('Datepicker shallowMounted', () => {
     expect(spy).toBeCalled()
   })
 
-  it('watches initialView', async () => {
+  it('watches initialView when open', async () => {
     const wrapper = shallowMount(Datepicker, {
       propsData: {
         initialView: 'day'
       }
     })
     const spy = jest.spyOn(wrapper.vm, 'setInitialView')
-    wrapper.setProps({ initialView: 'month' })
-    await wrapper.vm.$nextTick()
+    await wrapper.vm.showCalendar()
+    await wrapper.setProps({ initialView: 'month' })
     expect(spy).toBeCalled()
   })
 
-  it('should emit changedMonth on a month change received from PickerDay', () => {
-    const date = new Date(2016, 9, 1)
-    wrapper.vm.handleChangedMonthFromDayPicker({ timestamp: date.getTime() })
+  it('knows the next view up / down', () => {
+    wrapper.vm.setView('day')
+
+    expect(wrapper.vm.nextView.down).toBeUndefined()
+    expect(wrapper.vm.nextView.up).toBe('month')
+
+    wrapper.vm.setView('month')
+
+    expect(wrapper.vm.nextView.down).toBe('day')
+    expect(wrapper.vm.nextView.up).toBe('year')
+
+    wrapper.vm.setView('year')
+
+    expect(wrapper.vm.nextView.down).toBe('month')
+    expect(wrapper.vm.nextView.up).toBe('decade')
+  })
+
+  it('emits changedMonth/Year/Decade', () => {
+    const pageDate = new Date(2016, 9, 1)
+
+    wrapper.vm.setView('day')
+    wrapper.vm.handlePageChange({ pageDate })
+
     expect(wrapper.emitted().changedMonth).toBeTruthy()
+
+    wrapper.vm.setView('month')
+    wrapper.vm.handlePageChange({ pageDate })
+    expect(wrapper.emitted().changedYear).toBeTruthy()
+
+    wrapper.vm.setView('year')
+    wrapper.vm.handlePageChange({ pageDate })
+    expect(wrapper.emitted().changedDecade).toBeTruthy()
   })
 })
 
