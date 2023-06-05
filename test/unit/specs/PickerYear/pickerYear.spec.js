@@ -6,8 +6,6 @@ describe('PickerYear', () => {
   beforeEach(() => {
     wrapper = mount(PickerYear, {
       propsData: {
-        allowedToShowView: () => true,
-
         pageDate: new Date(2018, 1, 1),
         selectedDate: new Date(2018, 2, 24)
       }
@@ -43,12 +41,12 @@ describe('PickerYear', () => {
 
   it('can set the next decade', () => {
     wrapper.vm.changePage({ incrementBy: 1 })
-    expect(wrapper.emitted().changedDecade).toBeTruthy()
+    expect(wrapper.emitted().pageChange).toBeTruthy()
   })
 
   it('can set the previous decade', () => {
     wrapper.vm.changePage({ incrementBy: -1 })
-    expect(wrapper.emitted().changedDecade).toBeTruthy()
+    expect(wrapper.emitted().pageChange).toBeTruthy()
   })
 
   it('formats the decade range', async () => {
@@ -66,7 +64,7 @@ describe('PickerYear', () => {
   })
 
   it('emits an event when selected', () => {
-    wrapper.vm.selectYear({ isDisabled: false })
-    expect(wrapper.emitted().selectYear).toBeTruthy()
+    wrapper.vm.select({ isDisabled: false })
+    expect(wrapper.emitted().select).toBeTruthy()
   })
 })

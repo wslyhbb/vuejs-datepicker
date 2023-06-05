@@ -122,7 +122,7 @@ export default {
 
     showFocusCalendar () {
       if (this.showCalendarOnFocus) {
-        this.$emit('showCalendar', true)
+        this.$emit('showCalendar')
       }
     },
     /**

@@ -18,7 +18,7 @@ describe('Datepicker.vue inline', () => {
 
   it('should not close the calendar when date is selected', () => {
     const date = new Date()
-    wrapper.vm.selectDate({ timestamp: date.getTime() })
+    wrapper.vm.handleSelect({ timestamp: date.getTime() })
     expect(wrapper.vm.isOpen).toEqual(true)
     document.body.click()
     expect(wrapper.vm.isOpen).toEqual(true)

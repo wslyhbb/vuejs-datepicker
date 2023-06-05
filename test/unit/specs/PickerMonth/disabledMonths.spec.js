@@ -6,8 +6,6 @@ describe('PickerMonth', () => {
   beforeEach(() => {
     wrapper = mount(PickerMonth, {
       propsData: {
-        allowedToShowView: () => true,
-
         pageDate: new Date(2018, 3, 1),
         selectedDate: new Date(2018, 3, 19)
       }

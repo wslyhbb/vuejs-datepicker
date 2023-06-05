@@ -8,8 +8,6 @@ describe('PickerDay: Datepicker with monday as first day of week', () => {
     wrapper = shallowMount(PickerDay, {
       propsData: {
         mondayFirst: true,
-
-        allowedToShowView: () => true,
         language: enGB,
         pageDate: new Date(2018, 1, 1)
       }

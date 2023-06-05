@@ -49,72 +49,32 @@
       </template>
     </date-input>
 
-    <!-- Day View -->
-    <picker-day
-      v-if="allowedToShowView('day')"
-      :allowedToShowView="allowedToShowView"
+    <component
+      :is="picker"
       :calendarClass="calendarClass"
       :calendarStyle="calendarStyle"
       :dayCellContent="dayCellContent"
       :disabledDates="disabledDates"
       :firstDayOfWeek="firstDayOfWeek"
       :highlighted="highlighted"
+      :is-up-disabled="isUpDisabled"
       :language="language"
       :mondayFirst="mondayFirst"
       :pageDate="pageDate"
       :selectedDate="selectedDate"
-      :showDayView="view === 'day'"
       :showEdgeDates="showEdgeDates"
       :showFullMonthName="fullMonthName"
       :twoLetterAbbr="twoLetterAbbr"
       :use-utc="useUtc"
-      @changedMonth="handleChangedMonthFromDayPicker"
-      @selectDate="selectDate"
+      :visible="isOpen"
+      @pageChange="handlePageChange"
+      @select="handleSelect"
       @setView="setView"
       @selectedDisabled="selectDisabledDate">
       <template v-slot:beforeCalendarHeader>
         <slot name="beforeCalendarHeader"></slot>
       </template>
-    </picker-day>
-
-    <!-- Month View -->
-    <picker-month
-      v-if="allowedToShowView('month')"
-      :pageDate="pageDate"
-      :selectedDate="selectedDate"
-      :showMonthView="view === 'month'"
-      :allowedToShowView="allowedToShowView"
-      :disabledDates="disabledDates"
-      :calendarClass="calendarClass"
-      :calendarStyle="calendarStyle"
-      :language="language"
-      :use-utc="useUtc"
-      @selectMonth="selectMonth"
-      @setView="setView"
-      @changedYear="setPageDate">
-      <template v-slot:beforeCalendarHeader>
-        <slot name="beforeCalendarHeader"></slot>
-      </template>
-    </picker-month>
-
-    <!-- Year View -->
-    <picker-year
-      v-if="allowedToShowView('year')"
-      :pageDate="pageDate"
-      :selectedDate="selectedDate"
-      :showYearView="view === 'year'"
-      :allowedToShowView="allowedToShowView"
-      :disabledDates="disabledDates"
-      :calendarClass="calendarClass"
-      :calendarStyle="calendarStyle"
-      :language="language"
-      :use-utc="useUtc"
-      @selectYear="selectYear"
-      @changedDecade="setPageDate">
-      <template v-slot:beforeCalendarHeader>
-        <slot name="beforeCalendarHeader"></slot>
-      </template>
-    </picker-year>
+    </component>
   </div>
 </template>
 
@@ -238,7 +198,9 @@ export default {
       this.setPageDate()
     },
     initialView () {
-      this.setInitialView()
+      if (this.isOpen) {
+        this.setInitialView()
+      }
     }
   },
   computed: {
@@ -249,23 +211,53 @@ export default {
 
       return this.initialView
     },
-    pageDate () {
-      return new Date(this.pageTimestamp)
-    },
-
     calendarStyle () {
       return {
         position: this.isInline ? 'static' : undefined
       }
     },
-    isOpen () {
-      return this.view !== ''
-    },
     isInline () {
       return !!this.inline
     },
+    isOpen () {
+      return this.view !== ''
+    },
     isRtl () {
       return rtlLangs.indexOf(this.language) !== -1
+    },
+    isUpDisabled () {
+      return !this.allowedToShowView(this.nextView.up)
+    },
+    nextView () {
+      const views = ['day', 'month', 'year']
+      const isCurrentView = (view) => view === this.view
+      const viewIndex = views.findIndex(isCurrentView)
+      const nextViewDown = (index) => {
+        return index <= 0 ? undefined : views[index - 1]
+      }
+      const nextViewUp = (index) => {
+        if (index < 0) {
+          return undefined
+        }
+
+        if (index === views.length - 1) {
+          return 'decade'
+        }
+
+        return views[index + 1]
+      }
+
+      return {
+        up: nextViewUp(viewIndex),
+        down: nextViewDown(viewIndex)
+      }
+    },
+    pageDate () {
+      return new Date(this.pageTimestamp)
+    },
+    picker () {
+      const view = this.view || this.computedInitialView
+      return `Picker${this.ucFirst(view)}`
     }
   },
   methods: {
@@ -342,9 +334,15 @@ export default {
       this.$emit('cleared')
     },
     /**
+     * Set the date
      * @param {Object} date
      */
-    selectDate (date) {
+    handleSelect (date) {
+      if (this.allowedToShowView(this.nextView.down)) {
+        this.showNextViewDown(date)
+        return
+      }
+
       this.setDate(date.timestamp)
       if (!this.isInline) {
         this.close()
@@ -356,32 +354,6 @@ export default {
      */
     selectDisabledDate (date) {
       this.$emit('selectedDisabled', date)
-    },
-    /**
-     * @param {Object} month
-     */
-    selectMonth (month) {
-      const date = new Date(month.timestamp)
-      if (this.allowedToShowView('day')) {
-        this.setPageDate(date)
-        this.$emit('changedMonth', month)
-        this.setView('day')
-      } else {
-        this.selectDate(month)
-      }
-    },
-    /**
-     * @param {Object} year
-     */
-    selectYear (year) {
-      const date = new Date(year.timestamp)
-      if (this.allowedToShowView('month')) {
-        this.setPageDate(date)
-        this.$emit('changedYear', year)
-        this.setView('month')
-      } else {
-        this.selectDate(year)
-      }
     },
     /**
      * Set the datepicker value
@@ -423,13 +395,6 @@ export default {
       this.pageTimestamp = this.utils.setDate(new Date(date), 1)
     },
     /**
-     * Handles a month change from the day picker
-     */
-    handleChangedMonthFromDayPicker (date) {
-      this.setPageDate(date)
-      this.$emit('changedMonth', date)
-    },
-    /**
      * Set the date from a typedDate event
      */
     setTypedDate (date) {
@@ -444,6 +409,13 @@ export default {
         this.$emit('closed')
         document.removeEventListener('click', this.clickOutside, false)
       }
+    },
+    /**
+     * Set the new pageDate and emit a `changed-<view>` event
+     */
+    handlePageChange (pageDate) {
+      this.setPageDate(pageDate)
+      this.$emit(`changed${this.ucFirst(this.nextView.up)}`, pageDate)
     },
     /**
      * Initiate the component
@@ -539,6 +511,23 @@ export default {
           }
         }
       }
+    },
+    /**
+     * Set the view to the next view down e.g. from `month` to `day`
+     * @param {Object} cell The currently focused cell
+     */
+    showNextViewDown (cell) {
+      this.setPageDate(new Date(cell.timestamp))
+      this.$emit(`changed${this.ucFirst(this.view)}`, cell)
+      this.setView(this.nextView.down)
+    },
+    /**
+     * Capitalizes the first letter
+     * @param {String} str The string to capitalize
+     * @returns {String}
+     */
+    ucFirst (str) {
+      return str[0].toUpperCase() + str.substring(1)
     }
   },
   mounted () {

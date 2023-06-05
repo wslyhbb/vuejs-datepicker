@@ -7,7 +7,6 @@ describe('PickerDay: changing months', () => {
   beforeEach(() => {
     wrapper = mount(PickerDay, {
       propsData: {
-        allowedToShowView: () => true,
         language: enGB,
         selectedDate: new Date(2018, 2, 24),
         pageDate: new Date(2018, 1, 1)
@@ -17,13 +16,13 @@ describe('PickerDay: changing months', () => {
 
   it('can set the next month', () => {
     wrapper.vm.changePage({ incrementBy: 1 })
-    expect(wrapper.emitted().changedMonth).toBeTruthy()
-    expect(wrapper.emitted().changedMonth[0][0].getMonth()).toEqual(2)
+    expect(wrapper.emitted().pageChange).toBeTruthy()
+    expect(wrapper.emitted().pageChange[0][0].getMonth()).toEqual(2)
   })
 
   it('can set the previous month', () => {
     wrapper.vm.changePage({ incrementBy: -1 })
-    expect(wrapper.emitted().changedMonth).toBeTruthy()
-    expect(wrapper.emitted().changedMonth[0][0].getMonth()).toEqual(0)
+    expect(wrapper.emitted().pageChange).toBeTruthy()
+    expect(wrapper.emitted().pageChange[0][0].getMonth()).toEqual(0)
   })
 })

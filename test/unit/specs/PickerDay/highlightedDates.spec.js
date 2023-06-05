@@ -7,8 +7,6 @@ describe('PickerDay highlight date', () => {
   beforeEach(() => {
     wrapper = mount(PickerDay, {
       propsData: {
-        allowedToShowView: () => true,
-
         pageDate: new Date(2016, 9, 1),
         language: enGB
       }

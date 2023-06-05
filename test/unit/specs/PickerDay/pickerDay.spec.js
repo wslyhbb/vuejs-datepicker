@@ -7,8 +7,6 @@ describe('PickerDay: DOM', () => {
   beforeEach(() => {
     wrapper = mount(PickerDay, {
       propsData: {
-        allowedToShowView: () => true,
-
         language: enGB,
         pageDate: new Date(2018, 1, 1),
         selectedDate: new Date(2018, 2, 24)
@@ -32,17 +30,17 @@ describe('PickerDay: DOM', () => {
 
   it('can set the next month', () => {
     wrapper.vm.changePage({ incrementBy: 1 })
-    expect(wrapper.emitted().changedMonth[0][0].getMonth()).toEqual(2)
+    expect(wrapper.emitted().pageChange[0][0].getMonth()).toEqual(2)
   })
 
   it('can set the previous month', () => {
     wrapper.vm.changePage({ incrementBy: -1 })
-    expect(wrapper.emitted().changedMonth[0][0].getMonth()).toEqual(0)
+    expect(wrapper.emitted().pageChange[0][0].getMonth()).toEqual(0)
   })
 
   it('emits an event when selected', () => {
-    wrapper.vm.selectDate({ isDisabled: false })
-    expect(wrapper.emitted().selectDate).toBeTruthy()
+    wrapper.vm.select({ isDisabled: false })
+    expect(wrapper.emitted().select).toBeTruthy()
   })
 
   it('knows the current page month', async () => {
@@ -103,7 +101,7 @@ describe('PickerDay: DOM', () => {
 
     await firstCell.trigger('click')
 
-    expect(wrapper.emitted().selectDate[0][0].date).toBe(28)
+    expect(wrapper.emitted().select[0][0].date).toBe(28)
   })
 
   it('selects an edge date from the next month', async () => {
@@ -116,7 +114,7 @@ describe('PickerDay: DOM', () => {
 
     await lastCell.trigger('click')
 
-    expect(wrapper.emitted().selectDate[0][0].date).toBe(3)
+    expect(wrapper.emitted().select[0][0].date).toBe(3)
   })
 
   it("only highlights today's edge date if shown", async () => {
