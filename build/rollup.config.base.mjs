@@ -23,7 +23,7 @@ const version = packageJson.version
 export const banner =
   '/*!\n' +
   ' * vuejs-datepicker v' + version + '\n' +
-  ' * (c) 2016-' + new Date().getFullYear() + ' Charlie Kassel\n' +
+  ' * (c) 2023-' + new Date().getFullYear() + ' Wesley Hobbie\n' +
   ' * Released under the MIT License.\n' +
   ' */'
 
@@ -60,7 +60,8 @@ export default {
       ]
     }),
     replace({
-      'process.env.NODE_ENV': JSON.stringify('production')
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      preventAssignment: true
     }),
     babel({
       babelHelpers: 'bundled',

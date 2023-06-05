@@ -36,7 +36,8 @@ export default {
       css: true
     }),
     replace({
-      'process.env.NODE_ENV': JSON.stringify('development')
+      'process.env.NODE_ENV': JSON.stringify('development'),
+      preventAssignment: true
     }),
     resolve({
       mainFields: ['module', 'jsnext', 'browser']
