@@ -51,6 +51,7 @@
 
     <component
       :is="picker"
+      :bootstrap-styling="bootstrapStyling"
       :calendarClass="calendarClass"
       :calendarStyle="calendarStyle"
       :dayCellContent="dayCellContent"

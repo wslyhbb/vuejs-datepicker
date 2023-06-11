@@ -3,15 +3,16 @@
        v-show="visible" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
     <picker-header
+      :bootstrap-styling="bootstrapStyling"
       :is-next-disabled="isNextDisabled"
       :is-previous-disabled="isPreviousDisabled"
       :is-rtl="isRtl"
       @pageChange="changePage($event)">
-      <span class="month__year_btn" tabindex="0"
+      <button class="month__year_btn"
             :class="{ 'up': !isUpDisabled }"
             @click="$emit('setView', 'year')">
         {{ pageTitleMonth }}
-      </span>
+      </button>
     </picker-header>
     <picker-cells
       ref="cells"

@@ -3,6 +3,10 @@ import DisabledDate from '@/utils/DisabledDate'
 
 export default {
   props: {
+    bootstrapStyling: {
+      type: Boolean,
+      default: false
+    },
     calendarClass: [String, Object, Array],
     calendarStyle: {
       type: Object

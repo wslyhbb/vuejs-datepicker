@@ -70,7 +70,7 @@ describe('PickerDay: DOM', () => {
   })
 
   it('does not display edge dates by default', () => {
-    const cells = wrapper.findAll('span.cell.day')
+    const cells = wrapper.findAll('button.cell')
     const firstCell = cells.at(0)
     const lastCell = cells.at(34)
 
@@ -83,7 +83,7 @@ describe('PickerDay: DOM', () => {
       showEdgeDates: true
     })
 
-    const cells = wrapper.findAll('span.cell.day')
+    const cells = wrapper.findAll('button.cell')
     const firstCell = cells.at(0)
     const lastCell = cells.at(34)
 
@@ -96,7 +96,7 @@ describe('PickerDay: DOM', () => {
       showEdgeDates: true
     })
 
-    const cells = wrapper.findAll('span.cell.day')
+    const cells = wrapper.findAll('button.cell')
     const firstCell = cells.at(0)
 
     await firstCell.trigger('click')
@@ -109,7 +109,7 @@ describe('PickerDay: DOM', () => {
       showEdgeDates: true
     })
 
-    const cells = wrapper.findAll('span.cell.day')
+    const cells = wrapper.findAll('button.cell')
     const lastCell = cells.at(34)
 
     await lastCell.trigger('click')

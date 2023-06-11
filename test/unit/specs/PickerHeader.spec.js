@@ -19,7 +19,7 @@ describe('PickerHeader', () => {
   })
 
   it('decrements the page on clicking the `previous` button', async () => {
-    const prevButton = wrapper.find('span.prev')
+    const prevButton = wrapper.find('button.prev')
     await prevButton.trigger('click')
 
     expect(wrapper.emitted('pageChange')[0][0]).toEqual({
@@ -28,7 +28,7 @@ describe('PickerHeader', () => {
   })
 
   it('increments the page on clicking the `next` button', async () => {
-    const nextButton = wrapper.find('span.next')
+    const nextButton = wrapper.find('button.next')
     await nextButton.trigger('click')
 
     expect(wrapper.emitted('pageChange')[0][0]).toEqual({

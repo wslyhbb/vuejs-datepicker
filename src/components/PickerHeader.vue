@@ -1,20 +1,26 @@
 <template>
   <header>
-    <span
-      class="prev" tabindex="0"
-      :class="{'disabled': isLeftNavDisabled}"
-      @click="isRtl ? goToNextPage() : goToPreviousPage()">&lt;</span>
+    <button
+      class="prev"
+      :class="{ 'btn': bootstrapStyling }"
+      :disabled="isLeftNavDisabled"
+      @click="isRtl ? goToNextPage() : goToPreviousPage()">&lt;</button>
     <slot />
-    <span
-      class="next" tabindex="0"
-      :class="{'disabled': isRightNavDisabled}"
-      @click="isRtl ? goToPreviousPage() : goToNextPage()">&gt;</span>
+    <button
+      class="next"
+      :class="{ 'btn': bootstrapStyling }"
+      :disabled="isRightNavDisabled"
+      @click="isRtl ? goToPreviousPage() : goToNextPage()">&gt;</button>
   </header>
 </template>
 
 <script>
 export default {
   props: {
+    bootstrapStyling: {
+      type: Boolean,
+      default: false
+    },
     isNextDisabled: {
       type: Boolean,
       required: true

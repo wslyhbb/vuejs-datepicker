@@ -3,15 +3,17 @@
        v-show="visible" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader" />
     <picker-header
+      :bootstrap-styling="bootstrapStyling"
       :is-next-disabled="isNextDisabled"
       :is-previous-disabled="isPreviousDisabled"
       :is-rtl="isRtl"
       @pageChange="changePage($event)">
-      <span class="day__month_btn" tabindex="0"
-            :class="{ 'up': !isUpDisabled }"
+      <button class="day__month_btn"
+            :class="{ 'up': !isUpDisabled, 'btn': bootstrapStyling }"
+            :disabled="isUpDisabled"
             @click="$emit('setView', 'month')">
         {{ pageTitleDay }}
-      </span>
+      </button>
     </picker-header>
     <div :class="{ 'flex-rtl': isRtl }">
       <span class="cell day-header" v-for="d in daysOfWeek" :key="d.timestamp">{{ d }}</span>

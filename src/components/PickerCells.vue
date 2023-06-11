@@ -1,7 +1,6 @@
 <template>
   <div>
-    <span
-      tabindex="0"
+    <button
       v-for="cell in cells"
       :key="cell.timestamp"
       :class="cellClasses(cell)"
@@ -9,7 +8,7 @@
       @keypress.enter="$emit('select', cell)"
       @keypress.space="$emit('select', cell)">
       <slot :cell="cell" />
-    </span>
+    </button>
   </div>
 </template>
 
