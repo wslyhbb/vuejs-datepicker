@@ -30,6 +30,21 @@
         display: flex;
         line-height: 40px;
 
+        button {
+            border: none;
+
+            &:hover:not(:disabled) {
+                background: #eee;
+                cursor: pointer;
+            }
+
+            &.day__month_btn,
+            &.month__year_btn {
+                color: #000;
+                flex-grow: 5;
+            }
+        }
+
         span {
             text-align: center;
             width: 71.42857142857143%;

@@ -54,7 +54,7 @@ describe('Datepicker with restricted views', () => {
       maximumView: 'month'
     })
 
-    wrapper.vm.showCalendar()
+    await wrapper.vm.showCalendar()
 
     expect(wrapper.vm.allowedToShowView('year')).toEqual(false)
     expect(wrapper.vm.allowedToShowView('day')).toEqual(true)
