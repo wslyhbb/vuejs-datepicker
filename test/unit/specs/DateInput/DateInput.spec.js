@@ -1,6 +1,35 @@
-import { enUS } from 'date-fns/locale'
-import DateInput from '@/components/DateInput.vue'
 import { shallowMount } from '@vue/test-utils'
+import DateInput from '@/components/DateInput.vue'
+import { enUS } from 'date-fns/locale'
+
+describe('DateInput shallowMounted', () => {
+  let wrapper
+
+  beforeEach(() => {
+    wrapper = shallowMount(DateInput)
+  })
+
+  afterEach(() => {
+    wrapper.unmount()
+  })
+
+  it('should render correct contents', () => {
+    expect(wrapper.findAll('input')).toHaveLength(1)
+  })
+
+  it('clears the date', async () => {
+    const input = wrapper.find('input')
+
+    expect(input.element.value).toEqual('')
+  })
+
+  it('emits `open` event on click', async () => {
+    const input = wrapper.find('input')
+    await input.trigger('click')
+
+    expect(wrapper.emitted('open')).toBeTruthy()
+  })
+})
 
 describe('DateInput', () => {
   let wrapper
@@ -13,10 +42,6 @@ describe('DateInput', () => {
         language: enUS
       }
     })
-  })
-
-  it('should render correct contents', () => {
-    expect(wrapper.findAll('input')).toHaveLength(1)
   })
 
   it('nulls date', async () => {
@@ -43,11 +68,6 @@ describe('DateInput', () => {
 
     expect(wrapper.vm.formattedValue).toEqual('2016/1/15')
     expect(wrapper.find('input').element.value).toEqual('2016/1/15')
-  })
-
-  it('emits showCalendar', () => {
-    wrapper.vm.showCalendar()
-    expect(wrapper.emitted().showCalendar).toBeTruthy()
   })
 
   it('adds bootstrap classes', async () => {
@@ -79,6 +99,17 @@ describe('DateInput', () => {
     expect(wrapper.find('input').attributes().disabled).toBeDefined()
   })
 
+  it('emits `close` when escape is pressed and calendar is open', async () => {
+    await wrapper.setProps({
+      isOpen: true
+    })
+
+    const input = wrapper.find('input')
+    await input.trigger('keydown.esc')
+
+    expect(wrapper.emitted('closeCalendar')).toBeTruthy()
+  })
+
   it('accepts a function as a formatter', async () => {
     wrapper.setProps({
       format: () => '!'
@@ -86,11 +117,6 @@ describe('DateInput', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('input').element.value).toEqual('!')
-  })
-
-  it('triggers closeCalendar on blur', () => {
-    wrapper.find('input').trigger('blur')
-    expect(wrapper.emitted('closeCalendar')).toBeTruthy()
   })
 
   it('should open the calendar on focus', async () => {
@@ -104,6 +130,7 @@ describe('DateInput', () => {
       }
     })
     wrapper.find('input').trigger('focus')
-    expect(wrapper.emitted().showCalendar).toBeTruthy()
+    expect(wrapper.emitted().open).toBeTruthy()
+    wrapper.unmount()
   })
 })

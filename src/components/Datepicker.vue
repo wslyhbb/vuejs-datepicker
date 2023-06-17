@@ -1,10 +1,10 @@
 <template>
   <div
     class="vdp-datepicker"
-    :class="[wrapperClass, isRtl ? 'rtl' : '']"
-    @keydown.capture="keyEvent">
+    :class="[wrapperClass, isRtl ? 'rtl' : '']">
     <date-input
       :id="id"
+      ref="dateInput"
       :autofocus="autofocus"
       :bootstrap-styling="bootstrapStyling"
       :calendar-button="calendarButton"
@@ -16,6 +16,7 @@
       :format="format"
       :inline="inline"
       :input-class="inputClass"
+      :is-open="isOpen"
       :language="language"
       :maxlength="maxlength"
       :name="name"
@@ -31,10 +32,12 @@
       :tabindex="tabindex"
       :typeable="typeable"
       :use-utc="useUtc"
-      @showCalendar="showCalendar"
+      @clearDate="clearDate"
       @closeCalendar="close"
-      @typedDate="setTypedDate"
-      @clearDate="clearDate">
+      @open="open"
+      @selectTypedDate="selectTypedDate"
+      @setFocus="setFocus($event)"
+      @typedDate="setTypedDate">
       <template #calendarBtn>
         <slot name="calendarBtn" />
       </template>
@@ -51,6 +54,7 @@
 
     <component
       :is="picker"
+      ref="picker"
       :bootstrap-styling="bootstrapStyling"
       :calendarClass="calendarClass"
       :calendarStyle="calendarStyle"
@@ -58,6 +62,7 @@
       :disabledDates="disabledDates"
       :firstDayOfWeek="firstDayOfWeek"
       :highlighted="highlighted"
+      :is-typeable="typeable"
       :is-up-disabled="isUpDisabled"
       :language="language"
       :mondayFirst="mondayFirst"
@@ -65,11 +70,14 @@
       :selectedDate="selectedDate"
       :showEdgeDates="showEdgeDates"
       :showFullMonthName="fullMonthName"
+      :slide-duration="slideDuration"
+      :tabbable-cell-id="tabbableCellId"
       :twoLetterAbbr="twoLetterAbbr"
       :use-utc="useUtc"
       :visible="isOpen"
       @pageChange="handlePageChange"
       @select="handleSelect"
+      @setFocus="setFocus($event)"
       @setView="setView"
       @selectedDisabled="selectDisabledDate">
       <template v-slot:beforeCalendarHeader>
@@ -82,6 +90,7 @@
 <script>
 import DateInput from './DateInput.vue'
 import inputProps from '@/mixins/inputProps.js'
+import navMixin from '@/mixins/navMixin.js'
 import PickerDay from './PickerDay.vue'
 import PickerMonth from './PickerMonth.vue'
 import PickerYear from './PickerYear.vue'
@@ -96,7 +105,7 @@ export default {
     PickerMonth,
     PickerYear
   },
-  mixins: [inputProps],
+  mixins: [inputProps, navMixin],
   props: {
     calendarClass: {
       type: [String, Object, Array],
@@ -189,6 +198,15 @@ export default {
 
     return {
       /*
+       * Positioning
+       */
+      calendarHeight: 0,
+      /*
+       * The latest valid `typedDate` (used for typeable datepicker)
+       * {Date}
+       */
+      latestValidTypedDate: null,
+      /*
        * Vue cannot observe changes to a Date Object so date must be stored as a timestamp
        * This represents the first day of the current viewing month
        * {Number}
@@ -199,10 +217,7 @@ export default {
        * {Date}
        */
       selectedDate: null,
-      /*
-       * Positioning
-       */
-      calendarHeight: 0,
+      slideDuration: 250,
       resetTypedDate: new Date(),
       utils: constructedDateUtils,
       view: ''
@@ -225,6 +240,9 @@ export default {
       if (this.isOpen) {
         this.setInitialView()
       }
+    },
+    latestValidTypedDate (date) {
+      this.setPageDate(date)
     }
   },
   computed: {
@@ -300,15 +318,25 @@ export default {
      * Effectively a toggle to show/hide the calendar
      * @return {mixed}
      */
-    showCalendar () {
+    open () {
       if (this.disabled || this.isInline) {
         return false
       }
-      if (this.isOpen) {
-        return this.close()
-      }
       this.setInitialView()
+      this.reviewFocus()
       this.$emit('opened')
+    },
+    /**
+     * Select the date from a 'selectTypedDate' event
+     * @param {Date=} date
+     */
+    selectTypedDate (date) {
+      this.setDate(date.getTime())
+      this.reviewFocus()
+
+      if (this.isOpen) {
+        this.close()
+      }
     },
     /**
      * Sets the initial picker page view: day, month or year
@@ -355,6 +383,8 @@ export default {
       this.setPageDate()
       this.$emit('selected', null)
       this.$emit('input', null)
+      this.focus.refs = ['input']
+      this.close()
       this.$emit('cleared')
     },
     /**
@@ -367,10 +397,12 @@ export default {
         return
       }
 
+      this.$refs.dateInput.typedDate = ''
       this.setDate(date.timestamp)
-      if (!this.isInline) {
-        this.close()
-      }
+      this.focus.delay = date.isNextMonth ? this.slideDuration : 0
+      this.focus.refs = this.isInline ? ['tabbableCell'] : ['input']
+      this.close()
+      this.reviewFocus()
       this.resetTypedDate = new Date()
     },
     /**
@@ -380,7 +412,7 @@ export default {
       this.$emit('selectedDisabled', date)
     },
     /**
-     * Set the datepicker value
+     * Set the datepicker modelValue (and, if typeable, update `latestValidTypedDate`)
      * @param {Date|String|Number|null} date
      */
     setValue (date) {
@@ -388,13 +420,12 @@ export default {
         const parsed = this.utils.parseDate(date, this.format)
         date = isNaN(parsed.valueOf()) ? null : parsed
       }
-      if (!date) {
-        this.setPageDate()
-        this.selectedDate = null
-        return
-      }
-      this.selectedDate = date
+      this.selectedDate = date || null
       this.setPageDate(date)
+
+      if (this.typeable) {
+        this.latestValidTypedDate = date || this.computedOpenDate
+      }
     },
     /**
      * Set the picker view
@@ -419,121 +450,86 @@ export default {
       this.pageTimestamp = this.utils.setDate(new Date(date), 1)
     },
     /**
-     * Set the date from a typedDate event
+     * Updates the page (if necessary) after a 'typedDate' event and sets `tabbableCell` & `latestValidTypedDate`
+     * @param {Date=} date
      */
     setTypedDate (date) {
-      this.setDate(date.getTime())
+      const originalPageDate = new Date(this.pageDate)
+
+      this.latestValidTypedDate = date || this.computedOpenDate
+      this.setPageDate(date)
+
+      if (this.isPageChange(originalPageDate)) {
+        this.handlePageChange({
+          focusRefs: [],
+          pageDate: this.pageDate
+        })
+        return
+      }
+
+      this.setTabbableCell()
     },
     /**
      * Close the calendar
      */
     close () {
-      this.view = ''
-      if (!this.isInline) {
-        this.$emit('closed')
-        document.removeEventListener('click', this.clickOutside, false)
+      if (this.isInline) {
+        return
       }
+
+      this.view = ''
+
+      if (this.isClickOutside) {
+        this.isClickOutside = false
+      } else {
+        this.reviewFocus()
+      }
+
+      this.$emit('closed')
     },
     /**
-     * Set the new pageDate and emit a `changed-<view>` event
+     * Set the new pageDate, focus the relevant element and emit a `changed-<view>` event
      */
-    handlePageChange (pageDate) {
+    handlePageChange ({ focusRefs, pageDate }) {
       this.setPageDate(pageDate)
+      this.focus.refs = focusRefs
+      this.focus.delay = this.slideDuration || 250
+      this.reviewFocus()
       this.$emit(`changed${this.ucFirst(this.nextView.up)}`, pageDate)
+    },
+    /**
+     * Returns true if element has the given className
+     * @param   {HTMLElement} element
+     * @param   {String}      className
+     * @returns {Boolean}
+     */
+    hasClass (element, className) {
+      return element && element.className.split(' ').includes(className)
+    },
+    /**
+     * Used for typeable datepicker: returns true if a typed date causes the page to change
+     * @param   {Date}    originalPageDate
+     * @returns {Boolean}
+     */
+    isPageChange (originalPageDate) {
+      if (!this.isOpen) {
+        return false
+      }
+
+      return originalPageDate.valueOf() !== this.pageDate.valueOf()
     },
     /**
      * Initiate the component
      */
     init () {
+      if (this.typeable) {
+        this.latestValidTypedDate = this.selectedDate || this.computedOpenDate
+      }
       if (this.value) {
         this.setValue(this.value)
       }
       if (this.isInline) {
         this.setInitialView()
-      }
-    },
-    keyEvent ($event) {
-      if (typeof this['keyEvent' + $event.key] === 'function') {
-        $event.preventDefault()
-        this['keyEvent' + $event.key]($event)
-      }
-    },
-    keyEventArrowUp () {
-      if (this.selectedDate !== null) {
-        const moveBy = 1000 * 60 * 60 * 24 * 7
-        if (this.selectedDate === null) {
-          this.setDate(this.pageTimestamp)
-        } else if (this.view === 'day') {
-          this.setDate(this.selectedDate.getTime() - moveBy)
-        } else if (this.view === 'month') {
-          const newTime = new Date(this.selectedDate.getTime())
-          newTime.setMonth(newTime.getMonth() - 3)
-          this.setDate(newTime.getTime())
-        } else if (this.view === 'year') {
-          const newTime = new Date(this.selectedDate.getTime())
-          newTime.setFullYear(newTime.getFullYear() - 3)
-          this.setDate(newTime.getTime())
-        }
-      }
-    },
-    keyEventArrowDown () {
-      if (this.selectedDate !== null) {
-        const moveBy = 1000 * 60 * 60 * 24 * 7
-        if (this.selectedDate === null) {
-          this.setDate(this.pageTimestamp)
-        } else if (this.view === 'day') {
-          this.setDate(this.selectedDate.getTime() + moveBy)
-        } else if (this.view === 'month') {
-          const newTime = new Date(this.selectedDate.getTime())
-          newTime.setMonth(newTime.getMonth() + 3)
-          this.setDate(newTime.getTime())
-        } else if (this.view === 'year') {
-          const newTime = new Date(this.selectedDate.getTime())
-          newTime.setFullYear(newTime.getFullYear() + 3)
-          this.setDate(newTime.getTime())
-        }
-      }
-    },
-    keyEventArrowLeft () {
-      if (this.selectedDate !== null) {
-        let moveBy = 1000 * 60 * 60 * 24
-        if (this.isRtl) {
-          moveBy = -moveBy
-        }
-        if (this.selectedDate !== null) {
-          if (this.view === 'day') {
-            this.setDate(this.selectedDate.getTime() - moveBy)
-          } else if (this.view === 'month') {
-            const newTime = new Date(this.selectedDate.getTime())
-            newTime.setMonth(newTime.getMonth() - 1)
-            this.setDate(newTime.getTime())
-          } else if (this.view === 'year') {
-            const newTime = new Date(this.selectedDate.getTime())
-            newTime.setFullYear(newTime.getFullYear() - 1)
-            this.setDate(newTime.getTime())
-          }
-        }
-      }
-    },
-    keyEventArrowRight () {
-      if (this.selectedDate !== null) {
-        let moveBy = 1000 * 60 * 60 * 24
-        if (this.isRtl) {
-          moveBy = -moveBy
-        }
-        if (this.selectedDate !== null) {
-          if (this.view === 'day') {
-            this.setDate(this.selectedDate.getTime() + moveBy)
-          } else if (this.view === 'month') {
-            const newTime = new Date(this.selectedDate.getTime())
-            newTime.setMonth(newTime.getMonth() + 1)
-            this.setDate(newTime.getTime())
-          } else if (this.view === 'year') {
-            const newTime = new Date(this.selectedDate.getTime())
-            newTime.setFullYear(newTime.getFullYear() + 1)
-            this.setDate(newTime.getTime())
-          }
-        }
       }
     },
     /**

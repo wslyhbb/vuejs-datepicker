@@ -196,4 +196,44 @@ export default class DisabledDate {
 
     return true
   }
+
+  getEarliestPossibleDate (date) {
+    if (!date) {
+      return null
+    }
+    const utils = this._utils
+
+    if (this.isDateDisabled(date)) {
+      const nextDate = new Date(
+        utils.getFullYear(date),
+        utils.getMonth(date),
+        utils.getDate(date) + 1
+      )
+
+      return this.getEarliestPossibleDate(nextDate)
+    }
+
+    return date
+  }
+
+  getLatestPossibleDate (date) {
+    const isDisabledVia = this.isYearDisabledVia(date)
+
+    if (isDisabledVia.to() || isDisabledVia.from()) {
+      return true
+    }
+
+    // now we have to check each month of the year
+    for (let i = 0; i < 12; i++) {
+      const monthDate = new Date(date)
+      monthDate.setMonth(i)
+      // if at least one month of this year is NOT disabled,
+      // we can conclude that this year SHOULD be selectable
+      if (!this.isMonthDisabled(monthDate)) {
+        return false
+      }
+    }
+
+    return true
+  }
 }

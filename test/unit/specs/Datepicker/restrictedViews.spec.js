@@ -54,7 +54,7 @@ describe('Datepicker with restricted views', () => {
       maximumView: 'month'
     })
 
-    await wrapper.vm.showCalendar()
+    await wrapper.vm.open()
 
     expect(wrapper.vm.allowedToShowView('year')).toEqual(false)
     expect(wrapper.vm.allowedToShowView('day')).toEqual(true)
@@ -102,7 +102,7 @@ describe('Datepicker with restricted views', () => {
       minimumView: 'day',
       maximumView: 'day'
     })
-    wrapper.vm.showCalendar()
+    wrapper.vm.open()
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar').length).toEqual(1)
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar .cell.month').length).toEqual(0)
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar .cell.year').length).toEqual(0)
@@ -113,7 +113,7 @@ describe('Datepicker with restricted views', () => {
       maximumView: 'year'
     })
     await wrapper.vm.close()
-    wrapper.vm.showCalendar()
+    wrapper.vm.open()
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar').length).toEqual(1)
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar .cell.day').length).toEqual(0)
     expect(wrapper.vm.$el.querySelectorAll('.vdp-datepicker__calendar .cell.year').length).toEqual(0)

@@ -1,12 +1,19 @@
 <template>
-  <div>
+  <div class="picker-cells">
     <button
-      v-for="cell in cells"
+      v-for="(cell, id) in cells"
       :key="cell.timestamp"
       :class="cellClasses(cell)"
+      :data-id="id"
+      :disabled="cell.isDisabled"
+      type="button"
       @click="$emit('select', cell)"
       @keypress.enter="$emit('select', cell)"
-      @keypress.space="$emit('select', cell)">
+      @keypress.space="$emit('select', cell)"
+      @keydown.up.prevent="handleArrow(id, -columns)"
+      @keydown.down.prevent="handleArrow(id, columns)"
+      @keydown.left.prevent="handleArrow(id, isRtl ? 1 : -1)"
+      @keydown.right.prevent="handleArrow(id, isRtl ? -1 : 1)">
       <slot :cell="cell" />
     </button>
   </div>
@@ -20,9 +27,17 @@ export default {
       type: Array,
       required: true
     },
+    isRtl: {
+      type: Boolean,
+      default: false
+    },
     showEdgeDates: {
       type: Boolean,
       default: true
+    },
+    tabbableCellId: {
+      type: Number,
+      default: null
     },
     view: {
       type: String,
@@ -31,8 +46,20 @@ export default {
     }
   },
   emits: {
+    arrow (config) {
+      return typeof config === 'object'
+    },
     select (cell) {
       return typeof cell === 'object'
+    }
+  },
+  computed: {
+    /**
+     * The number of columns in the picker
+     * @return {Number}
+     */
+    columns () {
+      return this.view === 'day' ? 7 : 3
     }
   },
   methods: {
@@ -62,6 +89,12 @@ export default {
           weekend: cell.isWeekend
         }
       ]
+    },
+    /**
+     * Emits an `arrow` event
+     */
+    handleArrow (cellId, delta) {
+      this.$emit('arrow', { cellId, delta })
     }
   }
 }
