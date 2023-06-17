@@ -73,6 +73,7 @@ export default {
     }
   },
   emits: {
+    focusInput: null,
     pageChange: (page) => {
       return typeof page === 'object'
     },
@@ -80,6 +81,9 @@ export default {
       return refArray.every((ref) => {
         return ['input', 'prev', 'up', 'next', 'tabbableCell'].includes(ref)
       })
+    },
+    setView: (view) => {
+      return ['day', 'month', 'year'].includes(view)
     }
   },
   computed: {

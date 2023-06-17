@@ -83,6 +83,9 @@ export default {
     clearDate: null,
     closeCalendar: null,
     open: null,
+    selectTypedDate: (date) => {
+      return date === null || date instanceof Date
+    },
     setFocus: (refArray) => {
       return refArray.every((ref) => {
         return [
