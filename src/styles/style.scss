@@ -17,6 +17,10 @@
     width: 300px;
     border: 1px solid #ccc;
 
+    .today {
+        background-color: #eee;
+    }
+
     button {
         background: inherit;
         text-align: center;
@@ -29,6 +33,7 @@
     header {
         display: flex;
         line-height: 40px;
+        justify-content: space-between;
 
         button {
             border: none;

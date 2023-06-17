@@ -3,18 +3,25 @@
        v-show="visible" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader"></slot>
     <picker-header
+      ref="pickerHeader"
       :bootstrap-styling="bootstrapStyling"
       :is-next-disabled="isNextDisabled"
       :is-previous-disabled="isPreviousDisabled"
       :is-rtl="isRtl"
-      @pageChange="changePage($event)">
-      <span>{{ pageTitleYear }}</span>
+      :is-up-disabled="true"
+      @focusInput="focusInput"
+      @pageChange="changePage($event)"
+      @setFocus="$emit('setFocus', $event)">
+      {{ pageTitleYear }}
     </picker-header>
     <picker-cells
       ref="cells"
       v-slot="{ cell }"
       :cells="years"
+      :is-rtl="isRtl"
+      :tabbable-cell-id="tabbableCellId"
       view="year"
+      @arrow="handleArrow($event)"
       @select="select($event)">
       {{ cell.year }}
     </picker-cells>
@@ -103,24 +110,26 @@ export default {
     }
   },
   methods: {
-    changeYear (incrementBy) {
-      const date = this.pageDate
-      this.utils.setFullYear(date, this.utils.getFullYear(date) + incrementBy)
-      this.$emit('pageChange', date)
+    /**
+     * Changes the year up or down
+     * @param {Number} incrementBy
+     * @param {[String]} focusRefs
+     */
+    changeYear ({ incrementBy, focusRefs }) {
+      const pageDate = this.pageDate
+      this.utils.setFullYear(pageDate, this.utils.getFullYear(pageDate) + incrementBy)
+      this.$emit('pageChange', { focusRefs, pageDate })
     },
     /**
      * Changes the page up or down
      * @param {Number} incrementBy
+     * @param {[String]} focusRefs
      */
-    changePage ({ incrementBy }) {
-      if (incrementBy === 1) {
-        if (!this.isNextDisabled) {
-          this.changeYear(incrementBy * 10)
-        }
-      } else if (incrementBy === -1) {
-        if (!this.isPreviousDisabled) {
-          this.changeYear(incrementBy * 10)
-        }
+    changePage ({ incrementBy, focusRefs }) {
+      if (incrementBy === 1 && !this.isNextDisabled) {
+        this.changeYear({ incrementBy: incrementBy * 10, focusRefs })
+      } else if (incrementBy === -1 && !this.isPreviousDisabled) {
+        this.changeYear({ incrementBy: incrementBy * 10, focusRefs })
       }
     },
     /**

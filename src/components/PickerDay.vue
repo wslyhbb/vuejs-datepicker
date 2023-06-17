@@ -3,17 +3,19 @@
        v-show="visible" :style="calendarStyle" @mousedown.prevent>
     <slot name="beforeCalendarHeader" />
     <picker-header
+      ref="pickerHeader"
       :bootstrap-styling="bootstrapStyling"
       :is-next-disabled="isNextDisabled"
       :is-previous-disabled="isPreviousDisabled"
       :is-rtl="isRtl"
-      @pageChange="changePage($event)">
-      <button class="day__month_btn"
-            :class="{ 'up': !isUpDisabled, 'btn': bootstrapStyling }"
-            :disabled="isUpDisabled"
-            @click="$emit('setView', 'month')">
-        {{ pageTitleDay }}
-      </button>
+      :is-up-disabled="isUpDisabled"
+      next-view-up="month"
+      up-button-classes="day__month_btn"
+      @focusInput="focusInput"
+      @pageChange="changePage($event)"
+      @setFocus="$emit('setFocus', $event)"
+      @setView="$emit('setView', $event)">
+      {{ pageTitleDay }}
     </picker-header>
     <div :class="{ 'flex-rtl': isRtl }">
       <span class="cell day-header" v-for="d in daysOfWeek" :key="d.timestamp">{{ d }}</span>
@@ -21,8 +23,11 @@
         ref="cells"
         v-slot="{ cell }"
         :cells="days"
+        :is-rtl="isRtl"
         :show-edge-dates="showEdgeDates"
+        :tabbable-cell-id="tabbableCellId"
         view="day"
+        @arrow="handleArrow($event)"
         @select="select($event)">
         {{ dayCellContent(cell) }}
       </picker-cells>
@@ -210,25 +215,23 @@ export default {
     /**
      * Change the page month
      * @param {Number} incrementBy
+     * @param {[String]} focusRefs
      */
-    changeMonth (incrementBy) {
-      const date = this.pageDate
-      this.utils.setMonth(date, this.utils.getMonth(date) + incrementBy)
-      this.$emit('pageChange', date)
+    changeMonth ({ incrementBy, focusRefs }) {
+      const pageDate = this.pageDate
+      this.utils.setMonth(pageDate, this.utils.getMonth(pageDate) + incrementBy)
+      this.$emit('pageChange', { focusRefs, pageDate })
     },
     /**
      * Changes the page up or down
      * @param {Number} incrementBy
+     * @param {[String]} focusRefs
      */
-    changePage ({ incrementBy }) {
-      if (incrementBy === 1) {
-        if (!this.isNextDisabled) {
-          this.changeMonth(incrementBy)
-        }
-      } else if (incrementBy === -1) {
-        if (!this.isPreviousDisabled) {
-          this.changeMonth(incrementBy)
-        }
+    changePage ({ incrementBy, focusRefs }) {
+      if (incrementBy === 1 && !this.isNextDisabled) {
+        this.changeMonth({ incrementBy, focusRefs })
+      } else if (incrementBy === -1 && !this.isPreviousDisabled) {
+        this.changeMonth({ incrementBy, focusRefs })
       }
     },
     /**

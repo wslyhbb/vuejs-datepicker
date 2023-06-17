@@ -1,9 +1,9 @@
 <template>
   <div :class="{'input-group': bootstrapStyling}">
     <!-- Calendar Button -->
-    <button v-if="calendarButton" class="vdp-datepicker__calendar-button"
+    <button v-if="calendarButton" ref="calendarButton" class="vdp-datepicker__calendar-button"
       :class="{'btn input-group-prepend': bootstrapStyling}"
-      :disabled="disabled" @click="showCalendar">
+      :disabled="disabled" @click="toggle('calendarButton')">
       <span :class="{'input-group-text': bootstrapStyling}">
         <slot name="calendarBtn">
           <i :class="calendarButtonIcon">
@@ -36,6 +36,9 @@
       @blur="inputBlurred"
       @click="showCalendar"
       @focus="showFocusCalendar"
+      @keydown.down.prevent="handleKeydownDown"
+      @keydown.enter.prevent="handleKeydownEnter"
+      @keydown.esc.prevent="handleKeydownEscape"
       @keyup="keyUp">
     <!-- Clear Button -->
     <button v-if="clearButton && selectedDate" class="vdp-datepicker__clear-button"
@@ -61,6 +64,10 @@ export default {
   name: 'DateInput',
   mixins: [inputProps],
   props: {
+    isOpen: {
+      type: Boolean,
+      default: false
+    },
     language: {
       type: Object
     },
@@ -112,32 +119,91 @@ export default {
       this.typedDate = false
     }
   },
+  mounted () {
+    this.input = this.$el.querySelector('input')
+  },
   methods: {
+    /**
+     * Toggles the calendar (unless `show-calendar-on-focus` is true)
+     */
     showCalendar () {
       // prevent to emit the event twice if we are listening focus
       if (!this.showCalendarOnFocus) {
-        this.$emit('showCalendar')
+        this.toggle()
       }
     },
-
+    /**
+     * Opens the calendar when `show-calendar-on-focus` is true
+     */
     showFocusCalendar () {
-      if (this.showCalendarOnFocus) {
-        this.$emit('showCalendar')
+      if (this.showCalendarOnFocus && !this.isOpen) {
+        this.$emit('open')
       }
+    },
+    /**
+     * Opens the calendar, or sets the focus to the next focusable element down
+     */
+    handleKeydownDown () {
+      if (!this.isOpen) {
+        this.$emit('open')
+      }
+
+      if (!this.typeable) {
+        return
+      }
+
+      this.$emit('setFocus', ['prev', 'up', 'next', 'tabbableCell'])
+    },
+    /**
+     * Selects a typed date and closes the calendar
+     */
+    handleKeydownEnter () {
+      if (!this.typeable) {
+        return
+      }
+
+      if (!this.input.value) {
+        this.$emit('selectTypedDate', null)
+        return
+      }
+
+      const parsedDate = this.getTypedDate(this.input.value)
+
+      if (!isNaN(parsedDate)) {
+        this.typedDate = this.input.value
+        this.$emit('selectTypedDate', parsedDate)
+      }
+    },
+    /**
+     * Closes the calendar
+     */
+    handleKeydownEscape () {
+      this.$emit('closeCalendar')
     },
     /**
      * Attempt to parse a typed date
      * @param {Event} event
      */
     keyUp (event) {
-      const code = (event.keyCode ? event.keyCode : event.which)
+      if (
+        !this.typeable ||
+        [
+          'Control',
+          'Escape',
+          'Shift',
+          'Tab',
+          'ArrowUp',
+          'ArrowDown',
+          'ArrowLeft',
+          'ArrowRight'
+        ].includes(event.key)
+      ) {
+        return
+      }
 
-      // close calendar if escape or enter are pressed
-      if ([
-        27, // escape
-        13 // enter
-      ].includes(code)) {
-        this.input.blur()
+      if (!this.input.value) {
+        this.$emit('typedDate', null)
+        return
       }
 
       if (this.typeable) {
@@ -159,8 +225,6 @@ export default {
         this.input.value = null
         this.typedDate = null
       }
-
-      this.$emit('closeCalendar', true)
     },
     /**
      * emit a clearDate event
@@ -177,10 +241,17 @@ export default {
         : this.utils.parseDate(input, typeof this.format === 'string' ? this.format : undefined)
 
       return date
+    },
+    /**
+     * Opens or closes the calendar
+     */
+    toggle (calendarButton) {
+      if (this.isOpen) {
+        this.$emit('setFocus', [calendarButton || 'input'])
+      }
+
+      this.$emit(this.isOpen ? 'closeCalendar' : 'open')
     }
-  },
-  mounted () {
-    this.input = this.$el.querySelector('input')
   }
 }
 </script>

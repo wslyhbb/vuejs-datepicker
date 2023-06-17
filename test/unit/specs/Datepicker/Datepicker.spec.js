@@ -163,13 +163,6 @@ describe('Datepicker shallowMounted', () => {
     expect(wrapper.vm.pageDate.getDate()).toEqual(1)
   })
 
-  it('sets the date on typedDate event', () => {
-    const wrapper = shallowMount(Datepicker)
-    const today = new Date()
-    wrapper.vm.setTypedDate(today)
-    expect(wrapper.vm.selectedDate).toEqual(today)
-  })
-
   it('watches value', async () => {
     const wrapper = shallowMount(Datepicker, {
       propsData: {
@@ -201,7 +194,7 @@ describe('Datepicker shallowMounted', () => {
       }
     })
     const spy = jest.spyOn(wrapper.vm, 'setInitialView')
-    await wrapper.vm.showCalendar()
+    await wrapper.vm.open()
     await wrapper.setProps({ initialView: 'month' })
     expect(spy).toBeCalled()
   })
@@ -315,7 +308,7 @@ describe('Datepicker with initial-view', () => {
   let wrapper
   it('should open in Day view', () => {
     wrapper = shallowMount(Datepicker)
-    wrapper.vm.showCalendar()
+    wrapper.vm.open()
     expect(wrapper.vm.computedInitialView).toEqual('day')
     expect(wrapper.vm.view).toEqual('day')
   })
@@ -326,7 +319,7 @@ describe('Datepicker with initial-view', () => {
         initialView: 'month'
       }
     })
-    wrapper.vm.showCalendar()
+    wrapper.vm.open()
     expect(wrapper.vm.computedInitialView).toEqual('month')
     expect(wrapper.vm.view).toEqual('month')
   })
@@ -337,7 +330,7 @@ describe('Datepicker with initial-view', () => {
         initialView: 'year'
       }
     })
-    wrapper.vm.showCalendar()
+    wrapper.vm.open()
     expect(wrapper.vm.computedInitialView).toEqual('year')
     expect(wrapper.vm.view).toEqual('year')
   })

@@ -1,17 +1,21 @@
+import { mount, shallowMount } from '@vue/test-utils'
 import DateInput from '@/components/DateInput.vue'
-import { shallowMount } from '@vue/test-utils'
+import Datepicker from '@/components/Datepicker.vue'
 
-describe('DateInput', () => {
+describe('DateInput shallowMounted', () => {
   let wrapper
 
   beforeEach(() => {
     wrapper = shallowMount(DateInput, {
       propsData: {
         format: 'dd MMM yyyy',
-
         typeable: true
       }
     })
+  })
+
+  afterEach(() => {
+    wrapper.destroy()
   })
 
   it('does not format the date when typed', async () => {
@@ -38,6 +42,14 @@ describe('DateInput', () => {
     expect(wrapper.emitted().typedDate[0][0]).toBeInstanceOf(Date)
   })
 
+  it('emits `select-typed-date` when enter is pressed', async () => {
+    const input = wrapper.find('input')
+
+    await input.trigger('keydown.enter')
+
+    expect(wrapper.emitted('selectTypedDate')).toBeTruthy()
+  })
+
   it('allows custom date format', async () => {
     const dateString = '24/06/2018'
     wrapper.setProps({
@@ -56,13 +68,6 @@ describe('DateInput', () => {
     input.trigger('keyup')
     expect(wrapper.emitted().typedDate[0][0].toISOString()).toEqual('2018-06-24T03:00:00.000Z')
     expect(wrapper.vm.formattedValue).toEqual(dateString)
-  })
-
-  it('emits closeCalendar when return is pressed', () => {
-    const input = wrapper.find('input')
-    const blurSpy = jest.spyOn(input.element, 'blur')
-    input.trigger('keyup.enter')
-    expect(blurSpy).toBeCalled()
   })
 
   it('clears a typed date if it does not parse', () => {
@@ -85,5 +90,31 @@ describe('DateInput', () => {
     input.trigger('keydown')
     input.trigger('keyup')
     expect(wrapper.emitted().typedDate).not.toBeDefined()
+  })
+})
+
+describe('Datepicker mounted', () => {
+  let wrapper
+
+  beforeEach(() => {
+    wrapper = mount(Datepicker, {
+      props: {
+        typeable: true
+      }
+    })
+  })
+
+  afterEach(() => {
+    wrapper.destroy()
+  })
+
+  it('sets the date and closes the calendar', () => {
+    const today = new Date(new Date().setHours(0, 0, 0, 0))
+
+    wrapper.vm.open()
+    wrapper.vm.selectTypedDate(today)
+
+    expect(wrapper.vm.selectedDate).toEqual(today)
+    expect(wrapper.vm.isOpen).toBeFalsy()
   })
 })
