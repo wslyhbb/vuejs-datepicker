@@ -17,6 +17,7 @@
     <picker-cells
       ref="cells"
       v-slot="{ cell }"
+      :bootstrap-styling="bootstrapStyling"
       :cells="years"
       :is-rtl="isRtl"
       :tabbable-cell-id="tabbableCellId"
@@ -93,8 +94,9 @@ export default {
         years.push({
           year: this.utils.getFullYear(dObj),
           timestamp: dObj.getTime(),
+          isDisabled: this.isDisabledYear(dObj),
           isSelected: this.isSelectedYear(dObj),
-          isDisabled: this.isDisabledYear(dObj)
+          isToday: this.isTodayYear(dObj)
         })
         this.utils.setFullYear(dObj, this.utils.getFullYear(dObj) + 1)
       }
@@ -151,6 +153,17 @@ export default {
       return new DisabledDate(this.utils, this.disabledDates).isYearDisabled(
         date
       )
+    },
+    /**
+     * Whether the date has the same year as today's date
+     * @param {Date} date
+     * @return {Boolean}
+     */
+    isTodayYear (date) {
+      const { utils } = this
+      const todayYear = utils.getFullYear(utils.getNewDateObject())
+
+      return utils.getFullYear(date) === todayYear
     }
   }
 }

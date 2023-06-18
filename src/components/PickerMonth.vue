@@ -20,6 +20,7 @@
     <picker-cells
       ref="cells"
       v-slot="{ cell }"
+      :bootstrap-styling="bootstrapStyling"
       :cells="months"
       :is-rtl="isRtl"
       :tabbable-cell-id="tabbableCellId"
@@ -74,8 +75,9 @@ export default {
         months.push({
           month: this.utils.getMonthName(dObj), // , i, this.language.months),
           timestamp: dObj.getTime(),
+          isDisabled: this.isDisabledMonth(dObj),
           isSelected: this.isSelectedMonth(dObj),
-          isDisabled: this.isDisabledMonth(dObj)
+          isToday: this.isTodayMonth(dObj)
         })
         this.utils.setMonth(dObj, this.utils.getMonth(dObj) + 1)
       }
@@ -134,6 +136,17 @@ export default {
       return new DisabledDate(this.utils, this.disabledDates).isMonthDisabled(
         date
       )
+    },
+    /**
+     * Whether the date has the same month and year as today's date
+     * @param {Date} date
+     * @return {Boolean}
+     */
+    isTodayMonth (date) {
+      const { utils } = this
+      const todayMonth = new Date(utils.setDate(utils.getNewDateObject(), 1))
+
+      return utils.compareDates(date, todayMonth)
     }
   }
 }

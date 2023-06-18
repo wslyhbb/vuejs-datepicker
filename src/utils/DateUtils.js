@@ -276,27 +276,35 @@ const utils = {
   },
 
   /**
-   * Creates an array of dates for each day in between two dates.
-   * @param {Date} start
-   * @param {Date} end
-   * @return {Array}
-   */
-  createDateArray (start, end) {
-    const dates = []
-    while (start <= end) {
-      dates.push(new Date(start))
-      start = this.setDate(new Date(start), this.getDate(new Date(start)) + 1)
-    }
-    return dates
-  },
-
-  /**
    * method used as a prop validator for input values
    * @param {*} val
    * @return {Boolean}
    */
   validateDateInput (val) {
     return val === null || val instanceof Date || typeof val === 'string' || typeof val === 'number'
+  },
+
+  /**
+   * Remove hours/minutes/seconds/milliseconds from a date object
+   * @param {Date} date
+   * @return {Date}
+   */
+  resetDateTime (date) {
+    return new Date(
+      this.useUtc ? date.setUTCHours(0, 0, 0, 0) : date.setHours(0, 0, 0, 0)
+    )
+  },
+
+  /**
+   * Return a new date object with hours/minutes/seconds/milliseconds removed.
+   * Defaults to today's date, if no parameter is provided
+   * @param {Date=} date
+   * @return {Date}
+   */
+  getNewDateObject (date) {
+    return date
+      ? this.resetDateTime(new Date(date))
+      : this.resetDateTime(new Date())
   }
 }
 
