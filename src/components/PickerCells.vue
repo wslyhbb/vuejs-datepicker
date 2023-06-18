@@ -23,6 +23,10 @@
 export default {
   name: 'PickerCells',
   props: {
+    bootstrapStyling: {
+      type: Boolean,
+      default: false
+    },
     cells: {
       type: Array,
       required: true
@@ -73,6 +77,7 @@ export default {
         this.view,
         {
           blank: cell.date === '',
+          btn: this.bootstrapStyling,
           disabled: cell.isDisabled,
           'highlight-start': cell.isHighlightStart,
           'highlight-end': cell.isHighlightEnd,

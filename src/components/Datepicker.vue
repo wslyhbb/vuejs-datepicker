@@ -89,6 +89,7 @@
 
 <script>
 import DateInput from './DateInput.vue'
+import DisabledDate from '@/utils/DisabledDate'
 import inputProps from '@/mixins/inputProps.js'
 import navMixin from '@/mixins/navMixin.js'
 import PickerDay from './PickerDay.vue'
@@ -224,8 +225,36 @@ export default {
     }
   },
   watch: {
+    disabledDates: {
+      handler () {
+        const selectedDate =
+          this.selectedDate || this.parseValue(this.value)
+
+        if (!selectedDate) {
+          return
+        }
+
+        if (this.isDateDisabled(selectedDate) && selectedDate) {
+          this.setDate(null)
+          return
+        }
+
+        if (this.dateHasChanged(selectedDate)) {
+          this.setDate(selectedDate)
+        }
+      },
+      deep: true
+    },
+    initialView () {
+      if (this.isOpen) {
+        this.setInitialView()
+      }
+    },
     language (newLanguage) {
       this.utils = makeDateUtils(this.useUtc, newLanguage)
+    },
+    latestValidTypedDate (date) {
+      this.setPageDate(date)
     },
     useUtc (newUtc) {
       this.utils = makeDateUtils(newUtc, this.language)
@@ -235,14 +264,6 @@ export default {
     },
     openDate () {
       this.setPageDate()
-    },
-    initialView () {
-      if (this.isOpen) {
-        this.setInitialView()
-      }
-    },
-    latestValidTypedDate (date) {
-      this.setPageDate(date)
     }
   },
   computed: {
@@ -252,6 +273,16 @@ export default {
       }
 
       return this.initialView
+    },
+    computedOpenDate () {
+      const parsedOpenDate = this.parseValue(this.openDate)
+      const openDateOrToday = this.utils.getNewDateObject(parsedOpenDate)
+      const openDate = this.selectedDate || openDateOrToday
+
+      // If the `minimum-view` is `month` or `year`, convert `openDate` accordingly
+      return this.minimumView === 'day'
+        ? openDate
+        : new Date(this.utils.setDate(openDate, 1))
     },
     calendarStyle () {
       return {
@@ -325,6 +356,18 @@ export default {
       this.setInitialView()
       this.reviewFocus()
       this.$emit('opened')
+    },
+    /**
+     * Parse a datepicker value from string/number to date
+     * @param   {Date|String|Number|undefined} date
+     * @returns {Date|null}
+     */
+    parseValue (date) {
+      if (typeof date === 'string' || typeof date === 'number') {
+        const parsed = new Date(date)
+        return this.utils.isValidDate(parsed) ? parsed : null
+      }
+      return this.utils.isValidDate(date) ? date : null
     },
     /**
      * Select the date from a 'selectTypedDate' event
@@ -531,6 +574,18 @@ export default {
       if (this.isInline) {
         this.setInitialView()
       }
+    },
+    /**
+     * Returns true if a date is disabled
+     * @param {Date} date
+     * @returns {Boolean}
+     */
+    isDateDisabled (date) {
+      if (!this.disabledDates) return false
+
+      return new DisabledDate(this.utils, this.disabledDates).isDateDisabled(
+        date
+      )
     },
     /**
      * Set the view to the next view down e.g. from `month` to `day`

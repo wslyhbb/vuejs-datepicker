@@ -22,6 +22,7 @@
       <picker-cells
         ref="cells"
         v-slot="{ cell }"
+        :bootstrap-styling="bootstrapStyling"
         :cells="days"
         :is-rtl="isRtl"
         :show-edge-dates="showEdgeDates"

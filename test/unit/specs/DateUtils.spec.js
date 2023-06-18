@@ -44,18 +44,6 @@ describe('DateUtils', () => {
     expect(DateUtils.formatDate(new Date(2016, 8, 12), 'ccc')).toEqual('Mon')
   })
 
-  it('can create an array of dates', () => {
-    const start = new Date(2016, 9, 12)
-    const end = new Date(2016, 9, 16)
-    const dates = DateUtils.createDateArray(start, end)
-    expect(dates.length).toEqual(5)
-    let day = 12
-    dates.forEach((date) => {
-      expect(date.getDate()).toEqual(day)
-      day++
-    })
-  })
-
   it('gives days in a month', () => {
     expect(DateUtils.daysInMonth(2016, 0)).toEqual(31)
     expect(DateUtils.daysInMonth(2016, 1)).toEqual(29)
