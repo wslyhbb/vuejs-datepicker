@@ -9,7 +9,9 @@
     "vue",
     "datepicker",
     "date-picker",
-    "calendar"
+    "calendar",
+    "keyboard navigation",
+    "typeable"
   ],
   "main": "dist/vuejs-datepicker.common.js",
   "module": "dist/vuejs-datepicker.mjs",

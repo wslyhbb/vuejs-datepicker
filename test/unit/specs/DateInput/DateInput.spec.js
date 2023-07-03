@@ -103,6 +103,14 @@ describe('DateInput shallowMounted with selectedDate', () => {
     expect(wrapper.emitted('clearDate')).toBeTruthy()
   })
 
+  it('emits `clear-date` when backspace is pressed', async () => {
+    const input = wrapper.find('input')
+
+    await input.trigger('keydown.backspace')
+
+    expect(wrapper.emitted('clearDate')).toBeTruthy()
+  })
+
   it('adds bootstrap classes', async () => {
     wrapper.setProps({
       bootstrapStyling: true
