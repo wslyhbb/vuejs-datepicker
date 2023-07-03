@@ -36,6 +36,7 @@
       @blur="inputBlurred"
       @click="showCalendar"
       @focus="showFocusCalendar"
+      @keydown.delete="handleDelete"
       @keydown.down.prevent="handleKeydownDown"
       @keydown.enter.prevent="handleKeydownEnter"
       @keydown.esc.prevent="handleKeydownEscape"
@@ -224,6 +225,14 @@ export default {
         this.clearDate()
         this.input.value = null
         this.typedDate = null
+      }
+    },
+    /**
+     * Clears the calendar when the `delete` or `backspace` key is pressed
+     */
+    handleDelete () {
+      if (!this.typeable && this.selectedDate) {
+        this.clearDate()
       }
     },
     /**
