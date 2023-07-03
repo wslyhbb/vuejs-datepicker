@@ -522,11 +522,7 @@ export default {
 
       this.view = ''
 
-      if (this.isClickOutside) {
-        this.isClickOutside = false
-      } else {
-        this.reviewFocus()
-      }
+      this.reviewFocus()
 
       this.$emit('closed')
     },
