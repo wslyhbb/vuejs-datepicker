@@ -232,7 +232,8 @@
           &lt;datepicker :inline="true"&gt;&lt;/datepicker&gt;
       </code>
     </div>
-    <div class="example">      <h3>RTL datepicker</h3>
+    <div class="example">
+      <h3>RTL datepicker</h3>
       <datepicker :language="languages.he"></datepicker>
       <code>
           &lt;datepicker :language="languages.he"&gt;&lt;/datepicker&gt;
