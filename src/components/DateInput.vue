@@ -283,9 +283,10 @@ export default {
       }
     },
     /**
-     * emit a clearDate event
+     * Emits a `clear-date` event
      */
     clearDate () {
+      this.input.value = ''
       this.$emit('clearDate')
     },
     /**

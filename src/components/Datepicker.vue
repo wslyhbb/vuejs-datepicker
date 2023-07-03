@@ -32,12 +32,12 @@
       :tabindex="tabindex"
       :typeable="typeable"
       :use-utc="useUtc"
-      @clearDate="clearDate"
+      @clear-date="clearDate"
       @closeCalendar="close"
       @open="open"
-      @selectTypedDate="selectTypedDate"
-      @setFocus="setFocus($event)"
-      @typedDate="setTypedDate">
+      @select-typed-date="selectTypedDate"
+      @set-focus="setFocus($event)"
+      @typed-date="setTypedDate">
       <template #calendarBtn>
         <slot name="calendarBtn" />
       </template>
@@ -56,30 +56,30 @@
       :is="picker"
       ref="picker"
       :bootstrap-styling="bootstrapStyling"
-      :calendarClass="calendarClass"
+      :calendar-class="calendarClass"
       :calendarStyle="calendarStyle"
-      :dayCellContent="dayCellContent"
-      :disabledDates="disabledDates"
-      :firstDayOfWeek="firstDayOfWeek"
+      :day-cell-content="dayCellContent"
+      :disabled-dates="disabledDates"
+      :first-day-of-week="firstDayOfWeek"
       :highlighted="highlighted"
       :is-typeable="typeable"
       :is-up-disabled="isUpDisabled"
       :language="language"
-      :mondayFirst="mondayFirst"
-      :pageDate="pageDate"
-      :selectedDate="selectedDate"
-      :showEdgeDates="showEdgeDates"
-      :showFullMonthName="fullMonthName"
+      :monday-first="mondayFirst"
+      :page-date="pageDate"
+      :selected-date="selectedDate"
+      :show-edge-dates="showEdgeDates"
+      :show-full-month-name="fullMonthName"
       :slide-duration="slideDuration"
       :tabbable-cell-id="tabbableCellId"
-      :twoLetterAbbr="twoLetterAbbr"
+      :two-letter-abbr="twoLetterAbbr"
       :use-utc="useUtc"
       :visible="isOpen"
-      @pageChange="handlePageChange"
+      @page-change="handlePageChange"
       @select="handleSelect"
-      @setFocus="setFocus($event)"
-      @setView="setView"
-      @selectedDisabled="selectDisabledDate">
+      @set-focus="setFocus($event)"
+      @set-view="setView"
+      @selected-disabled="selectDisabledDate">
       <template v-slot:beforeCalendarHeader>
         <slot name="beforeCalendarHeader"></slot>
       </template>
@@ -264,6 +264,9 @@ export default {
     },
     openDate () {
       this.setPageDate()
+    },
+    view (newView, oldView) {
+      this.handleViewChange(newView, oldView)
     }
   },
   computed: {
@@ -480,6 +483,28 @@ export default {
       }
     },
     /**
+     * Sets the array of `refs` that might be focused following a view change
+     * @param {String} newView The view being changed to
+     * @param {String} oldView The previous view
+     */
+    setViewChangeFocusRefs (newView, oldView) {
+      if (oldView === '') {
+        this.focus.refs = []
+        return
+      }
+
+      const views = ['day', 'month', 'year']
+      const isNewView = (view) => view === newView
+      const isOldView = (view) => view === oldView
+      const newViewIndex = views.findIndex(isNewView)
+      const oldViewIndex = views.findIndex(isOldView)
+      const isViewChangeUp = newViewIndex - oldViewIndex > 0
+
+      this.focus.refs = isViewChangeUp
+        ? ['up', 'tabbableCell']
+        : ['tabbableCell', 'up']
+    },
+    /**
      * Sets the date that the calendar should open on
      */
     setPageDate (date) {
@@ -511,6 +536,22 @@ export default {
       }
 
       this.setTabbableCell()
+    },
+    /**
+     * Focus the relevant element when the view changes
+     * @param {String} newView
+     * @param {String} oldView
+     */
+    handleViewChange (newView, oldView) {
+      const isClosing = newView === ''
+      const isOpeningInline = oldView === '' && this.isInline
+
+      if (isClosing || isOpeningInline) {
+        return
+      }
+
+      this.setViewChangeFocusRefs(newView, oldView)
+      this.reviewFocus()
     },
     /**
      * Close the calendar
