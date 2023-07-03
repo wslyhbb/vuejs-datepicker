@@ -241,6 +241,9 @@ export default {
     },
     openDate () {
       this.setPageDate()
+    },
+    view (newView, oldView) {
+      this.handleViewChange(newView, oldView)
     }
   },
   computed: {
@@ -457,6 +460,28 @@ export default {
       }
     },
     /**
+     * Sets the array of `refs` that might be focused following a view change
+     * @param {String} newView The view being changed to
+     * @param {String} oldView The previous view
+     */
+    setViewChangeFocusRefs (newView, oldView) {
+      if (oldView === '') {
+        this.focus.refs = []
+        return
+      }
+
+      const views = ['day', 'month', 'year']
+      const isNewView = (view) => view === newView
+      const isOldView = (view) => view === oldView
+      const newViewIndex = views.findIndex(isNewView)
+      const oldViewIndex = views.findIndex(isOldView)
+      const isViewChangeUp = newViewIndex - oldViewIndex > 0
+
+      this.focus.refs = isViewChangeUp
+        ? ['up', 'tabbableCell']
+        : ['tabbableCell', 'up']
+    },
+    /**
      * Sets the date that the calendar should open on
      */
     setPageDate (date) {
@@ -488,6 +513,22 @@ export default {
       }
 
       this.setTabbableCell()
+    },
+    /**
+     * Focus the relevant element when the view changes
+     * @param {String} newView
+     * @param {String} oldView
+     */
+    handleViewChange (newView, oldView) {
+      const isClosing = newView === ''
+      const isOpeningInline = oldView === '' && this.isInline
+
+      if (isClosing || isOpeningInline) {
+        return
+      }
+
+      this.setViewChangeFocusRefs(newView, oldView)
+      this.reviewFocus()
     },
     /**
      * Close the calendar
