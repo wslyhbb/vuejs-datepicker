@@ -40,7 +40,9 @@
       @keydown.down.prevent="handleKeydownDown"
       @keydown.enter.prevent="handleKeydownEnter"
       @keydown.esc.prevent="handleKeydownEscape"
-      @keyup="keyUp">
+      @keydown.space="handleKeydownSpace($event)"
+      @keyup="keyUp"
+      @keyup.space="handleKeyupSpace($event)">
     <!-- Clear Button -->
     <button v-if="clearButton && selectedDate" class="vdp-datepicker__clear-button"
           :class="{'btn input-group-append': bootstrapStyling}"
@@ -182,6 +184,14 @@ export default {
       this.$emit('closeCalendar')
     },
     /**
+     * Prevents scrolling when not typeable
+     */
+    handleKeydownSpace (event) {
+      if (!this.typeable) {
+        event.preventDefault()
+      }
+    },
+    /**
      * Attempt to parse a typed date
      * @param {Event} event
      */
@@ -215,6 +225,20 @@ export default {
           this.$emit('typedDate', parsedDate)
         }
       }
+    },
+    /**
+     * Toggles the calendar unless a typed date has been entered
+     */
+    handleKeyupSpace (event) {
+      if (this.typeable) {
+        if (this.input.value === '') {
+          this.toggle()
+        }
+        return
+      }
+
+      event.preventDefault()
+      this.toggle()
     },
     /**
      * nullify the typed date to defer to regular formatting

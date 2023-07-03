@@ -117,4 +117,23 @@ describe('Datepicker mounted', () => {
     expect(wrapper.vm.selectedDate).toEqual(today)
     expect(wrapper.vm.isOpen).toBeFalsy()
   })
+
+  it('closes the calendar when escape is pressed', async () => {
+    const input = wrapper.find('input')
+
+    await input.trigger('click')
+    expect(wrapper.vm.isOpen).toBeTruthy()
+
+    await input.trigger('keydown.esc')
+    expect(wrapper.vm.isOpen).toBeFalsy()
+  })
+
+  it('opens the calendar when the space bar is pressed on the input field', async () => {
+    const input = wrapper.find('input')
+
+    await input.trigger('keydown.space')
+    await input.trigger('keyup.space')
+
+    expect(wrapper.vm.isOpen).toBeTruthy()
+  })
 })
