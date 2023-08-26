@@ -235,18 +235,17 @@ export default {
         return
       }
 
+      this.typedDate = this.input.value
+
       if (!this.input.value) {
         this.$emit('typedDate', null)
         return
       }
 
-      if (this.typeable) {
-        const parsedDate = this.getTypedDate(this.input.value)
+      const parsedDate = this.getTypedDate(this.input.value)
 
-        if (!isNaN(parsedDate)) {
-          this.typedDate = this.input.value
-          this.$emit('typedDate', parsedDate)
-        }
+      if (!isNaN(parsedDate)) {
+        this.$emit('typedDate', parsedDate)
       }
     },
     /**
