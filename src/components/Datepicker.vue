@@ -1,5 +1,7 @@
 <template>
   <div
+    :id="datepickerId"
+    ref="datepicker"
     class="vdp-datepicker"
     :class="[wrapperClass, isRtl ? 'rtl' : '']">
     <date-input
@@ -37,6 +39,7 @@
       @open="open"
       @select-typed-date="selectTypedDate"
       @set-focus="setFocus($event)"
+      @tab="tabThroughNavigation"
       @typed-date="setTypedDate">
       <template #calendarBtn>
         <slot name="calendarBtn" />
@@ -202,6 +205,7 @@ export default {
        * Positioning
        */
       calendarHeight: 0,
+      isClickOutside: false,
       /*
        * The latest valid `typedDate` (used for typeable datepicker)
        * {Date}
@@ -292,6 +296,9 @@ export default {
         position: this.isInline ? 'static' : undefined
       }
     },
+    datepickerId () {
+      return `vdp-${Math.random().toString(36).slice(-10)}`
+    },
     isInline () {
       return !!this.inline
     },
@@ -335,6 +342,13 @@ export default {
       const view = this.view || this.computedInitialView
       return `Picker${this.ucFirst(view)}`
     }
+  },
+  mounted () {
+    this.init()
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeUnmount () {
+    document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
     /**
@@ -563,9 +577,29 @@ export default {
 
       this.view = ''
 
-      this.reviewFocus()
+      if (this.isClickOutside) {
+        this.isClickOutside = false
+      } else {
+        this.reviewFocus()
+      }
 
       this.$emit('closed')
+    },
+    /**
+     * Closes the calendar when no element within it has focus
+     */
+    handleClickOutside (event) {
+      if (!this.isOpen || this.inline) {
+        return
+      }
+
+      const datePicker = event.target.closest('.vdp-datepicker')
+      if ((datePicker && datePicker.id !== this.datepickerId) ||
+          (!datePicker &&
+           !event.target.parentElement.closest('.vdp-datepicker__calendar'))) {
+        this.isClickOutside = true
+        this.close()
+      }
     },
     /**
      * Set the new pageDate, focus the relevant element and emit a `changed-<view>` event
@@ -641,9 +675,6 @@ export default {
     ucFirst (str) {
       return str[0].toUpperCase() + str.substring(1)
     }
-  },
-  mounted () {
-    this.init()
   }
 }
 
