@@ -5,6 +5,7 @@ export default {
         delay: 0,
         refs: []
       },
+      inlineTabbableCell: null,
       navElements: [],
       navElementsFocusedIndex: 0,
       resetTabbableCell: false,
@@ -44,6 +45,17 @@ export default {
         default:
           return date
       }
+    },
+    /**
+     * Returns true, unless tabbing should be focus-trapped
+     * @return {Boolean}
+     */
+    allowNormalTabbing (event) {
+      if (!this.isOpen) {
+        return true
+      }
+
+      return this.isTabbingAwayFromInlineDatepicker(event)
     },
     /**
      * Focuses the first non-disabled element found in the `focus.refs` array and sets `navElementsFocusedIndex`
@@ -174,6 +186,24 @@ export default {
       return [...Array.prototype.slice.call(navNodeList)]
     },
     /**
+     * Returns the first focusable element of an inline datepicker
+     * @returns {HTMLElement}
+     */
+    getFirstInlineFocusableElement () {
+      const pickerElements = this.getFocusableElements(this.$refs.picker.$el)
+
+      return pickerElements[0]
+    },
+    /**
+     * Returns the last focusable element of an inline datepicker
+     * @returns {HTMLElement}
+     */
+    getLastInlineFocusableElement () {
+      const pickerElements = this.getFocusableElements(this.$refs.picker.$el)
+
+      return pickerElements[pickerElements.length - 1]
+    },
+    /**
      * Returns the input element (when typeable)
      * @returns {Element}
      */
@@ -205,6 +235,59 @@ export default {
       return !!this.$slots[slotName]
     },
     /**
+     * Returns true if the user is tabbing away from an inline datepicker
+     * @return {Boolean}
+     */
+    isTabbingAwayFromInlineDatepicker (event) {
+      if (!this.inline) {
+        return false
+      }
+
+      if (this.isTabbingAwayFromFirstNavElement(event)) {
+        this.tabAwayFromFirstElement()
+
+        return true
+      }
+
+      if (this.isTabbingAwayFromLastNavElement(event)) {
+        this.tabAwayFromLastElement()
+
+        return true
+      }
+
+      return false
+    },
+    /**
+     * Used for inline calendars; returns true if the user tabs backwards from the first focusable element
+     * @param  {object}  event Used to determine whether we are tabbing forwards or backwards
+     * @return {Boolean}
+     */
+    isTabbingAwayFromFirstNavElement (event) {
+      if (!event.shiftKey) {
+        return false
+      }
+
+      const activeElement = this.getActiveElement()
+      const firstNavElement = this.navElements[0]
+
+      return activeElement === firstNavElement
+    },
+    /**
+     * Used for inline calendars; returns true if the user tabs forwards from the last focusable element
+     * @param  {object}  event Used to determine whether we are tabbing forwards or backwards
+     * @return {Boolean}
+     */
+    isTabbingAwayFromLastNavElement (event) {
+      if (event.shiftKey) {
+        return false
+      }
+
+      const activeElement = this.getActiveElement()
+      const lastNavElement = this.navElements[this.navElements.length - 1]
+
+      return activeElement === lastNavElement
+    },
+    /**
      * Sets the correct focus on next tick
      */
     reviewFocus () {
@@ -220,6 +303,17 @@ export default {
 
         this.resetTabbableCell = false
       })
+    },
+    /**
+     * Stores the current tabbableCell of an inline datepicker
+     * N.B. This is used when tabbing back (shift + tab) to an inline calendar from further down the page
+     */
+    setInlineTabbableCell () {
+      if (!this.inline) {
+        return
+      }
+
+      this.inlineTabbableCell = this.tabbableCell
     },
     /**
      * Set the focus
@@ -280,6 +374,71 @@ export default {
         pickerCells.querySelector('button.selected:not(.muted):enabled') ||
         pickerCells.querySelector('button.today:not(.muted):enabled') ||
         pickerCells.querySelector('button.cell:not(.muted):enabled')
+    },
+    /**
+     * Focuses the first focusable element of an inline datepicker, so that the previous element on the page will be tabbed to
+     */
+    tabAwayFromFirstElement () {
+      const firstElement = this.getFirstInlineFocusableElement()
+
+      firstElement.focus()
+
+      // Reset the tabbableCell as we don't want it to be the `firstElement` if the latter is
+      // an edge date from the previous month
+      this.tabbableCell = this.inlineTabbableCell
+    },
+    /**
+     * Focuses the last focusable element of an inline datepicker, so that the next element on the page will be tabbed to
+     */
+    tabAwayFromLastElement () {
+      const lastElement = this.getLastInlineFocusableElement()
+
+      lastElement.focus()
+
+      // Reset the tabbableCell as we don't want it to be the `lastElement` if the latter is
+      // an edge date from the next month
+      this.tabbableCell = this.inlineTabbableCell
+    },
+    /**
+     * Tab backwards through the focus-trapped elements
+     */
+    tabBackwards () {
+      this.navElementsFocusedIndex -= 1
+
+      if (this.navElementsFocusedIndex < 0) {
+        this.navElementsFocusedIndex = this.navElements.length - 1
+      }
+
+      this.navElements[this.navElementsFocusedIndex].focus()
+    },
+    /**
+     * Tab forwards through the focus-trapped elements
+     */
+    tabForwards () {
+      this.navElementsFocusedIndex += 1
+
+      if (this.navElementsFocusedIndex >= this.navElements.length) {
+        this.navElementsFocusedIndex = 0
+      }
+
+      this.navElements[this.navElementsFocusedIndex].focus()
+    },
+    /**
+     * Tab through the focus-trapped elements
+     * @param event
+     */
+    tabThroughNavigation (event) {
+      if (this.allowNormalTabbing(event)) {
+        return
+      }
+
+      event.preventDefault()
+
+      if (event.shiftKey) {
+        this.tabBackwards()
+      } else {
+        this.tabForwards()
+      }
     },
     /**
      * Update which cell in the picker should be focus-trapped
