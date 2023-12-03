@@ -1,6 +1,6 @@
 {
   "name": "@wslyhbb/vuejs-datepicker",
-  "version": "4.1.6",
+  "version": "4.1.7",
   "publishConfig": {
     "access": "public"
   },
@@ -87,7 +87,7 @@
     "postcss": "^8.4.20",
     "pre-commit": "^1.2.2",
     "sass": "^1.62.1",
-    "vite": "^4.0.3",
+    "vite": "^5.0.4",
     "vue": "^3.2.45",
     "vue-eslint-parser": "^9.1.0"
   }

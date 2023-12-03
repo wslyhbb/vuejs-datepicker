@@ -23,7 +23,7 @@ export default defineConfig(() => {
         entry: resolve(__dirname, './src/components/Datepicker.vue'),
         name: 'vuejsDatepicker',
         formats: ['es', 'umd', 'iife', 'cjs'],
-        fileName: (format) => {
+        fileName (format) {
           if (format === 'es') {
             return 'vuejs-datepicker.mjs'
           } else if (format === 'iife') {
@@ -43,7 +43,7 @@ export default defineConfig(() => {
             vue: 'Vue',
             'date-fns': 'dateFns'
           },
-          assetFileNames: (assetInfo) => {
+          assetFileNames (assetInfo) {
             if (assetInfo.name === 'style.css') return 'vuejs-datepicker.css'
             return assetInfo.name
           }
