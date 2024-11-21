@@ -164,7 +164,7 @@ export default {
     twoLetterAbbr: {
       type: Boolean
     },
-    value: {
+    modelValue: {
       validator: val => utils.validateDateInput(val)
     },
     wrapperClass: {
@@ -184,7 +184,7 @@ export default {
     },
     cleared: null,
     closed: null,
-    input: (date) => {
+    'update:modelValue': (date) => {
       return date instanceof Date || date === null
     },
     opened: null,
@@ -232,7 +232,7 @@ export default {
     disabledDates: {
       handler () {
         const selectedDate =
-          this.selectedDate || this.parseValue(this.value)
+          this.selectedDate || this.parseValue(this.modelValue)
 
         if (!selectedDate) {
           return
@@ -263,7 +263,7 @@ export default {
     useUtc (newUtc) {
       this.utils = makeDateUtils(newUtc, this.language)
     },
-    value (value) {
+    modelValue (value) {
       this.setValue(value)
     },
     openDate () {
@@ -433,7 +433,7 @@ export default {
       this.selectedDate = date
       this.setPageDate(date)
       this.$emit('selected', date)
-      this.$emit('input', date)
+      this.$emit('update:modelValue', date)
     },
     /**
      * Clear the selected date
@@ -442,7 +442,7 @@ export default {
       this.selectedDate = null
       this.setPageDate()
       this.$emit('selected', null)
-      this.$emit('input', null)
+      this.$emit('update:modelValue', null)
       this.focus.refs = ['input']
       this.close()
       this.$emit('cleared')
@@ -639,8 +639,8 @@ export default {
       if (this.typeable) {
         this.latestValidTypedDate = this.selectedDate || this.computedOpenDate
       }
-      if (this.value) {
-        this.setValue(this.value)
+      if (this.modelValue) {
+        this.setValue(this.modelValue)
       }
       if (this.isInline) {
         this.setInitialView()
