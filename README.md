@@ -114,7 +114,7 @@ E.g.via:
 ```
 <style lang="scss">
 /* purgecss start ignore */
-@import "@wslyhbb/vuejs-datepicker/dist/vuejs-datepicker.css"
+@use "@wslyhbb/vuejs-datepicker/dist/vuejs-datepicker.css"
 /* purgecss end ignore */
 </style>
 ```

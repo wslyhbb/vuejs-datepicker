@@ -58,7 +58,7 @@ export default {
       return typeof date === 'object'
     },
     setFocus: (refArray) => {
-      return refArray === ['input']
+      return Array.isArray(refArray) && refArray.length === 1 && refArray[0] === 'input'
     }
   },
   data () {
@@ -168,7 +168,6 @@ export default {
      * @param  {Number}            stepsRemaining  The number of steps remaining in the iteration
      * @return {HTMLButtonElement | void}
      */
-    // eslint-disable-next-line complexity,max-statements
     getElement ({ currentElement, delta, stepsRemaining }) {
       const element = this.getElementSibling(currentElement, delta)
       const options = {
@@ -309,7 +308,6 @@ export default {
      * Sets the focus on the correct cell following a page change
      * @param {Object} options
      */
-    // eslint-disable-next-line max-statements
     setFocusOnNewPage ({ delta, stepsRemaining }) {
       const currentElement = this.getFirstOrLastElement(delta)
       const options = {

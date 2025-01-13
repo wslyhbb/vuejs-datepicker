@@ -293,7 +293,7 @@ const state = {
 }
 
 export default {
-  name: 'demo',
+  name: 'DemoComponent',
   components: {
     Datepicker
   },

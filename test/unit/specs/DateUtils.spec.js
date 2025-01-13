@@ -142,7 +142,7 @@ describe('getDaysStartingOn', () => {
   })
 })
 
-const getAmbiguousDate = _ => {
+const getAmbiguousDate = () => {
   const timezoneOffset = ((new Date()).getTimezoneOffset() / 60)
   const ambiguousHour = 25 - timezoneOffset
   const ambiguousDate = new Date(2018, 11, 31, ambiguousHour)
