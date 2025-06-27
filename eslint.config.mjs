@@ -38,7 +38,7 @@ export default [
         languageOptions: {
             globals: {
                 ...globals.browser,
-                ...globals.jest
+                ...globals.vitest
             }
         },
         rules: {

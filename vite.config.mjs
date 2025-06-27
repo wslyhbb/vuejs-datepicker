@@ -49,6 +49,18 @@ export default defineConfig(() => {
           }
         }
       }
+    },
+    test: {
+      globals: true,
+      setupFiles: './test/unit/setup.js',
+      coverage: {
+        include: [
+          'src/**/*.{js,vue}',
+          '!src/locale/translations/**/*.js'
+        ],
+        reportsDirectory: './test/unit/coverage'
+      },
+      environment: 'jsdom'
     }
   }
 })

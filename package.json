@@ -1,6 +1,6 @@
 {
   "name": "@wslyhbb/vuejs-datepicker",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "publishConfig": {
     "access": "public"
   },
@@ -52,8 +52,8 @@
     "prepublishOnly": "npm run lint && npm run build",
     "dev": "vite build --mode development --watch",
     "serve": "vite ./example",
-    "test": "jest --config test/unit/jest.conf.js --coverage",
-    "test:watch": "jest --config test/unit/jest.conf.js --watch",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --watch",
     "lint": "eslint ."
   },
   "pre-commit": [
@@ -65,26 +65,21 @@
     "vue": "^3.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.7",
-    "@babel/plugin-transform-runtime": "^7.19.6",
-    "@babel/preset-env": "^7.20.2",
-    "@babel/runtime": "^7.20.7",
     "@vitejs/plugin-vue": "^5.2.1",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
     "@vue/compiler-sfc": "^3.2.45",
     "@vue/test-utils": "^2.2.6",
-    "@vue/vue3-jest": "^29.2.2",
     "autoprefixer": "^10.4.13",
-    "babel-jest": "^29.3.1",
     "date-fns": "^4.1.0",
     "eslint": "^9.18.0",
     "eslint-plugin-vue": "^10.0.0",
     "globals": "^16.0.0",
-    "jest": "^29.3.1",
-    "jest-environment-jsdom": "^29.3.1",
     "postcss": "^8.4.20",
     "pre-commit": "^1.2.2",
     "sass": "^1.62.1",
     "vite": "^6.0.7",
+    "vitest": "^3.2.4",
     "vue": "^3.2.45",
     "vue-eslint-parser": "^10.1.3"
   }

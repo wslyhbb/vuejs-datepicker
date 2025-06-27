@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
-import PickerDay from '@/components/PickerDay'
+import PickerDay from '@/components/PickerDay.vue'
 import { enGB } from 'date-fns/locale'
 
 describe('PickerDay: Set first day of week', () => {

@@ -169,10 +169,10 @@ describe('Datepicker shallowMounted', () => {
         modelValue: '2018-01-01'
       }
     })
-    const spy = jest.spyOn(wrapper.vm, 'setValue')
+    const spy = vi.spyOn(wrapper.vm, 'setValue')
     wrapper.setProps({ modelValue: '2018-04-26' })
     await wrapper.vm.$nextTick()
-    expect(spy).toBeCalled()
+    expect(spy).toHaveBeenCalled()
   })
 
   it('watches openDate', async () => {
@@ -181,10 +181,10 @@ describe('Datepicker shallowMounted', () => {
         openDate: new Date(2018, 0, 1)
       }
     })
-    const spy = jest.spyOn(wrapper.vm, 'setPageDate')
+    const spy = vi.spyOn(wrapper.vm, 'setPageDate')
     wrapper.setProps({ openDate: new Date(2018, 3, 26) })
     await wrapper.vm.$nextTick()
-    expect(spy).toBeCalled()
+    expect(spy).toHaveBeenCalled()
   })
 
   it('watches initialView when open', async () => {
@@ -193,10 +193,10 @@ describe('Datepicker shallowMounted', () => {
         initialView: 'day'
       }
     })
-    const spy = jest.spyOn(wrapper.vm, 'setInitialView')
+    const spy = vi.spyOn(wrapper.vm, 'setInitialView')
     await wrapper.vm.open()
     await wrapper.setProps({ initialView: 'month' })
-    expect(spy).toBeCalled()
+    expect(spy).toHaveBeenCalled()
   })
 
   it('knows the next view up / down', () => {

@@ -1,13 +1,17 @@
 .DS_Store
+
+# Exclude node_modules
 node_modules
-npm-debug.log
+
+# Personal Visual Studio Code directory
 .vscode
+
+**/*debug.log*
+
 .coveralls.yml
 dist/*
 example/demo.js
 example/demo.js.map
 test/unit/coverage
-yarn-debug.log*
-yarn-error.log*
 .idea
 TODO
