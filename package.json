@@ -65,6 +65,7 @@
     "vue": "^3.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
@@ -72,14 +73,14 @@
     "@vue/test-utils": "^2.2.6",
     "autoprefixer": "^10.4.13",
     "date-fns": "^4.1.0",
-    "eslint": "^9.18.0",
+    "eslint": "^10.1.0",
     "eslint-plugin-vue": "^10.0.0",
     "globals": "^17.3.0",
-    "jsdom": "^27.4.0",
+    "jsdom": "^29.0.1",
     "postcss": "^8.4.20",
     "pre-commit": "^1.2.2",
     "sass": "^1.62.1",
-    "vite": "^7.3.1",
+    "vite": "^8.0.2",
     "vitest": "^4.0.18",
     "vue": "^3.2.45",
     "vue-eslint-parser": "^10.1.3"

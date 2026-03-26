@@ -45,7 +45,7 @@ export default defineConfig(() => {
           },
           assetFileNames (assetInfo) {
             if (assetInfo.name === 'style.css') return 'vuejs-datepicker.css'
-            return assetInfo.name
+            return assetInfo.name || 'asset'
           }
         }
       }
